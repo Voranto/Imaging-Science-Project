@@ -2,7 +2,8 @@
 import { ref } from 'vue';
 import ImageUploader from './components/ImageUploader.vue';
 import Canvas from './components/Canvas.vue';
-
+import TransformRender from './components/TransformRender.vue';
+import {transformRequested} from './composables/useTransforms.ts'
 </script>
 
 <template>
@@ -12,5 +13,6 @@ import Canvas from './components/Canvas.vue';
     <div id="canvas">
       <Canvas></Canvas>
     </div>
+    <TransformRender v-if="transformRequested"></TransformRender>
   </main>
 </template>

@@ -1,11 +1,9 @@
 <template>
     Upload your Image here
-    <hr>
     <input type="file"  ref="imageInput" @change="handleImageUpload">
 </template> 
 
 <script setup>
-    import { ref } from "vue";
     import { FabricImage } from 'fabric';
     import { useCanvasState } from '../composables/useCanvas.js'
     const { canvasInstance } = useCanvasState();
@@ -16,8 +14,8 @@
         const reader = new FileReader();
         const canvas = canvasInstance.value;
         if (!canvas) {
-        console.warn('Canvas instance is not ready yet');
-        return;
+            console.warn('Canvas instance is not ready yet');
+            return;
         }
         const imageUrl = URL.createObjectURL(image);
         const img = await FabricImage.fromURL(imageUrl);

@@ -1,1 +1,3 @@
 Add lines and more structures for the canvas 
+Fix FFT display (either separate the channels, or only allow grayscale)
+Make the FFT a Canvas

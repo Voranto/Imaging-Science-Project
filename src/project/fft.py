@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException
+from fastapi import APIRouter, File, UploadFile, HTTPException, Request, Header
 from fastapi.responses import Response
 from PIL import Image
 import numpy as np
@@ -9,28 +9,33 @@ router = APIRouter(
     tags=["FFT Transforms"]
 )
 
-@router.post("/compute_color")
-async def compute_fft_color(image : UploadFile = File(...)):
-    # Returns a 3 dimensional array of the FFT of each of the channels
-    if image.content_type not in ["image/png", "image/jpeg"]:
-        raise HTTPException(status_code=400, detail="File must be an image")
+@router.post("/grayscale")
+async def compute_fft_color(request: Request):
+    # Returns a 2 dimensional array of the FFT
+    
+    try:
+        x_image_width = int(request.headers.get("x-image-width"))
+        x_image_height = int(request.headers.get("x-image-height"))
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=422, 
+            detail="Missing or invalid 'x-image-width' / 'x-image-height' headers"
+        )
 
-    contents = await image.read()
+    
+    body_bytes = await request.body()
 
-    image = Image.open(io.BytesIO(contents)).convert("RGB")
+    img_array = np.frombuffer(body_bytes, dtype=np.uint8).reshape((x_image_height, x_image_width))
+    np.savetxt("img.txt", img_array, delimiter=",", fmt='%d')
 
-    img_array = np.array(image)
+    img_array = img_array.astype(np.float32)
+    
+    fft_shifted = np.fft.fftshift(np.fft.fft2(img_array))
+    magnitude = np.log1p(np.abs(fft_shifted))
 
-    fft = np.fft.fft2(img_array,axes=(0,1))
-    shifted_fft = np.fft.fftshift(fft,axes=(0,1))
-
-    magnitude_spectrum = np.abs(shifted_fft)
-    log_spectrum = np.log(1 + magnitude_spectrum)
-
-    # Move to 0-255 range
-    min_val, max_val = log_spectrum.min(), log_spectrum.max()
-    normalized = (255 * (log_spectrum - min_val) / (max_val - min_val)).astype(np.uint8)
-
+    min_val, max_val = magnitude.min(), magnitude.max()
+    normalized = (255 * (magnitude - min_val) / (max_val - min_val + 1e-8)).astype(np.uint8)
+    np.savetxt("fft.txt", magnitude, delimiter=",", fmt='%d')
     res_img = Image.fromarray(normalized)
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")

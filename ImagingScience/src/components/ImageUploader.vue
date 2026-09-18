@@ -4,7 +4,7 @@
 </template> 
 
 <script setup>
-    import { FabricImage } from 'fabric';
+    import { FabricImage, filters } from 'fabric';
     import { useCanvasState } from '../composables/useCanvas.ts'
     const { canvasInstance } = useCanvasState();
 
@@ -18,9 +18,12 @@
             return;
         }
         const imageUrl = URL.createObjectURL(image);
+        
+        // Convert the image to grayscale
         const img = await FabricImage.fromURL(imageUrl);
-        
-        
+        img.filters.push(new filters.Grayscale());
+        img.applyFilters();
+
         var targetImageHeight = null;
         var targetImageWidth = null;
 
@@ -42,29 +45,5 @@
         canvas.add(img);
         canvas.setActiveObject(img);
         canvas.renderAll();
-    }
-
-
-    function uploadImageToCanvas(img) {
-        const c = document.getElementById("imageCanvas");
-        var ctx = c.getContext("2d");
-
-        var targetImageHeight = null;
-        var targetImageWidth = null;
-
-        var targetImageX = 0;
-        var targetImageY = 0;
-        if (img.width - c.width > img.width - c.height) {
-            targetImageWidth = c.width;
-            targetImageHeight = img.height * (c.width / img.width)
-            targetImageY = (c.height - targetImageHeight) / 2
-        }
-        else {
-            targetImageHeight = c.height;
-            targetImageWidth = img.width * (c.height / img.height)
-            targetImageX = (c.width - targetImageWidth) / 2
-        }
-        
-        ctx.drawImage(img, 0, 0, img.width, img.height, targetImageX, targetImageY, targetImageWidth, targetImageHeight );
     }
 </script>

@@ -13,6 +13,6 @@ import {transformRequested} from './composables/useTransforms.ts'
     <div id="canvas">
       <Canvas></Canvas>
     </div>
-    <TransformRender v-if="transformRequested"></TransformRender>
+    <TransformRender v-show="transformRequested"></TransformRender>
   </main>
 </template>

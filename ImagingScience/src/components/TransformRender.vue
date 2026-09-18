@@ -2,13 +2,17 @@
 
 <script setup>
 import { ref } from 'vue';
-import {transformRequested, transformImageSrc} from '../composables/useTransforms.ts'
+import {transformRequested , updateImageTransform} from '../composables/useTransforms.ts'
 
 </script>
 <template>
     <div class="overlay-screen">
-        <button @click="transformRequested=false">Close </button>
-        <img v-if="transformImageSrc" :src="transformImageSrc">
+        <button @click="updateImageTransform">Close </button>
+        <select name="transformType" id="transformType">
+          <option value="none" selected="selected">none</option>
+          <option value="fft">fft</option>
+        </select>
+        <canvas v-show="transformRequested" ref="transformImageCanvas" style="border:1px solid #000000" id="transformImageCanvas"></canvas>
   <div class="overlay-content">
     
   </div>

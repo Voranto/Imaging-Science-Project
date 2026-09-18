@@ -124,14 +124,12 @@ const addBox = () => {
   canvas.add(rect);
   rect.on("selected", () => {
     var colorSelector = document.getElementById("objectColorSelector");
-    console.log(rect.fill)
     colorSelector.value = getRectGrayscale(rect);
   })
   canvas.setActiveObject(rect);
 };
 const updateObjectColor = () => {
     const colorSelectorValue = document.getElementById("objectColorSelector").value;
-    console.log(colorSelectorValue)
     if (isDrawing && canvas.freeDrawingBrush) {
         canvas.freeDrawingBrush.color = `rgb(${colorSelectorValue}, ${colorSelectorValue}, ${colorSelectorValue})`;
     }

@@ -26,7 +26,6 @@ async def compute_fft_color(request: Request):
     body_bytes = await request.body()
 
     img_array = np.frombuffer(body_bytes, dtype=np.uint8).reshape((x_image_height, x_image_width))
-    np.savetxt("img.txt", img_array, delimiter=",", fmt='%d')
 
     img_array = img_array.astype(np.float32)
     
@@ -35,7 +34,6 @@ async def compute_fft_color(request: Request):
 
     min_val, max_val = magnitude.min(), magnitude.max()
     normalized = (255 * (magnitude - min_val) / (max_val - min_val + 1e-8)).astype(np.uint8)
-    np.savetxt("fft.txt", magnitude, delimiter=",", fmt='%d')
     res_img = Image.fromarray(normalized)
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")

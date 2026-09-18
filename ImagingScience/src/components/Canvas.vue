@@ -3,7 +3,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, useTemplateRef } from 'vue';
 import { Canvas, Rect, FabricImage, PencilBrush } from 'fabric'; 
-import { useCanvasState } from '../composables/useCanvas.js'
+import { useCanvasState } from '../composables/useCanvas.ts'
 import { getFFT } from '../composables/useTransforms.ts'
 // Reference to the canvas object
 const canvasRef = useTemplateRef("canvasObject");
@@ -28,6 +28,7 @@ var canvas = ref(null);
 
 onMounted(() => {
   canvas = new Canvas(canvasRef.value, {uniformScaling: false,});
+  canvas.backgroundColor = "white";
   canvas.on('path:created', (e) => {
   e.path.set({
     objectCaching: false, // Prevents texture bitmap bounding box clipping

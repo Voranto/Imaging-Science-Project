@@ -1,13 +1,14 @@
 
 
 <script setup>
-import {transformRequested} from '../composables/useTransforms.ts'
-
+import { ref } from 'vue';
+import {transformRequested, transformImageSrc} from '../composables/useTransforms.ts'
 
 </script>
 <template>
     <div class="overlay-screen">
         <button @click="transformRequested=false">Close </button>
+        <img v-if="transformImageSrc" :src="transformImageSrc">
   <div class="overlay-content">
     
   </div>

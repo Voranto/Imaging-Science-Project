@@ -5,7 +5,7 @@
 
 <script setup>
     import { FabricImage } from 'fabric';
-    import { useCanvasState } from '../composables/useCanvas.js'
+    import { useCanvasState } from '../composables/useCanvas.ts'
     const { canvasInstance } = useCanvasState();
 
 

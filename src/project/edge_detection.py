@@ -18,8 +18,6 @@ async def compute_simple_edge_detection(request: Request):
         x_image_width = int(request.headers.get("x-image-width"))
         x_image_height = int(request.headers.get("x-image-height"))
         threshold = float(request.headers.get("threshold"))
-        print(request.headers.get("applyGaussian"))
-        print(request.headers.get("applyGaussian") == "true")
         applyGaussian = request.headers.get("applyGaussian") == "true"
     except (TypeError, ValueError):
         raise HTTPException(
@@ -84,5 +82,45 @@ async def get_max_value_simple_edge_detection(request: Request):
     gradient = np.hypot(grad_x, grad_y)
     
     return JSONResponse(content={"max_value": float(np.max(gradient))})
+
+@router.post("/canny")
+async def compute_cannys_edge_detection(request: Request):
+    # Returns the max value of the image gradient (used to adjust the threshold input)
+    try:
+        x_image_width = int(request.headers.get("x-image-width"))
+        x_image_height = int(request.headers.get("x-image-height"))
+        applyGaussian = request.headers.get("applyGaussian") == "true"
+        
+        thresholdWeak = float(request.headers.get("thresholdWeak"))
+        thresholdStrong = float(request.headers.get("thresholdStrong"))
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=422, 
+            detail="Missing or invalid 'x-image-width' / 'x-image-height' headers"
+        )
+
+    
+    body_bytes = await request.body()
+
+    img_array = np.frombuffer(body_bytes, dtype=np.uint8).reshape((x_image_height, x_image_width))
+
+    img_array = img_array.astype(np.float32)
+
+    if (applyGaussian):
+        img_array = gaussian_filter(img_array, sigma=1.0)
+
+    sobel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], dtype=np.float32)
+    sobel_y = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]], dtype=np.float32)
+    # Use Sobel Operators to compute it
+    grad_x = convolve(img_array,sobel_x, mode="nearest")
+    grad_y = convolve(img_array,sobel_y, mode="nearest")
+
+    # Now iterate the image and get the gradient direction of each pixel
+    theta_rad = np.arctan2(grad_y, grad_x)
+    theta_deg = np.degrees(theta_rad)
+
+    
+
+
 
     

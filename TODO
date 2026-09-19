@@ -1,3 +1,7 @@
 Add lines and more structures for the canvas 
-Fix FFT display (either separate the channels, or only allow grayscale)
-Make the FFT a Canvas
+
+think of some way to reverse the fft canvas. Either preserve the state and do some sort 
+of mix, or some other alternative
+
+Add more transforms
+Add Filters (cannys/corner detection)

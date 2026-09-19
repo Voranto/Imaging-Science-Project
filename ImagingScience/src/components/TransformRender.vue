@@ -7,8 +7,8 @@ import {transformRequested , updateImageTransform} from '../composables/useTrans
 </script>
 <template>
     <div class="overlay-screen">
-        <button @click="updateImageTransform">Close </button>
-        <select name="transformType" id="transformType">
+        <button @click="updateImageTransform" >Close </button>
+        <select name="transformType" id="transformType" style="display: none;">
           <option value="none" selected="selected">none</option>
           <option value="fft">fft</option>
         </select>

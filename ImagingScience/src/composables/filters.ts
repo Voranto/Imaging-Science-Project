@@ -10,7 +10,7 @@ export var filterImageSrc : Ref<string> = ref("test");
 
 const SIMPLE_EDGE_DETECTION_URL = "http://localhost:8000/api/filter/edge/simple";
 const SIMPLE_EDGE_DETECTION_MAX_VALUE_URL = "http://localhost:8000/api/filter/edge/simple/max_value"
-
+const CANNY_EDGE_DETECTION_URL = "http://localhost:8000/api/filter/edge/canny"
 export async function getSimpleEdges() {
     const canvas = canvasInstance.value;
     
@@ -55,7 +55,7 @@ export async function getSimpleEdges() {
         },
         });
 
-        thresholdInput.max = response.data.max_value.toString();
+        thresholdInput.max = Math.max(100,response.data.max_value).toString();
     }
     
     var thresholdObject : HTMLSelectElement | null = document.getElementById("simpleEdgeThreshold") as HTMLSelectElement;
@@ -97,6 +97,83 @@ export async function getSimpleEdges() {
     }
 }
 
+export async function getCannys() {
+    const canvas = canvasInstance.value;
+    
+    if (!canvas) return;
+    
+    
+    filterRequested.value = true;
+    changeFilterType("cannys_edge")
+
+    // We have to deselect any objects, otherwise the Edge Detection will be wrong because of the bounding box
+    // Preserve the activeObject for afterwards
+    var activeObject = canvas.getActiveObject();
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    // Round the height and weight to prevent issues when sending it through axios
+    const width = Math.floor(canvas.width);
+    const height = Math.floor(canvas.height);
+
+
+    const ctx = canvas.getContext()
+    const imageData = ctx.getImageData(0, 0, width, height);
+    console.log(width,height);
+    const rgba = imageData.data;
+
+    const totalPixels = width * height;
+    const grayArray  : Uint8Array<any> = new Uint8Array(totalPixels);
+
+    for (let i = 0; i < totalPixels; i++) {
+        grayArray[i] = rgba[i * 4]!;
+    }
+
+    // Get thresholds and gaussian checkbox
+    var thresholdWeakObject : HTMLSelectElement | null = document.getElementById("thresholdCannyWeak") as HTMLSelectElement;
+    var thresholdWeak = 0;
+    if (thresholdWeakObject) {
+        thresholdWeak = Number(thresholdWeakObject.value);
+    }
+    var thresholdStrongObject : HTMLSelectElement | null = document.getElementById("thresholdCannyStrong") as HTMLSelectElement;
+    var thresholdStrong = 0;
+    if (thresholdStrongObject) {
+        thresholdStrong = Number(thresholdStrongObject.value);
+    }
+    var applyGaussianObject : HTMLInputElement | null = document.getElementById("applyGaussianCanny") as HTMLInputElement;
+    var applyGaussian = true;
+    if (applyGaussianObject) {
+        applyGaussian = Boolean(applyGaussianObject.checked);
+    }
+
+    try {
+
+        const response = await axios.post(CANNY_EDGE_DETECTION_URL, grayArray, {
+        headers: {
+            'Content-Type': 'application/octet-stream',
+            'x-image-width': width.toString(),
+            'x-image-height': height.toString(),
+            'thresholdWeak': thresholdWeak,
+            'thresholdStrong': thresholdStrong,
+            'applyGaussian': applyGaussian,
+        },
+        responseType: 'blob',
+        });
+
+        
+        const newImageUrl = URL.createObjectURL(response.data);
+        filterImageSrc.value = newImageUrl;
+        
+    } catch (error) {
+        console.error('Upload failed:', error);
+    }
+
+    if (activeObject){
+        canvas.setActiveObject(activeObject);
+        canvas.requestRenderAll();
+    }
+}
 
 export function getFilterType() {
     const filterType : HTMLSelectElement | null = document.getElementById("filterType") as HTMLSelectElement;

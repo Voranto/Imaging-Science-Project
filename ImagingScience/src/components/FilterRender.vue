@@ -4,7 +4,10 @@
 import { ref } from 'vue';
 import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges } from '../composables/filters.ts'
 
-const threshold = ref(125)
+const thresholdSimpleEdge = ref(50)
+const thresholdCannyWeak = ref(50)
+const thresholdCannyStrong = ref(100)
+
 </script>
 <template>
     <div class="overlay-screen">
@@ -12,13 +15,23 @@ const threshold = ref(125)
         <select name="filterType" id="filterType" style="display: none;">
           <option value="none" selected="selected">none</option>
           <option value="simple_edge">simple_edge</option>
+          <option value="cannys_edge">cannys_edge</option>
         </select>
         <div v-show="getFilterType() == 'simple_edge'">
-            Threshold: <input type="range" v-model.number="threshold" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
-            <span class="threshold-value">{{ threshold }}</span>
-            <label>Apply Gaussian Smoothing</label><input type="checkbox" id="applyGaussianSimpleEdges" @change="getSimpleEdges">
+            Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
+            <span class="threshold-value">{{ thresholdSimpleEdge }}</span>
+            <label>Apply Gaussian Smoothing</label><input type="checkbox" id="applyGaussianSimpleEdges" @change="getSimpleEdges" checked>
         </div>
         
+        <div v-show="getFilterType() == 'cannys_edge'">
+            Weak Threshold: <input type="range" v-model.number="thresholdCannyWeak" @change="getCannys" id="thresholdCannyWeak" min="0" max="250">
+            <span class="threshold-value">{{ thresholdCannyWeak }}</span>
+            
+            Strong Threshold: <input type="range" v-model.number="thresholdCannyStrong" @change="getCannys" id="thresholdCannyStrong" min="0" max="250">
+            <span class="threshold-value">{{ thresholdCannyStrong }}</span>
+            <label>Apply Gaussian Smoothing</label><input type="checkbox" id="applyGaussianCanny" @change="getCannys" checked>
+        </div>
+
         <img :src="filterImageSrc" id="filterImage">
     <div class="overlay-content">
     

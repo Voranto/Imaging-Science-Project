@@ -5,7 +5,7 @@ import { ref, onMounted, onUnmounted, useTemplateRef } from 'vue';
 import { Canvas, Rect, FabricImage, PencilBrush } from 'fabric'; 
 import { useCanvasState } from '../composables/useCanvas.ts'
 import { getFFT } from '../composables/useTransforms.ts'
-import { getSimpleEdges } from '../composables/filters.ts'
+import { getSimpleEdges, getCannys } from '../composables/filters.ts'
 
 // Reference to the canvas object
 const canvasRef = useTemplateRef("canvasObject");
@@ -238,6 +238,8 @@ window.addEventListener('keydown', (e) => {
       <button @click="clearCanvas">Clear Canvas</button>
       <button @click="getFFT">Generate FFT</button>
       <button @click="getSimpleEdges">Simple Edge Detector</button>
+      
+      <button @click="getCannys">Cannys Edge Detector</button>
     </div>
 
     <canvas ref="canvasObject" id="imageCanvas" style="border:1px solid #000000"></canvas>

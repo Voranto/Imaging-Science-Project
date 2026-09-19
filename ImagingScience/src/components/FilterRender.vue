@@ -4,6 +4,7 @@
 import { ref } from 'vue';
 import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges } from '../composables/filters.ts'
 
+const threshold = ref(125)
 </script>
 <template>
     <div class="overlay-screen">
@@ -13,7 +14,8 @@ import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges } from '
           <option value="simple_edge">simple_edge</option>
         </select>
         <div v-show="getFilterType() == 'simple_edge'">
-            Threshold: <input type="range" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
+            Threshold: <input type="range" v-model.number="threshold" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
+            <span class="threshold-value">{{ threshold }}</span>
         </div>
         
         <img :src="filterImageSrc" id="filterImage">

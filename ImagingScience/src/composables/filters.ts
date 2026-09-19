@@ -9,6 +9,7 @@ export const filterRequested : Ref<boolean> = ref(false);
 export var filterImageSrc : Ref<string> = ref("test");
 
 const SIMPLE_EDGE_DETECTION_URL = "http://localhost:8000/api/filter/edge/simple";
+const SIMPLE_EDGE_DETECTION_MAX_VALUE_URL = "http://localhost:8000/api/filter/edge/simple/max_value"
 
 export async function getSimpleEdges() {
     const canvas = canvasInstance.value;
@@ -26,7 +27,6 @@ export async function getSimpleEdges() {
     canvas.requestRenderAll();
     await new Promise((resolve) => requestAnimationFrame(resolve));
 
-
     // Round the height and weight to prevent issues when sending it through axios
     const width = Math.floor(canvas.width);
     const height = Math.floor(canvas.height);
@@ -42,6 +42,20 @@ export async function getSimpleEdges() {
 
     for (let i = 0; i < totalPixels; i++) {
         grayArray[i] = rgba[i * 4]!;
+    }
+
+    // Update max value of the threshold
+    const thresholdInput : HTMLInputElement| null = document.getElementById("simpleEdgeThreshold") as HTMLInputElement;
+    if (thresholdInput) {
+        const response = await axios.post(SIMPLE_EDGE_DETECTION_MAX_VALUE_URL, grayArray, {
+        headers: {
+            'Content-Type': 'application/octet-stream',
+            'x-image-width': width.toString(),
+            'x-image-height': height.toString(),
+        },
+        });
+
+        thresholdInput.max = response.data.max_value.toString();
     }
     
     var thresholdObject : HTMLSelectElement | null = document.getElementById("simpleEdgeThreshold") as HTMLSelectElement;
@@ -70,11 +84,14 @@ export async function getSimpleEdges() {
     } catch (error) {
         console.error('Upload failed:', error);
     }
+
     if (activeObject){
         canvas.setActiveObject(activeObject);
         canvas.requestRenderAll();
     }
 }
+
+
 export function getFilterType() {
     const filterType : HTMLSelectElement | null = document.getElementById("filterType") as HTMLSelectElement;
     if (filterType) {

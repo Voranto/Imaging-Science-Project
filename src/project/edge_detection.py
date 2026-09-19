@@ -3,7 +3,7 @@ from fastapi.responses import Response, JSONResponse
 from PIL import Image
 import numpy as np
 import io
-from scipy.ndimage import convolve
+from scipy.ndimage import convolve, gaussian_filter
 import math
 router = APIRouter(
     prefix="/filter/edge",
@@ -18,6 +18,9 @@ async def compute_simple_edge_detection(request: Request):
         x_image_width = int(request.headers.get("x-image-width"))
         x_image_height = int(request.headers.get("x-image-height"))
         threshold = float(request.headers.get("threshold"))
+        print(request.headers.get("applyGaussian"))
+        print(request.headers.get("applyGaussian") == "true")
+        applyGaussian = request.headers.get("applyGaussian") == "true"
     except (TypeError, ValueError):
         raise HTTPException(
             status_code=422, 
@@ -31,6 +34,10 @@ async def compute_simple_edge_detection(request: Request):
 
     img_array = img_array.astype(np.float32)
 
+    if (applyGaussian):
+        img_array = gaussian_filter(img_array, sigma=1.0)
+    
+    
     sobel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], dtype=np.float32)
     sobel_y = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]], dtype=np.float32)
     # Use Sobel Operators to compute it

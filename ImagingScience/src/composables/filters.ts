@@ -64,6 +64,11 @@ export async function getSimpleEdges() {
         threshold = Number(thresholdObject.value);
     }
 
+    var applyGaussianObject : HTMLInputElement | null = document.getElementById("applyGaussianSimpleEdges") as HTMLInputElement;
+    var applyGaussian = true;
+    if (applyGaussianObject) {
+        applyGaussian = Boolean(applyGaussianObject.checked);
+    }
 
     try {
 
@@ -73,6 +78,7 @@ export async function getSimpleEdges() {
             'x-image-width': width.toString(),
             'x-image-height': height.toString(),
             'threshold': threshold,
+            'applyGaussian': applyGaussian.toString(),
         },
         responseType: 'blob',
         });

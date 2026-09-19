@@ -16,6 +16,7 @@ const threshold = ref(125)
         <div v-show="getFilterType() == 'simple_edge'">
             Threshold: <input type="range" v-model.number="threshold" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
             <span class="threshold-value">{{ threshold }}</span>
+            <label>Apply Gaussian Smoothing</label><input type="checkbox" id="applyGaussianSimpleEdges" @change="getSimpleEdges">
         </div>
         
         <img :src="filterImageSrc" id="filterImage">

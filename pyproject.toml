@@ -9,6 +9,8 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "fastapi[standard]>=0.141.1",
+    "pywavelet>=0.2.10",
+    "pywavelets>=1.10.0",
 ]
 
 [project.scripts]

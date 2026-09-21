@@ -4,7 +4,7 @@
 import { ref, onMounted, onUnmounted, useTemplateRef } from 'vue';
 import { Canvas, Rect, FabricImage, PencilBrush, Circle } from 'fabric'; 
 import { useCanvasState } from '../composables/useCanvas.ts'
-import { getFFT, getDCT } from '../composables/useTransforms.ts'
+import { getFFT, getDCT, getDWT } from '../composables/useTransforms.ts'
 import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter } from '../composables/filters.ts'
 
 // Reference to the canvas object
@@ -261,6 +261,7 @@ window.addEventListener('keydown', (e) => {
       <button @click="clearCanvas">Clear Canvas</button>
       <button @click="getFFT">Generate FFT</button>
       <button @click="getDCT">Generate DCT</button>
+      <button @click="getDWT">Generate DWT</button>
       <button @click="getSimpleEdges">Simple Edge Detector</button>
       <button @click="getCannys">Cannys Edge Detector</button>
       <button @click="getHighpassFilter">Highpass Filter</button>

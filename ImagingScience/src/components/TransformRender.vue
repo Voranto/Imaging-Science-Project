@@ -12,6 +12,7 @@ import {transformRequested , updateImageTransform} from '../composables/useTrans
           <option value="none" selected="selected">none</option>
           <option value="fft">fft</option>
           <option value="dct">dct</option>
+          <option value="dwt">dwt</option>
         </select>
         <canvas v-show="transformRequested" ref="transformImageCanvas" style="border:1px solid #000000" id="transformImageCanvas"></canvas>
   <div class="overlay-content">

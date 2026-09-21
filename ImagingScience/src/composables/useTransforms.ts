@@ -10,6 +10,8 @@ export const transformCanvas = ref<Canvas | null>(null);
 
 const FFT_COMPUTE_URL = "http://localhost:8000/api/fft/grayscale";
 const DCT_COMPUTE_URL = "http://localhost:8000/api/dct/grayscale";
+const DWT_COMPUTE_URL = "http://localhost:8000/api/dwt/grayscale";
+
 
 export async function getFFT() {
     const canvas = canvasInstance.value;
@@ -103,6 +105,7 @@ export async function getFFT() {
     }
     
 }
+
 export async function getDCT() {
     const canvas = canvasInstance.value;
     
@@ -142,6 +145,99 @@ export async function getDCT() {
             'Content-Type': 'application/octet-stream',
             'x-image-width': width.toString(),
             'x-image-height': height.toString(),
+        },
+        responseType: 'blob',
+        });
+
+        // First reveal the canvas container
+        transformRequested.value = true;
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+
+        // Initiate the canvas only once
+        if (!transformCanvas.value) {
+            const el = document.getElementById('transformImageCanvas') as HTMLCanvasElement | null;
+            if (el) {
+                transformCanvas.value = new Canvas(el);
+            }
+        }
+
+        
+        const newImageUrl = URL.createObjectURL(response.data);
+        console.log(transformCanvas)
+        if (transformCanvas && transformCanvas.value){
+            const tCanvas = transformCanvas.value;
+            console.log(tCanvas)
+            tCanvas.setDimensions({
+                width: canvas.width,
+                height: canvas.height
+            })
+            tCanvas.clear();
+            tCanvas.backgroundColor = "white";
+
+            const img = await FabricImage.fromURL(newImageUrl);
+            img.set({
+                selectable: false,
+                evented: false,
+                width: canvas.width,
+                height: canvas.height,
+                left: canvas.width / 2,
+                top: canvas.height / 2
+            });
+
+            tCanvas.add(img);
+            tCanvas.requestRenderAll();
+        }
+
+        
+    } catch (error) {
+        console.error('Upload failed:', error);
+    }
+    if (activeObject){
+        canvas.setActiveObject(activeObject);
+        canvas.requestRenderAll();
+    }
+    
+}
+export async function getDWT() {
+    const canvas = canvasInstance.value;
+    
+    if (!canvas) return;
+    
+    // We have to deselect any objects, otherwise the DCT will be wrong because of the bounding box
+    // Preserve the activeObject for afterwards
+    var activeObject = canvas.getActiveObject();
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+
+    // Round the height and weight to prevent issues when sending it through axios
+    const width = Math.floor(canvas.width);
+    const height = Math.floor(canvas.height);
+
+    // Set the transform type in TransformRender to DWT
+    changeTransformType("dwt");
+
+    const ctx = canvas.getContext()
+    const imageData = ctx.getImageData(0, 0, width, height);
+    console.log(width,height);
+    const rgba = imageData.data;
+
+    const totalPixels = width * height;
+    const grayArray  : Uint8Array<any> = new Uint8Array(totalPixels);
+
+    for (let i = 0; i < totalPixels; i++) {
+        grayArray[i] = rgba[i * 4]!;
+    }
+
+    try {
+
+        const response = await axios.post(DWT_COMPUTE_URL, grayArray, {
+        headers: {
+            'Content-Type': 'application/octet-stream',
+            'x-image-width': width.toString(),
+            'x-image-height': height.toString(),
+            'levels': 1
         },
         responseType: 'blob',
         });

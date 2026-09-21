@@ -2,7 +2,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import {transformRequested , updateImageTransform, getTransformType, getDWT} from '../composables/useTransforms.ts'
+import {transformRequested , updateImageTransform, getTransformType} from '../composables/transform.ts'
+import {getDWT} from '../composables/useTransforms.ts'
 
 const dwtLevel = ref(1);
 

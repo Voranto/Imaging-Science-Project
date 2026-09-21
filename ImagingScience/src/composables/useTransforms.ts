@@ -9,7 +9,7 @@ export const transformRequested : Ref<boolean> = ref(false);
 export const transformCanvas = ref<Canvas | null>(null);
 
 const FFT_COMPUTE_URL = "http://localhost:8000/api/fft/grayscale";
-const IFFT_COMPUTE_URL = "http://localhost:8000/api/fft/inverse/grayscale";
+const DCT_COMPUTE_URL = "http://localhost:8000/api/dct/grayscale";
 
 export async function getFFT() {
     const canvas = canvasInstance.value;
@@ -103,17 +103,12 @@ export async function getFFT() {
     }
     
 }
-
-// Check if the FFT has been updated from the canvas, and if so, do the ifft2 and redraw
-async function updateImageFFT() {
-    // For now just returns. TODO
-    return
-    /**
+export async function getDCT() {
     const canvas = canvasInstance.value;
     
     if (!canvas) return;
     
-    // We have to deselect any objects, otherwise the IFFT will be wrong because of the bounding box
+    // We have to deselect any objects, otherwise the DCT will be wrong because of the bounding box
     // Preserve the activeObject for afterwards
     var activeObject = canvas.getActiveObject();
     canvas.discardActiveObject();
@@ -125,8 +120,8 @@ async function updateImageFFT() {
     const width = Math.floor(canvas.width);
     const height = Math.floor(canvas.height);
 
-    // Set the transform type in TransformRender to fft
-    changeTransformType("fft");
+    // Set the transform type in TransformRender to DCT
+    changeTransformType("dct");
 
     const ctx = canvas.getContext()
     const imageData = ctx.getImageData(0, 0, width, height);
@@ -142,7 +137,7 @@ async function updateImageFFT() {
 
     try {
 
-        const response = await axios.post(IFFT_COMPUTE_URL, grayArray, {
+        const response = await axios.post(DCT_COMPUTE_URL, grayArray, {
         headers: {
             'Content-Type': 'application/octet-stream',
             'x-image-width': width.toString(),
@@ -152,17 +147,29 @@ async function updateImageFFT() {
         });
 
         // First reveal the canvas container
-        transformRequested.value = false;
+        transformRequested.value = true;
         await new Promise((resolve) => requestAnimationFrame(resolve));
 
+        // Initiate the canvas only once
+        if (!transformCanvas.value) {
+            const el = document.getElementById('transformImageCanvas') as HTMLCanvasElement | null;
+            if (el) {
+                transformCanvas.value = new Canvas(el);
+            }
+        }
+
+        
         const newImageUrl = URL.createObjectURL(response.data);
-        if (canvas){
-            canvas.setDimensions({
+        console.log(transformCanvas)
+        if (transformCanvas && transformCanvas.value){
+            const tCanvas = transformCanvas.value;
+            console.log(tCanvas)
+            tCanvas.setDimensions({
                 width: canvas.width,
                 height: canvas.height
             })
-            canvas.clear();
-            canvas.backgroundColor = "white";
+            tCanvas.clear();
+            tCanvas.backgroundColor = "white";
 
             const img = await FabricImage.fromURL(newImageUrl);
             img.set({
@@ -174,8 +181,8 @@ async function updateImageFFT() {
                 top: canvas.height / 2
             });
 
-            canvas.add(img);
-            canvas.requestRenderAll();
+            tCanvas.add(img);
+            tCanvas.requestRenderAll();
         }
 
         
@@ -186,16 +193,10 @@ async function updateImageFFT() {
         canvas.setActiveObject(activeObject);
         canvas.requestRenderAll();
     }
-     */
-}    
-
+    
+}
 
 export function updateImageTransform() {
-    const transformType = getTransformType();
-    if (transformType == "fft") {
-        updateImageFFT();
-    }
-
     changeTransformType("none")
     transformRequested.value =false; 
 }

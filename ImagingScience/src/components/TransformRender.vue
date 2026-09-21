@@ -2,7 +2,9 @@
 
 <script setup>
 import { ref } from 'vue';
-import {transformRequested , updateImageTransform} from '../composables/useTransforms.ts'
+import {transformRequested , updateImageTransform, getTransformType, getDWT} from '../composables/useTransforms.ts'
+
+const dwtLevel = ref(1);
 
 </script>
 <template>
@@ -14,6 +16,12 @@ import {transformRequested , updateImageTransform} from '../composables/useTrans
           <option value="dct">dct</option>
           <option value="dwt">dwt</option>
         </select>
+
+        <div v-show="getTransformType() == 'dwt'">
+            Level: <input type="range" v-model.number="dwtLevel" @change="getDWT" id="dwtLevel" min="0" max="20">
+            <span class="threshold-value">{{ dwtLevel }}</span>
+        </div>
+
         <canvas v-show="transformRequested" ref="transformImageCanvas" style="border:1px solid #000000" id="transformImageCanvas"></canvas>
   <div class="overlay-content">
     

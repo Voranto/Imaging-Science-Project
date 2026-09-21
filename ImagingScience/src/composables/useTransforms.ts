@@ -218,6 +218,13 @@ export async function getDWT() {
     // Set the transform type in TransformRender to DWT
     changeTransformType("dwt");
 
+    var levelsObject : HTMLSelectElement | null = document.getElementById("dwtLevel") as HTMLSelectElement;
+    var level = 0;
+    if (levelsObject) {
+        level = Number(levelsObject.value);
+    }
+
+
     const ctx = canvas.getContext()
     const imageData = ctx.getImageData(0, 0, width, height);
     console.log(width,height);
@@ -237,7 +244,7 @@ export async function getDWT() {
             'Content-Type': 'application/octet-stream',
             'x-image-width': width.toString(),
             'x-image-height': height.toString(),
-            'levels': 1
+            'levels': level
         },
         responseType: 'blob',
         });
@@ -297,7 +304,7 @@ export function updateImageTransform() {
     transformRequested.value =false; 
 }
 
-function getTransformType() {
+export function getTransformType() {
     const transformType : HTMLSelectElement | null = document.getElementById("transformType") as HTMLSelectElement;
     if (transformType) {
         return transformType.value;

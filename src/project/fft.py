@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 @router.post("/grayscale")
-async def compute_fft_color(request: Request):
+async def compute_fft_grayscale(request: Request):
     # Returns a 2 dimensional array of the FFT
     
     try:
@@ -41,7 +41,7 @@ async def compute_fft_color(request: Request):
     return Response(content=buf.getvalue(), media_type="image/png")
 
 @router.post("/inverse/grayscale")
-async def compute_fft_color(request: Request):
+async def compute_inverse_fft_grayscale(request: Request):
     # Returns a 2 dimensional array of the Image reversing the FFT
     
     try:

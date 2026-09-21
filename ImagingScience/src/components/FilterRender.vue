@@ -2,12 +2,13 @@
 
 <script setup>
 import { ref } from 'vue';
-import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges } from '../composables/filters.ts'
+import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges, getCannys, getHighpassFilter } from '../composables/filters.ts'
 
 const thresholdSimpleEdge = ref(50)
 const thresholdCannyWeak = ref(50)
 const thresholdCannyStrong = ref(100)
 
+const highpassFilterSigma = ref(1)
 </script>
 <template>
     <div class="overlay-screen">
@@ -16,6 +17,7 @@ const thresholdCannyStrong = ref(100)
           <option value="none" selected="selected">none</option>
           <option value="simple_edge">simple_edge</option>
           <option value="cannys_edge">cannys_edge</option>
+          <option value="highpass">highpass</option>
         </select>
         <div v-show="getFilterType() == 'simple_edge'">
             Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
@@ -30,6 +32,10 @@ const thresholdCannyStrong = ref(100)
             Strong Threshold: <input type="range" v-model.number="thresholdCannyStrong" @change="getCannys" id="thresholdCannyStrong" min="0" max="250">
             <span class="threshold-value">{{ thresholdCannyStrong }}</span>
             <label>Apply Gaussian Smoothing</label><input type="checkbox" id="applyGaussianCanny" @change="getCannys" checked>
+        </div>
+        <div v-show="getFilterType() == 'highpass'">
+            Sigma: <input type="range" v-model.number="highpassFilterSigma" @change="getHighpassFilter" id="highpassFilterSigma" min="0" max="20">
+            <span class="threshold-value">{{ highpassFilterSigma }}</span>
         </div>
 
         <img :src="filterImageSrc" id="filterImage">

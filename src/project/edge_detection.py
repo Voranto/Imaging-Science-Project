@@ -85,6 +85,25 @@ async def get_max_value_simple_edge_detection(request: Request):
     
     return JSONResponse(content={"max_value": float(np.max(gradient))})
 
+class Direction(Enum):
+    HORIZONTAL = 0
+    DIAGONAL_POSITIVE = 1
+    VERTICAL = 2
+    DIAGONAL_NEGATIVE = 3
+
+def getDirection(degree):
+    # Normalize degree to [0, 360) range to handle negative degrees and values >= 360
+    degree = degree % 360
+
+    if (degree < 22.5) or (337.5 <= degree) or (157.5 <= degree < 202.5):
+        return Direction.HORIZONTAL
+    elif (22.5 <= degree < 67.5) or (202.5 <= degree < 247.5):
+        return Direction.DIAGONAL_POSITIVE
+    elif (67.5 <= degree < 112.5) or (247.5 <= degree < 292.5):
+        return Direction.VERTICAL
+    elif (112.5 <= degree < 157.5) or (292.5 <= degree < 337.5):
+        return Direction.DIAGONAL_NEGATIVE    
+
 @router.post("/canny")
 async def compute_cannys_edge_detection(request: Request):
     # Returns the max value of the image gradient (used to adjust the threshold input)
@@ -149,35 +168,40 @@ async def compute_cannys_edge_detection(request: Request):
                     gradient_processed[y_i][x_i] = 0
 
     # Clasify the remaining edges into weak and strong edges. We convert no edge to a value of 0, weak edges to 1 and strong to a value of 2
+    weakEdges = np.array([])
+    
     for x_i in range(x_image_width):
         for y_i in range(x_image_height):
             if gradient_processed[y_i][x_i] >= thresholdStrong:
                 gradient_processed[y_i][x_i] = 2
             elif gradient_processed[y_i][x_i] >= thresholdWeak:
                 gradient_processed[y_i][x_i] = 1
+                np.append(weakEdges,(x_i,y_i))
             else:
                 gradient_processed[y_i][x_i] = 0
 
-    
-    def checkStrongNeighbor(x_i,y_i):
+    def checkStrongNeighbor(weakEdges):
         directions = [(1,1),(-1,-1),(1,0),(0,1),(-1,0),(0,-1),(1,-1),(-1,1)]
-        for dx,dy in directions:
-            if x_i + dx < 0 or x_i+dx >= x_image_width or y_i+dy < 0 or y_i+dy >= x_image_height:
-                continue
-            if gradient_processed[y_i+dy][x_i+dx] == 2:
-                return True
-        return False
+        ans = np.array([])
+        for x_i,y_i in weakEdges:
+            for dx,dy in directions:
+                if x_i + dx < 0 or x_i+dx >= x_image_width or y_i+dy < 0 or y_i+dy >= x_image_height:
+                    continue
+                if gradient_processed[y_i+dy][x_i+dx] == 2:
+                    np.append(ans,True)
+            np.append(ans,False)
+        return ans
 
-    # Keep upgrading weak edges until no change is found
+    # Keep upgrading weak edges until no change is found. Instead of iterating entire image, store weak edges
     edgeUpgraded = True
     while edgeUpgraded:
         edgeUpgraded = False
-        for x_i in range(x_image_width):
-            for y_i in range(x_image_height):
-                if gradient_processed[y_i][x_i] == 1 and checkStrongNeighbor(x_i,y_i):
-                    gradient_processed[y_i][x_i] = 2
-                    edgeUpgraded = True
-    
+        strong = np.extract(checkStrongNeighbor(weakEdges),weakEdges)
+        if strong.size > 0:
+            edgeUpgraded = True
+            for x,y in strong:
+                gradient_processed[y][x] = 2
+
     # Now switch the values to edge -> 0, non-edge -> 255
 
     gradient_processed[gradient_processed == 0] = np.uint8(255)
@@ -190,25 +214,3 @@ async def compute_cannys_edge_detection(request: Request):
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")
     return Response(content=buf.getvalue(), media_type="image/png")
-
-
-
-class Direction(Enum):
-    HORIZONTAL = 0
-    DIAGONAL_POSITIVE = 1
-    VERTICAL = 2
-    DIAGONAL_NEGATIVE = 3
-
-def getDirection(degree):
-    # Normalize degree to [0, 360) range to handle negative degrees and values >= 360
-    degree = degree % 360
-
-    if (degree < 22.5) or (337.5 <= degree) or (157.5 <= degree < 202.5):
-        return Direction.HORIZONTAL
-    elif (22.5 <= degree < 67.5) or (202.5 <= degree < 247.5):
-        return Direction.DIAGONAL_POSITIVE
-    elif (67.5 <= degree < 112.5) or (247.5 <= degree < 292.5):
-        return Direction.VERTICAL
-    elif (112.5 <= degree < 157.5) or (292.5 <= degree < 337.5):
-        return Direction.DIAGONAL_NEGATIVE    
-

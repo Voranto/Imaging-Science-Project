@@ -2,10 +2,10 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, useTemplateRef } from 'vue';
-import { Canvas, Rect, FabricImage, PencilBrush } from 'fabric'; 
+import { Canvas, Rect, FabricImage, PencilBrush, Circle } from 'fabric'; 
 import { useCanvasState } from '../composables/useCanvas.ts'
 import { getFFT } from '../composables/useTransforms.ts'
-import { getSimpleEdges, getCannys } from '../composables/filters.ts'
+import { getSimpleEdges, getCannys, getHighpassFilter } from '../composables/filters.ts'
 
 // Reference to the canvas object
 const canvasRef = useTemplateRef("canvasObject");
@@ -80,8 +80,8 @@ onUnmounted(() => {
   setCanvas(null);
 });
 
-function getRectGrayscale(rect) {
-  const fill = rect.fill;
+function getObjectGrayscale(obj) {
+  const fill = obj.fill;
   if (!fill || typeof fill !== 'string') return 0;
 
   const ctx = document.createElement('canvas').getContext('2d');
@@ -126,7 +126,29 @@ const addBox = () => {
   canvas.add(rect);
   rect.on("selected", () => {
     var colorSelector = document.getElementById("objectColorSelector");
-    colorSelector.value = getRectGrayscale(rect);
+    colorSelector.value = getObjectGrayscale(rect);
+  })
+  canvas.setActiveObject(rect);
+};
+const addCircle = () => {
+  if (!canvas) return;
+  var colorSelector = document.getElementById("objectColorSelector");
+  const rect = new Circle({
+    left: 100,
+    top: 100,
+    fill: `rgb(${colorSelector.value}, ${colorSelector.value}, ${colorSelector.value})`,
+    radius: 60,
+    uniformScaling: false,
+    uniScaleKey: 'shiftKey',
+    objectCaching: false,     
+    strokeWidth: 0,           
+    strokeUniform: true,
+    noScaleCache: true,
+  });
+  canvas.add(rect);
+  rect.on("selected", () => {
+    var colorSelector = document.getElementById("objectColorSelector");
+    colorSelector.value = getObjectGrayscale(rect);
   })
   canvas.setActiveObject(rect);
 };
@@ -234,12 +256,13 @@ window.addEventListener('keydown', (e) => {
       </button>
       <label>Brush size: </label><input type="range" min="1" max="100" id="brushSize" @input="updateBrushSize" value="5">
       <button @click="addBox">Add Rectangle</button>
+      <button @click="addCircle">Add Circle</button>
       <input type="range" min="0" max="255" id="objectColorSelector" @input="updateObjectColor">
       <button @click="clearCanvas">Clear Canvas</button>
       <button @click="getFFT">Generate FFT</button>
       <button @click="getSimpleEdges">Simple Edge Detector</button>
-      
       <button @click="getCannys">Cannys Edge Detector</button>
+      <button @click="getHighpassFilter">Highpass Filter</button>
     </div>
 
     <canvas ref="canvasObject" id="imageCanvas" style="border:1px solid #000000"></canvas>

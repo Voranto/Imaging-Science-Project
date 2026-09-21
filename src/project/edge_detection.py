@@ -3,7 +3,7 @@ from fastapi.responses import Response, JSONResponse
 from PIL import Image
 import numpy as np
 import io
-from scipy.ndimage import convolve, gaussian_filter
+from scipy.ndimage import convolve, gaussian_filter, generate_binary_structure, label
 import math
 from enum import Enum
 
@@ -142,75 +142,60 @@ async def compute_cannys_edge_detection(request: Request):
     theta_deg = np.degrees(theta_rad)
 
 
-    gradient_processed = gradient.copy()
-    for x_i in range(x_image_width):
-        for y_i in range(x_image_height):
-            # Set borders to zero either way
-            if y_i == 0 or y_i ==x_image_height -1 or x_i == 0 or x_i == x_image_width-1:
-                gradient_processed[y_i][x_i] = 0
-                continue
+    q_angle = np.zeros_like(theta_deg, dtype=np.uint8)
+    q_angle[(theta_deg >= 22.5) & (theta_deg < 67.5)] = 1   # Diagonal /
+    q_angle[(theta_deg >= 67.5) & (theta_deg < 112.5)] = 2  # Vertical |
+    q_angle[(theta_deg >= 112.5) & (theta_deg < 157.5)] = 3
 
-            deg = theta_deg[y_i][x_i]
-            direction = getDirection(deg)
-            if direction == Direction.HORIZONTAL:
-                if gradient[y_i][x_i] < gradient[y_i][x_i + 1]  or gradient[y_i][x_i] < gradient[y_i][x_i-1]:
-                    gradient_processed[y_i][x_i] = 0
-            if direction == Direction.VERTICAL:
-                if gradient[y_i][x_i] < gradient[y_i+1][x_i]  or gradient[y_i][x_i] < gradient[y_i-1][x_i]:
-                    gradient_processed[y_i][x_i] = 0
+    # Neighboring pixels
+    p = np.zeros_like(gradient)
+    r = np.zeros_like(gradient)
 
-            if direction == Direction.DIAGONAL_NEGATIVE:
-                if gradient[y_i][x_i] < gradient[y_i-1][x_i-1]  or gradient[y_i][x_i] < gradient[y_i+1][x_i+1]:
-                    gradient_processed[y_i][x_i] = 0
-            
-            if direction == Direction.DIAGONAL_POSITIVE:
-                if gradient[y_i][x_i] < gradient[y_i-1][x_i+1]  or gradient[y_i][x_i] < gradient[y_i+1][x_i-1]:
-                    gradient_processed[y_i][x_i] = 0
+    mask = (q_angle == 0)
+    p[mask] = np.pad(gradient, ((0,0),(0,1)), mode='constant')[:, 1:][mask]
+    r[mask] = np.pad(gradient, ((0,0),(1,0)), mode='constant')[:, :-1][mask]
 
-    # Clasify the remaining edges into weak and strong edges. We convert no edge to a value of 0, weak edges to 1 and strong to a value of 2
-    weakEdges = np.array([])
-    
-    for x_i in range(x_image_width):
-        for y_i in range(x_image_height):
-            if gradient_processed[y_i][x_i] >= thresholdStrong:
-                gradient_processed[y_i][x_i] = 2
-            elif gradient_processed[y_i][x_i] >= thresholdWeak:
-                gradient_processed[y_i][x_i] = 1
-                np.append(weakEdges,(x_i,y_i))
-            else:
-                gradient_processed[y_i][x_i] = 0
+    mask = (q_angle == 1)
+    p[mask] = np.pad(gradient, ((1,0),(0,1)), mode='constant')[:-1, 1:][mask]
+    r[mask] = np.pad(gradient, ((0,1),(1,0)), mode='constant')[1:, :-1][mask]
 
-    def checkStrongNeighbor(weakEdges):
-        directions = [(1,1),(-1,-1),(1,0),(0,1),(-1,0),(0,-1),(1,-1),(-1,1)]
-        ans = np.array([])
-        for x_i,y_i in weakEdges:
-            for dx,dy in directions:
-                if x_i + dx < 0 or x_i+dx >= x_image_width or y_i+dy < 0 or y_i+dy >= x_image_height:
-                    continue
-                if gradient_processed[y_i+dy][x_i+dx] == 2:
-                    np.append(ans,True)
-            np.append(ans,False)
-        return ans
+    mask = (q_angle == 2)
+    p[mask] = np.pad(gradient, ((1,0),(0,0)), mode='constant')[:-1, :][mask]
+    r[mask] = np.pad(gradient, ((0,1),(0,0)), mode='constant')[1:, :][mask]
 
-    # Keep upgrading weak edges until no change is found. Instead of iterating entire image, store weak edges
-    edgeUpgraded = True
-    while edgeUpgraded:
-        edgeUpgraded = False
-        strong = np.extract(checkStrongNeighbor(weakEdges),weakEdges)
-        if strong.size > 0:
-            edgeUpgraded = True
-            for x,y in strong:
-                gradient_processed[y][x] = 2
+    mask = (q_angle == 3)
+    p[mask] = np.pad(gradient, ((1,0),(1,0)), mode='constant')[:-1, :-1][mask]
+    r[mask] = np.pad(gradient, ((0,1),(0,1)), mode='constant')[1:, 1:][mask]
 
-    # Now switch the values to edge -> 0, non-edge -> 255
+    # Keep only local maxima
+    nms_mask = (gradient >= p) & (gradient >= r)
+    gradient_processed = np.where(nms_mask, gradient, 0)
 
-    gradient_processed[gradient_processed == 0] = np.uint8(255)
-    
-    gradient_processed[gradient_processed == 1] = np.uint8(255)
-    
-    gradient_processed[gradient_processed == 2] = np.uint8(0)
+    # Zero out edges
+    gradient_processed[0, :] = 0
+    gradient_processed[-1, :] = 0
+    gradient_processed[:, 0] = 0
+    gradient_processed[:, -1] = 0
 
-    res_img = Image.fromarray(gradient_processed.astype(np.uint8))
+    # 3. Vectorized Double Thresholding
+    strong_mask = gradient_processed >= thresholdStrong
+    weak_mask = (gradient_processed >= thresholdWeak) & ~strong_mask
+
+
+    structure = generate_binary_structure(2, 2)
+    labeled_array, _ = label(weak_mask | strong_mask, structure=structure)
+
+    # Find connected component labels that contain at least one strong edge
+    strong_labels = np.unique(labeled_array[strong_mask])
+    strong_labels = strong_labels[strong_labels != 0] # Remove background label
+
+    # Keep pixels that belong to a valid component containing a strong edge
+    final_edges = np.isin(labeled_array, strong_labels)
+
+    # Output formatting: Edge -> 0 (Black), Non-Edge -> 255 (White)
+    output_array = np.where(final_edges, 0, 255).astype(np.uint8)
+
+    res_img = Image.fromarray(output_array)
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")
     return Response(content=buf.getvalue(), media_type="image/png")

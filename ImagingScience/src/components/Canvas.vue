@@ -4,8 +4,8 @@
 import { ref, onMounted, onUnmounted, useTemplateRef } from 'vue';
 import { Canvas, Rect, FabricImage, PencilBrush, Circle } from 'fabric'; 
 import { useCanvasState } from '../composables/useCanvas.ts'
-import { getFFT } from '../composables/useTransforms.ts'
-import { getSimpleEdges, getCannys, getHighpassFilter } from '../composables/filters.ts'
+import { getFFT, getDCT } from '../composables/useTransforms.ts'
+import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter } from '../composables/filters.ts'
 
 // Reference to the canvas object
 const canvasRef = useTemplateRef("canvasObject");
@@ -260,9 +260,11 @@ window.addEventListener('keydown', (e) => {
       <input type="range" min="0" max="255" id="objectColorSelector" @input="updateObjectColor">
       <button @click="clearCanvas">Clear Canvas</button>
       <button @click="getFFT">Generate FFT</button>
+      <button @click="getDCT">Generate DCT</button>
       <button @click="getSimpleEdges">Simple Edge Detector</button>
       <button @click="getCannys">Cannys Edge Detector</button>
       <button @click="getHighpassFilter">Highpass Filter</button>
+      <button @click="getLowpassFilter">Lowpass Filter</button>
     </div>
 
     <canvas ref="canvasObject" id="imageCanvas" style="border:1px solid #000000"></canvas>

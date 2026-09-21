@@ -12,6 +12,8 @@ const SIMPLE_EDGE_DETECTION_URL = "http://localhost:8000/api/filter/edge/simple"
 const SIMPLE_EDGE_DETECTION_MAX_VALUE_URL = "http://localhost:8000/api/filter/edge/simple/max_value"
 const CANNY_EDGE_DETECTION_URL = "http://localhost:8000/api/filter/edge/canny"
 const HIGHPASS_FILTER_URL = "http://localhost:8000/api/filter/highpass"
+const LOWPASS_FILTER_URL = "http://localhost:8000/api/filter/lowpass"
+
 export async function getSimpleEdges() {
     const canvas = canvasInstance.value;
     
@@ -236,6 +238,70 @@ export async function getHighpassFilter() {
     
     filterRequested.value = true;
     changeFilterType("highpass")
+}
+
+export async function getLowpassFilter() {
+    const canvas = canvasInstance.value;
+    
+    if (!canvas) return;
+    // We have to deselect any objects, otherwise the Edge Detection will be wrong because of the bounding box
+    // Preserve the activeObject for afterwards
+    var activeObject = canvas.getActiveObject();
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    // Round the height and weight to prevent issues when sending it through axios
+    const width = Math.floor(canvas.width);
+    const height = Math.floor(canvas.height);
+
+
+    const ctx = canvas.getContext()
+    const imageData = ctx.getImageData(0, 0, width, height);
+    console.log(width,height);
+    const rgba = imageData.data;
+
+    const totalPixels = width * height;
+    const grayArray  : Uint8Array<any> = new Uint8Array(totalPixels);
+
+    for (let i = 0; i < totalPixels; i++) {
+        grayArray[i] = rgba[i * 4]!;
+    }
+
+    // Get thresholds and gaussian checkbox
+    var sigmaObject : HTMLSelectElement | null = document.getElementById("lowpassFilterSigma") as HTMLSelectElement;
+    var sigma = 0;
+    if (sigmaObject) {
+        sigma = Number(sigmaObject.value);
+    }
+
+    try {
+
+        const response = await axios.post(LOWPASS_FILTER_URL, grayArray, {
+        headers: {
+            'Content-Type': 'application/octet-stream',
+            'x-image-width': width.toString(),
+            'x-image-height': height.toString(),
+            'sigma': sigma,
+        },
+        responseType: 'blob',
+        });
+
+        
+        const newImageUrl = URL.createObjectURL(response.data);
+        filterImageSrc.value = newImageUrl;
+        
+    } catch (error) {
+        console.error('Upload failed:', error);
+    }
+
+    if (activeObject){
+        canvas.setActiveObject(activeObject);
+        canvas.requestRenderAll();
+    }
+    
+    filterRequested.value = true;
+    changeFilterType("lowpass")
 }
 export function getFilterType() {
     const filterType : HTMLSelectElement | null = document.getElementById("filterType") as HTMLSelectElement;

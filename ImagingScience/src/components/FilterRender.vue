@@ -49,7 +49,7 @@ const gammaCorrectionValue = ref(1.0)
 
 
         <div v-show="getFilterType() == 'gammaCorrection'">
-            Sigma: <input type="range" v-model.number="gammaCorrectionValue" @change="getGammaCorrection" id="gammaCorrectionValue" min="0.1" max="3.0" step="0.1">
+            Sigma: <input type="range" v-model.number="gammaCorrectionValue" @change="getGammaCorrection" id="gammaCorrectionValue" min="0.1" max="4.0" step="0.1">
             <span class="threshold-value">{{ gammaCorrectionValue }}</span>
         </div>
 

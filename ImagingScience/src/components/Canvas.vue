@@ -152,6 +152,40 @@ const addCircle = () => {
   })
   canvas.setActiveObject(rect);
 };
+const addGaussian = () => {
+  const gaussianObj = createGaussianImage(canvas.width +100, canvas.height+100, 10);
+  canvas.add(gaussianObj);
+  canvas.setActiveObject(gaussianObj);
+};
+
+function createGaussianImage(width, height, sigma) {
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = width;
+    tempCanvas.height = height;
+    const ctx = tempCanvas.getContext('2d');
+    const imgData = ctx.createImageData(width, height);
+    
+    const cx = width / 2;
+    const cy = height / 2;
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const idx = (y * width + x) * 4;
+            // Gaussian math
+            const dist = Math.pow(x - cx, 2) + Math.pow(y - cy, 2);
+            const val = Math.exp(-dist / (2 * sigma * sigma)) * 255;
+            
+            imgData.data[idx]     = val; // R
+            imgData.data[idx + 1] = val; // G
+            imgData.data[idx + 2] = val; // B
+            imgData.data[idx + 3] = 255; // A
+        }
+    }
+    ctx.putImageData(imgData, 0, 0);
+    return new FabricImage(tempCanvas);
+}
+
+
 const updateObjectColor = () => {
     const colorSelectorValue = document.getElementById("objectColorSelector").value;
     if (isDrawing && canvas.freeDrawingBrush) {
@@ -257,6 +291,7 @@ window.addEventListener('keydown', (e) => {
       <label>Brush size: </label><input type="range" min="1" max="100" id="brushSize" @input="updateBrushSize" value="5">
       <button @click="addBox">Add Rectangle</button>
       <button @click="addCircle">Add Circle</button>
+      <button @click="addGaussian">Add Gaussian</button>
       <input type="range" min="0" max="255" id="objectColorSelector" @input="updateObjectColor">
       <button @click="clearCanvas">Clear Canvas</button>
       <button @click="getFFT">Generate FFT</button>

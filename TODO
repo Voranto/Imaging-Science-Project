@@ -5,3 +5,8 @@ of mix, or some other alternative
 
 Add more transforms
 Add Filters (corner detection) 
+Im not too happy with the DWT
+
+Preserve image data into a float32 array so that no artifacts appear. When something is added, deleted or stops moving: fabricCanvas.on('object:modified', () => {
+  syncFloatBuffer(); // Executes rasterization ONCE after drop
+});

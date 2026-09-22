@@ -24,9 +24,17 @@ async def compute_fft_grayscale(request: Request):
 
     
     body_bytes = await request.body()
+    expected_bytes = x_image_height * x_image_width * 4
+    actual_bytes = len(body_bytes)
 
-    img_array = np.frombuffer(body_bytes, dtype=np.uint8).reshape((x_image_height, x_image_width))
-
+    if actual_bytes != expected_bytes:
+        print(f"DEBUG MISMATCH -> Header Dim: ({x_image_height}x{x_image_width}) = {expected_bytes}B | Received: {actual_bytes}B | Array Len: {actual_bytes / 4}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Buffer size mismatch: Expected {expected_bytes} bytes for shape ({x_image_height}, {x_image_width}), but got {actual_bytes} bytes."
+        )
+    img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
+    np.savetxt("img_array",img_array)
     img_array = img_array.astype(np.float32)
     
     fft_shifted = np.fft.fftshift(np.fft.fft2(img_array))

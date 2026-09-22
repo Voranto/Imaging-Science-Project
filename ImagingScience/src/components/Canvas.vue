@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, useTemplateRef,shallowRef , type ShallowRef } from 'vue';
 import { Canvas, Rect, FabricImage, PencilBrush, Circle, FabricObject, ActiveSelection } from 'fabric'; 
-import { ImageBuffer } from '../composables/ImageBuffer.ts'
+import { ImageBuffer, getObjectGrayscale } from '../composables/ImageBuffer.ts'
 import { getFFT, getDCT, getDWT } from '../composables/useTransforms.ts'
 import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection } from '../composables/filters.ts'
 import { useImageBufferState } from '../composables/useImageBufferState.ts';
@@ -58,22 +58,7 @@ onUnmounted(() => {
   window.removeEventListener('resize', imageBuffer.value!.resizeCanvas);
 });
 
-function getObjectGrayscale(obj : FabricObject) {
-  const fill = obj.fill;
-  if (!fill || typeof fill !== 'string') return 0;
 
-  const ctx = document.createElement('canvas').getContext('2d');
-  if (!ctx) return 0;
-  
-  ctx.fillStyle = fill;
-  const computedHex = ctx.fillStyle; 
-
-  const r = parseInt(computedHex.substring(1, 3), 16);
-  const g = parseInt(computedHex.substring(3, 5), 16);
-  const b = parseInt(computedHex.substring(5, 7), 16);
-
-  return Math.round(0.299 * r + 0.587 * g + 0.114 * b);
-}
 
 
 const addBox = () => {
@@ -85,11 +70,14 @@ const addBox = () => {
     left: 100,
     top: 100,
     fill: `rgb(${color }, ${color}, ${color})`,
+    originX: 'left',
+    originY: 'top',
     width: 60,
     height: 60,
     uniformScaling: false,
     uniScaleKey: 'shiftKey',
   });
+  rect.set("customType", "rect")
   canvas.add(rect);
   rect.on("selected", () => {
     var colorSelector = document.getElementById("objectColorSelector");
@@ -115,6 +103,7 @@ const addCircle = () => {
     strokeUniform: true,
     noScaleCache: true,
   });
+  rect.set("customType", "circle");
   canvas.add(rect);
   rect.on("selected", () => {
     var colorSelector = document.getElementById("objectColorSelector");
@@ -125,21 +114,31 @@ const addCircle = () => {
 const addGaussian = () => {
   const canvas = imageBuffer.value?.canvas; 
   if (!canvas) return;
-  const gaussianObj = createGaussianImage(canvas.width +100, canvas.height+100, 10);
+  var sigma = 100;
+  var height = canvas.height +100;
+  var width = canvas.width + 100;
+  const gaussianObj = createGaussianImage(width, height, sigma);
+  gaussianObj.set({
+    originX: 'left',
+    originY: 'top',
+  });
+  gaussianObj.set("customType", "gaussian");
+  gaussianObj.set("sigma", sigma.toString())
   canvas.add(gaussianObj);
   canvas.setActiveObject(gaussianObj);
 };
 
-function createGaussianImage(width: number, height: number, sigma: number) {
+function createGaussianImage(rawWidth: number, rawHeight: number, sigma: number) {
+    const height = Math.floor(rawHeight);
+    const width = Math.floor(rawWidth)
     const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = width;
-    tempCanvas.height = height;
+    tempCanvas.width = Math.floor(width);
+    tempCanvas.height = Math.floor(height);
     const ctx = tempCanvas.getContext('2d');
-    const imgData = ctx!.createImageData(width, height);
+    const imgData = ctx!.createImageData(Math.floor(width), Math.floor(height));
     
     const cx = width / 2;
     const cy = height / 2;
-
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             const idx = (y * width + x) * 4;
@@ -168,6 +167,7 @@ const updateObjectColor = () => {
     if (!obj) return;
     obj.set("fill", `rgb(${colorSelectorValue}, ${colorSelectorValue}, ${colorSelectorValue})`);
     imageBuffer.value!.canvas.renderAll();
+    imageBuffer.value?.syncFloatBuffer();
 }
 
 const clearCanvas = () => {

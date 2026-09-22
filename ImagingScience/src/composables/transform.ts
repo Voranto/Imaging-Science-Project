@@ -54,24 +54,16 @@ export abstract class  Transform {
         }
     }
 
-    private getGrayscaleArray(height: number, width: number) : Uint8Array<any>{
-
-        const ctx = canvas!.getContext()
-        const imageData = ctx.getImageData(0, 0, width, height);
-        const rgba = imageData.data;
-
-        const totalPixels = width * height;
-        const grayArray  : Uint8Array<any> = new Uint8Array(totalPixels);
-
-        for (let i = 0; i < totalPixels; i++) {
-            grayArray[i] = rgba[i * 4]!;
-        }
-        return grayArray;
+    private getGrayscaleArray(height: number, width: number) : Float32Array<any>{
+        imageBuffer.value?.resizeCanvas();
+        const arr = imageBuffer.value?.floatBuffer;
+        if (!arr) return new Float32Array();
+        return arr;
     }
 
-    private async requestTransform(height: number, width: number, grayArray : Uint8Array<any>) {
+    private async requestTransform(height: number, width: number, grayArray : Float32Array<any>) {
          try {
-
+            
             const response = await axios.post(this.baseURL + "/grayscale", grayArray, {
             headers: this.getHeaders(height, width),
             responseType: 'blob',
@@ -92,10 +84,11 @@ export abstract class  Transform {
     }
 
     private getHeaders(height :number, width: number) {
+        console.log("Headers,", Math.floor(width), Math.floor(height))
         var headers = new AxiosHeaders({
                 'Content-Type': 'application/octet-stream',
-                'x-image-width': width.toString(),
-                'x-image-height': height.toString(),
+                'x-image-width': Math.floor(width).toString(),
+                'x-image-height': Math.floor(height).toString(),
             });
         var parameters = this.getParameters();
         for (const [key ,value ] of parameters) {
@@ -119,7 +112,7 @@ export abstract class  Transform {
         }
     }
 
-    private async projectResultOnCanvas(response: AxiosResponse<any, Uint8Array>) {
+    private async projectResultOnCanvas(response: AxiosResponse<any, Float32Array>) {
         const newImageUrl = URL.createObjectURL(response.data);
 
             if (transformCanvas && transformCanvas.value){

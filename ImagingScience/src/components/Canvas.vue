@@ -1,55 +1,35 @@
 
 
-<script setup>
-import { ref, onMounted, onUnmounted, useTemplateRef } from 'vue';
-import { Canvas, Rect, FabricImage, PencilBrush, Circle } from 'fabric'; 
-import { useCanvasState } from '../composables/useCanvas.ts'
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, useTemplateRef,shallowRef , type ShallowRef } from 'vue';
+import { Canvas, Rect, FabricImage, PencilBrush, Circle, FabricObject, ActiveSelection } from 'fabric'; 
+import { ImageBuffer } from '../composables/ImageBuffer.ts'
 import { getFFT, getDCT, getDWT } from '../composables/useTransforms.ts'
 import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection } from '../composables/filters.ts'
+import { useImageBufferState } from '../composables/useImageBufferState.ts';
 
+const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 // Reference to the canvas object
-const canvasRef = useTemplateRef("canvasObject");
+const canvasRef = useTemplateRef<HTMLCanvasElement>("canvasObject");
 
-// Global canvas instance shared in useCanvas.js
-const { canvasInstance } = useCanvasState();
-const { setCanvas } = useCanvasState();
-
-const isDrawing = ref(false)
-var brushSize = 5;
-
-const resizeCanvas = () => {
-  if (!canvasRef.value) return;
-  canvas.setDimensions({
-    width: window.innerWidth * 0.9,
-    height: window.innerHeight * 0.9
-  });
-};
+const brushSize = ref(10);
 
 // Actual canvas object from fabric
-var canvas = ref(null);
 
+const handleCanvasResize = () => {
+  imageBuffer.value!.resizeCanvas();
+}
 onMounted(() => {
-  canvas = new Canvas(canvasRef.value, {uniformScaling: false,enableRetinaScaling: false, imageSmoothing: false,snapAngle: 0,
-    snapThreshold: null});
-  const lowerCanvasEl = canvas.getElement();
-  if (lowerCanvasEl) {
-    // Re-initialize 2D context properties
-    const ctx = lowerCanvasEl.getContext('2d', {
-      alpha: false,
-      willReadFrequently: true,
-      colorSpace: 'srgb'
-    });
-    
-    if (ctx) ctx.imageSmoothingEnabled = false;
-  }
-  canvas.backgroundColor = "white";
-  canvas.on('path:created', (e) => {
+  if (!canvasRef.value) return;
+  imageBuffer.value = new ImageBuffer(canvasRef.value, window.innerWidth * 0.9, window.innerHeight * 0.9);
+  imageBuffer.value.canvas.backgroundColor = "white";
+  imageBuffer.value.canvas.on('path:created', (e) => {
   e.path.set({
     objectCaching: false,
     strokeLineCap: 'round',
     strokeLineJoin: 'round'
   });
-  canvas.on('object:moving', (e) => {
+  imageBuffer.value!.canvas.on('object:moving', (e) => {
   if (!e.target) return;
   e.target.set({
     left: Math.round(e.target.left),
@@ -57,7 +37,7 @@ onMounted(() => {
   });
 });
 
-canvas.on('object:scaling', (e) => {
+imageBuffer.value!.canvas.on('object:scaling', (e) => {
   if (!e.target) return;
   e.target.set({
     left: Math.round(e.target.left),
@@ -68,19 +48,17 @@ canvas.on('object:scaling', (e) => {
     scaleY: 1
   });
 });
-  canvas.renderAll();
+  imageBuffer.value!.canvas.renderAll();
 });
-  window.addEventListener('resize', resizeCanvas);
-  setCanvas(canvas);
-  resizeCanvas();
+  window.addEventListener('resize', handleCanvasResize);
+  updateBrushSize();
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', resizeCanvas);
-  setCanvas(null);
+  window.removeEventListener('resize', imageBuffer.value!.resizeCanvas);
 });
 
-function getObjectGrayscale(obj) {
+function getObjectGrayscale(obj : FabricObject) {
   const fill = obj.fill;
   if (!fill || typeof fill !== 'string') return 0;
 
@@ -97,46 +75,38 @@ function getObjectGrayscale(obj) {
   return Math.round(0.299 * r + 0.587 * g + 0.114 * b);
 }
 
-const toggleBrush = () => {
-  isDrawing.value = !isDrawing.value;
-  canvas.isDrawingMode = isDrawing.value;
-  canvas.freeDrawingBrush = new PencilBrush(canvas);
-  var colorSelector = document.getElementById("objectColorSelector");
-  if (canvas.freeDrawingBrush) {
-    canvas.freeDrawingBrush.width = brushSize;
-    canvas.freeDrawingBrush.color = `rgb(${colorSelector.value}, ${colorSelector.value}, ${colorSelector.value})`;
-  }
-};
+
 const addBox = () => {
+  const canvas = imageBuffer.value?.canvas;
   if (!canvas) return;
   var colorSelector = document.getElementById("objectColorSelector");
+  const color = (colorSelector! as HTMLSelectElement).value
   const rect = new Rect({
     left: 100,
     top: 100,
-    fill: `rgb(${colorSelector.value}, ${colorSelector.value}, ${colorSelector.value})`,
+    fill: `rgb(${color }, ${color}, ${color})`,
     width: 60,
     height: 60,
     uniformScaling: false,
     uniScaleKey: 'shiftKey',
-    objectCaching: false,     // Prevents Fabric from rasterizing to an offscreen anti-aliased canvas
-    strokeWidth: 0,           // Ensures no anti-aliased border outline is computed
-    strokeUniform: true,
-    noScaleCache: true,
   });
   canvas.add(rect);
   rect.on("selected", () => {
     var colorSelector = document.getElementById("objectColorSelector");
-    colorSelector.value = getObjectGrayscale(rect);
+    
+    (colorSelector! as HTMLSelectElement).value = getObjectGrayscale(rect).toString();
   })
   canvas.setActiveObject(rect);
 };
 const addCircle = () => {
+  const canvas = imageBuffer.value?.canvas;
   if (!canvas) return;
   var colorSelector = document.getElementById("objectColorSelector");
+  const color = (colorSelector! as HTMLSelectElement).value
   const rect = new Circle({
     left: 100,
     top: 100,
-    fill: `rgb(${colorSelector.value}, ${colorSelector.value}, ${colorSelector.value})`,
+    fill: `rgb(${color}, ${color}, ${color})`,
     radius: 60,
     uniformScaling: false,
     uniScaleKey: 'shiftKey',
@@ -148,22 +118,24 @@ const addCircle = () => {
   canvas.add(rect);
   rect.on("selected", () => {
     var colorSelector = document.getElementById("objectColorSelector");
-    colorSelector.value = getObjectGrayscale(rect);
+    (colorSelector! as HTMLSelectElement).value = getObjectGrayscale(rect).toString();
   })
   canvas.setActiveObject(rect);
 };
 const addGaussian = () => {
+  const canvas = imageBuffer.value?.canvas; 
+  if (!canvas) return;
   const gaussianObj = createGaussianImage(canvas.width +100, canvas.height+100, 10);
   canvas.add(gaussianObj);
   canvas.setActiveObject(gaussianObj);
 };
 
-function createGaussianImage(width, height, sigma) {
+function createGaussianImage(width: number, height: number, sigma: number) {
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = width;
     tempCanvas.height = height;
     const ctx = tempCanvas.getContext('2d');
-    const imgData = ctx.createImageData(width, height);
+    const imgData = ctx!.createImageData(width, height);
     
     const cx = width / 2;
     const cy = height / 2;
@@ -181,62 +153,62 @@ function createGaussianImage(width, height, sigma) {
             imgData.data[idx + 3] = 255; // A
         }
     }
-    ctx.putImageData(imgData, 0, 0);
+    ctx!.putImageData(imgData, 0, 0);
     return new FabricImage(tempCanvas);
 }
 
 
 const updateObjectColor = () => {
-    const colorSelectorValue = document.getElementById("objectColorSelector").value;
-    if (isDrawing && canvas.freeDrawingBrush) {
-        canvas.freeDrawingBrush.color = `rgb(${colorSelectorValue}, ${colorSelectorValue}, ${colorSelectorValue})`;
+    const colorSelectorValue = (document.getElementById("objectColorSelector")! as HTMLSelectElement).value;
+    if (imageBuffer.value!.isDrawing && imageBuffer.value!.canvas.freeDrawingBrush) {
+        imageBuffer.value!.canvas.freeDrawingBrush.color = `rgb(${colorSelectorValue}, ${colorSelectorValue}, ${colorSelectorValue})`;
     }
 
-    var obj = canvas.getActiveObject();
+    var obj = imageBuffer.value!.canvas.getActiveObject();
     if (!obj) return;
     obj.set("fill", `rgb(${colorSelectorValue}, ${colorSelectorValue}, ${colorSelectorValue})`);
-    canvas.renderAll();
+    imageBuffer.value!.canvas.renderAll();
 }
 
 const clearCanvas = () => {
-     canvas.clear();
-     canvas.backgroundColor = "white";
+    imageBuffer.value!.canvas.clear();
+    imageBuffer.value!.canvas.backgroundColor = "white";
 }
 
 const deleteActiveObject = () => {
-  if (!canvas) return;
-
-  const activeObjects = canvas.getActiveObjects();
+  if (!imageBuffer.value!.canvas) return;
+  const activeObjects = imageBuffer.value!.canvas.getActiveObjects();
 
   if (activeObjects.length > 0) {
     activeObjects.forEach((obj) => {
-      canvas.remove(obj);
+      imageBuffer.value!.canvas.remove(obj);
     });
 
-    canvas.discardActiveObject();
-    canvas.renderAll();
+    imageBuffer.value!.canvas.discardActiveObject();
+    imageBuffer.value!.canvas.renderAll();
   }
 };
 
 const updateBrushSize = () => {
-    brushSize = document.getElementById("brushSize").value;
-    if (canvas.freeDrawingBrush) {
-        canvas.freeDrawingBrush.width = brushSize;
+    brushSize.value = Number((document.getElementById("brushSize")!as HTMLSelectElement).value);
+    if (imageBuffer.value!.canvas.freeDrawingBrush) {
+        imageBuffer.value!.canvas.freeDrawingBrush.width = brushSize.value;
     }
 }
 
-let clipboard = null;
+let clipboard : FabricObject;
 
 const copyObject = async () => {
-  if (!canvas) return;
+  if (!imageBuffer.value!.canvas) return;
 
-  const activeObject = canvas.getActiveObject();
+  const activeObject = imageBuffer.value!.canvas.getActiveObject();
   if (!activeObject) return;
 
   clipboard = await activeObject.clone();
 };
 
 const pasteObject = async () => {
+  const canvas = imageBuffer.value?.canvas;
   if (!canvas || !clipboard) return;
 
   const clonedObj = await clipboard.clone();
@@ -250,13 +222,16 @@ const pasteObject = async () => {
   });
 
   if (clonedObj.type === 'activeSelection') {
-    clonedObj.canvas = canvas;
-    clonedObj.forEachObject((obj) => {
+    const selection = clonedObj as ActiveSelection;
+    
+    selection.canvas = canvas;
+    selection.forEachObject((obj) => {
       canvas.add(obj);
     });
-    clonedObj.setCoordinates();
+    
+    selection.setCoords();
   } else {
-    canvas.add(clonedObj);
+    imageBuffer.value!.canvas.add(clonedObj);
   }
 
   canvas.setActiveObject(clonedObj);
@@ -266,8 +241,12 @@ const pasteObject = async () => {
 
 
 window.addEventListener('keydown', (e) => {
-  if ((e.key === 'Delete' || e.key === 'Backspace') && e.target.tagName !== 'INPUT') {
-    deleteActiveObject();
+  if (e.key === 'Delete' || e.key === 'Backspace') {
+    var element = e.target as HTMLElement;     
+    if (element.tagName !== "INPUT") { 
+        deleteActiveObject();
+    }  
+    
   }
   const isCmdOrCtrl = e.metaKey || e.ctrlKey;
 
@@ -285,10 +264,10 @@ window.addEventListener('keydown', (e) => {
 <template>
     <div class="canvas-container">
     <div class="toolbar">
-      <button @click="toggleBrush">
-        {{ isDrawing ? 'Stop Drawing' : 'Draw with Brush' }}
+      <button @click="updateBrushSize(); imageBuffer!.toggleBrush()">
+        {{ imageBuffer?.isDrawing.value ? 'Stop Drawing' : 'Draw with Brush' }}
       </button>
-      <label>Brush size: </label><input type="range" min="1" max="100" id="brushSize" @input="updateBrushSize" value="5">
+      <label>Brush size: </label><input type="range" min="1" max="100" id="brushSize" @input="updateBrushSize" value="10">
       <button @click="addBox">Add Rectangle</button>
       <button @click="addCircle">Add Circle</button>
       <button @click="addGaussian">Add Gaussian</button>

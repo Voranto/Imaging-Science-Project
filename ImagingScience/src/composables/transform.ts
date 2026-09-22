@@ -1,11 +1,10 @@
 import { ref, type Ref, useTemplateRef } from 'vue';
 import axios, {type AxiosResponse, AxiosHeaders} from 'axios';
-import { useCanvasState } from './useCanvas.js'
 import { Canvas, FabricImage, FabricObject } from 'fabric'
+import { useImageBufferState } from '../composables/useImageBufferState.ts';
 
-
-const { canvasInstance } = useCanvasState();
-var canvas = canvasInstance.value;
+const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
+var canvas = imageBuffer.value?.canvas;
 
 export const transformRequested : Ref<boolean> = ref(false);
 export const transformCanvas = ref<Canvas | null>(null);
@@ -18,7 +17,6 @@ export abstract class  Transform {
     public async applyTransform() : Promise<void> {
         this.initializeCanvas();
         if (!canvas) return;
-        console.log("here2")
 
         await this.storeActiveObject();
 
@@ -28,7 +26,6 @@ export abstract class  Transform {
         const height = Math.floor(canvas.height);
 
         // Set the transform type in TransformRender to DWT
-        console.log(this.transformType)
         changeTransformType(this.transformType.toString());
 
         const grayArray = this.getGrayscaleArray(height, width);
@@ -104,13 +101,12 @@ export abstract class  Transform {
         for (const [key ,value ] of parameters) {
             headers.set(key,value)
         }
-        console.log("here")
-        console.log(headers);
+
         return headers;
     }
 
     private initializeCanvas() {
-        canvas = canvasInstance.value;
+        canvas = imageBuffer.value?.canvas;
     }
 
     private initializeTransformCanvas() {

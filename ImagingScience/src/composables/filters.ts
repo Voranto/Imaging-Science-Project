@@ -1,9 +1,10 @@
 import { ref, type Ref, useTemplateRef } from 'vue';
 import axios from 'axios';
-import { useCanvasState } from './useCanvas.js'
 import { Canvas, FabricImage } from 'fabric'
 
-const { canvasInstance } = useCanvasState();
+import { useImageBufferState } from '../composables/useImageBufferState.ts';
+
+const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
 export const filterRequested : Ref<boolean> = ref(false);
 export var filterImageSrc : Ref<string> = ref("test");
@@ -16,7 +17,7 @@ const LOWPASS_FILTER_URL = "http://localhost:8000/api/filter/lowpass"
 const GAMMA_CORRECTION_URL = "http://localhost:8000/api/filter/gamma"
 
 export async function getSimpleEdges() {
-    const canvas = canvasInstance.value;
+    const canvas = imageBuffer.value?.canvas;
     
     if (!canvas) return;
     
@@ -38,7 +39,6 @@ export async function getSimpleEdges() {
 
     const ctx = canvas.getContext()
     const imageData = ctx.getImageData(0, 0, width, height);
-    console.log(width,height);
     const rgba = imageData.data;
 
     const totalPixels = width * height;
@@ -102,7 +102,7 @@ export async function getSimpleEdges() {
 }
 
 export async function getCannys() {
-    const canvas = canvasInstance.value;
+    const canvas = imageBuffer.value?.canvas;
     
     if (!canvas) return;
     // We have to deselect any objects, otherwise the Edge Detection will be wrong because of the bounding box
@@ -119,7 +119,6 @@ export async function getCannys() {
 
     const ctx = canvas.getContext()
     const imageData = ctx.getImageData(0, 0, width, height);
-    console.log(width,height);
     const rgba = imageData.data;
 
     const totalPixels = width * height;
@@ -178,7 +177,7 @@ export async function getCannys() {
 }
 
 export async function getHighpassFilter() {
-    const canvas = canvasInstance.value;
+    const canvas = imageBuffer.value?.canvas;
     
     if (!canvas) return;
     // We have to deselect any objects, otherwise the Edge Detection will be wrong because of the bounding box
@@ -195,7 +194,6 @@ export async function getHighpassFilter() {
 
     const ctx = canvas.getContext()
     const imageData = ctx.getImageData(0, 0, width, height);
-    console.log(width,height);
     const rgba = imageData.data;
 
     const totalPixels = width * height;
@@ -242,7 +240,7 @@ export async function getHighpassFilter() {
 }
 
 export async function getLowpassFilter() {
-    const canvas = canvasInstance.value;
+    const canvas = imageBuffer.value?.canvas;
     
     if (!canvas) return;
     // We have to deselect any objects, otherwise the Edge Detection will be wrong because of the bounding box
@@ -259,7 +257,6 @@ export async function getLowpassFilter() {
 
     const ctx = canvas.getContext()
     const imageData = ctx.getImageData(0, 0, width, height);
-    console.log(width,height);
     const rgba = imageData.data;
 
     const totalPixels = width * height;
@@ -306,7 +303,7 @@ export async function getLowpassFilter() {
 }
 
 export async function getGammaCorrection() {
-    const canvas = canvasInstance.value;
+    const canvas = imageBuffer.value?.canvas;
     
     if (!canvas) return;
     // We have to deselect any objects, otherwise the Edge Detection will be wrong because of the bounding box
@@ -323,7 +320,6 @@ export async function getGammaCorrection() {
 
     const ctx = canvas.getContext()
     const imageData = ctx.getImageData(0, 0, width, height);
-    console.log(width,height);
     const rgba = imageData.data;
 
     const totalPixels = width * height;

@@ -1,11 +1,12 @@
 import { ref, type Ref } from 'vue';
 import axios from 'axios';
-import { useCanvasState } from './useCanvas.js'
 import { Canvas, FabricImage } from 'fabric'
 import { FFT } from './FFT.ts'
 import { DCT } from './DCT.ts'
 import { DWT } from './DWT.ts'
-const { canvasInstance } = useCanvasState();
+import { useImageBufferState } from '../composables/useImageBufferState.ts';
+
+const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
 export const transformRequested : Ref<boolean> = ref(false);
 export const transformCanvas = ref<Canvas | null>(null);

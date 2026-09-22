@@ -3,20 +3,25 @@
     <input type="file"  ref="imageInput" @change="handleImageUpload">
 </template> 
 
-<script setup>
+<script setup lang="ts">
     import { FabricImage, filters } from 'fabric';
-    import { useCanvasState } from '../composables/useCanvas.ts'
-    const { canvasInstance } = useCanvasState();
+    import { useImageBufferState } from '../composables/useImageBufferState.ts';
+
+    const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
 
-    const  handleImageUpload = async (e) => {
-        const image = e.target.files[0];
+    const  handleImageUpload = async (e : Event) => {
+        const target = e.target as HTMLInputElement;
+        if (!target.files || target.files.length === 0) return;
+
+        const image = target.files[0];
         const reader = new FileReader();
-        const canvas = canvasInstance.value;
+        const canvas = imageBuffer.value?.canvas;
         if (!canvas) {
             console.warn('Canvas instance is not ready yet');
             return;
         }
+        if (!image) return;
         const imageUrl = URL.createObjectURL(image);
         
         // Convert the image to grayscale

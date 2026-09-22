@@ -2,7 +2,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter } from '../composables/filters.ts'
+import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection } from '../composables/filters.ts'
 
 const thresholdSimpleEdge = ref(50)
 const thresholdCannyWeak = ref(50)
@@ -10,6 +10,7 @@ const thresholdCannyStrong = ref(100)
 
 const highpassFilterSigma = ref(1)
 const lowpassFilterSigma = ref(1)
+const gammaCorrectionValue = ref(1.0)
 
 </script>
 <template>
@@ -21,6 +22,7 @@ const lowpassFilterSigma = ref(1)
           <option value="cannys_edge">cannys_edge</option>
           <option value="highpass">highpass</option>
           <option value="lowpass">lowpass</option>
+          <option value="gammaCorrection">gammaCorrection</option>
         </select>
         <div v-show="getFilterType() == 'simple_edge'">
             Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
@@ -43,6 +45,12 @@ const lowpassFilterSigma = ref(1)
         <div v-show="getFilterType() == 'highpass'">
             Sigma: <input type="range" v-model.number="highpassFilterSigma" @change="getHighpassFilter" id="highpassFilterSigma" min="0" max="20">
             <span class="threshold-value">{{ highpassFilterSigma }}</span>
+        </div>
+
+
+        <div v-show="getFilterType() == 'gammaCorrection'">
+            Sigma: <input type="range" v-model.number="gammaCorrectionValue" @change="getGammaCorrection" id="gammaCorrectionValue" min="0.1" max="3.0" step="0.1">
+            <span class="threshold-value">{{ gammaCorrectionValue }}</span>
         </div>
 
         <img :src="filterImageSrc" id="filterImage">

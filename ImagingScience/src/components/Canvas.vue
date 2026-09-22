@@ -5,7 +5,7 @@ import { ref, onMounted, onUnmounted, useTemplateRef } from 'vue';
 import { Canvas, Rect, FabricImage, PencilBrush, Circle } from 'fabric'; 
 import { useCanvasState } from '../composables/useCanvas.ts'
 import { getFFT, getDCT, getDWT } from '../composables/useTransforms.ts'
-import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter } from '../composables/filters.ts'
+import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection } from '../composables/filters.ts'
 
 // Reference to the canvas object
 const canvasRef = useTemplateRef("canvasObject");
@@ -266,6 +266,7 @@ window.addEventListener('keydown', (e) => {
       <button @click="getCannys">Cannys Edge Detector</button>
       <button @click="getHighpassFilter">Highpass Filter</button>
       <button @click="getLowpassFilter">Lowpass Filter</button>
+      <button @click="getGammaCorrection">Gamma Correction</button>
     </div>
 
     <canvas ref="canvasObject" id="imageCanvas" style="border:1px solid #000000"></canvas>

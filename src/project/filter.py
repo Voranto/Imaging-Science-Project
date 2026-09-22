@@ -72,4 +72,30 @@ async def compute_highpass_filter(request: Request):
     res_img.save(buf, format="PNG")
     return Response(content=buf.getvalue(), media_type="image/png")
 
+@router.post("/gamma")
+async def compute_gamma_correction(request: Request):
+     # Returns the max value of the image gradient (used to adjust the threshold input)
+        try:
+            x_image_width = int(request.headers.get("x-image-width"))
+            x_image_height = int(request.headers.get("x-image-height"))
+            gamma = float(request.headers.get("gamma"))
+        except (TypeError, ValueError):
+                raise HTTPException(
+                    status_code=422, 
+                    detail="Missing or invalid headers"
+                )
+    
+        body_bytes = await request.body()
+    
+        img_array = np.frombuffer(body_bytes, dtype=np.uint8).reshape((x_image_height, x_image_width))
+    
+        img_array = img_array.astype(np.float32)
+    
+        gamma_corrected = 255.0 * (img_array / 255.0) ** gamma
 
+        gamma_corrected = np.clip(np.round(gamma_corrected), 0, 255).astype('uint8')
+     
+        res_img = Image.fromarray(gamma_corrected.astype(np.uint8))
+        buf = io.BytesIO()
+        res_img.save(buf, format="PNG")
+        return Response(content=buf.getvalue(), media_type="image/png")

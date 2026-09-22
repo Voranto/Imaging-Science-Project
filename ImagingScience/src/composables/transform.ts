@@ -1,5 +1,5 @@
 import { ref, type Ref, useTemplateRef } from 'vue';
-import axios, {type AxiosResponse} from 'axios';
+import axios, {type AxiosResponse, AxiosHeaders} from 'axios';
 import { useCanvasState } from './useCanvas.js'
 import { Canvas, FabricImage, FabricObject } from 'fabric'
 
@@ -18,7 +18,7 @@ export abstract class  Transform {
     public async applyTransform() : Promise<void> {
         this.initializeCanvas();
         if (!canvas) return;
-
+        console.log("here2")
 
         await this.storeActiveObject();
 
@@ -28,6 +28,7 @@ export abstract class  Transform {
         const height = Math.floor(canvas.height);
 
         // Set the transform type in TransformRender to DWT
+        console.log(this.transformType)
         changeTransformType(this.transformType.toString());
 
         const grayArray = this.getGrayscaleArray(height, width);
@@ -75,11 +76,7 @@ export abstract class  Transform {
          try {
 
             const response = await axios.post(this.baseURL + "/grayscale", grayArray, {
-            headers: {
-                'Content-Type': 'application/octet-stream',
-                'x-image-width': width.toString(),
-                'x-image-height': height.toString(),
-            },
+            headers: this.getHeaders(height, width),
             responseType: 'blob',
             });
             
@@ -96,6 +93,22 @@ export abstract class  Transform {
         }
 
     }
+
+    private getHeaders(height :number, width: number) {
+        var headers = new AxiosHeaders({
+                'Content-Type': 'application/octet-stream',
+                'x-image-width': width.toString(),
+                'x-image-height': height.toString(),
+            });
+        var parameters = this.getParameters();
+        for (const [key ,value ] of parameters) {
+            headers.set(key,value)
+        }
+        console.log("here")
+        console.log(headers);
+        return headers;
+    }
+
     private initializeCanvas() {
         canvas = canvasInstance.value;
     }
@@ -143,12 +156,12 @@ export abstract class  Transform {
         await new Promise((resolve) => requestAnimationFrame(resolve));
     }
 
-    public abstract getParameters() : Array<any>;
+    public abstract getParameters() : Array<[string, string]>;
 }
 export enum TransformType {
-    fft,
-    dwt,
-    dct
+    fft = "fft",
+    dwt = "dwt",
+    dct = "dct"
 }
 export function updateImageTransform() {
         changeTransformType("none")

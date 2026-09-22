@@ -4,4 +4,4 @@ think of some way to reverse the fft canvas. Either preserve the state and do so
 of mix, or some other alternative
 
 Add more transforms
-Add Filters (corner detection) - Make cannys faster
+Add Filters (corner detection) 

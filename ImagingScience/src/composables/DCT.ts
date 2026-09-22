@@ -1,13 +1,13 @@
 import { Transform, TransformType } from "./transform"
 
-export class FFT extends Transform {
+export class DCT extends Transform {
     baseURL : string;
     transformType: TransformType;
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/fft";
-        this.transformType = TransformType.fft;
+        this.baseURL = "http://localhost:8000/api/dct";
+        this.transformType = TransformType.dct;
     }
 
     public getParameters() : Array<any> {

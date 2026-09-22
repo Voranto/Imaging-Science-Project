@@ -19,7 +19,7 @@ const dwtLevel = ref(1);
         </select>
 
         <div v-show="getTransformType() == 'dwt'">
-            Level: <input type="range" v-model.number="dwtLevel" @change="getDWT" id="dwtLevel" min="0" max="20">
+            Level: <input type="range" v-model.number="dwtLevel" @change="getDWT" id="dwtLevel" min="0" max="10">
             <span class="threshold-value">{{ dwtLevel }}</span>
         </div>
 

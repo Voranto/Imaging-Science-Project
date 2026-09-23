@@ -11,6 +11,7 @@ const dwtLevel = ref(1);
 <template>
     <div class="overlay-screen">
         <button @click="updateImageTransform" >Close </button>
+        <button @click="renderTransformToCanvas" >Paint transform to Canvas</button>
         <select name="transformType" id="transformType" style="display: none;">
           <option value="none" selected="selected">none</option>
           <option value="fft">fft</option>

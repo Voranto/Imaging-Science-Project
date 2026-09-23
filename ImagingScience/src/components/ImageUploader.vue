@@ -48,6 +48,8 @@
         img.scaleToHeight(targetImageHeight);
         img.set({ left: targetImageX + targetImageWidth / 2, top: targetImageY + targetImageHeight  /2});
         img.set("customType", "image");
+        img.set("originX", "top");
+        img.set("originY", "left");
         canvas.add(img);
         canvas.setActiveObject(img);
         canvas.renderAll();

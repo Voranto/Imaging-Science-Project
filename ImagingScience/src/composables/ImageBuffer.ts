@@ -1,4 +1,4 @@
-import { Canvas, FabricObject, PencilBrush } from 'fabric';
+import { Canvas, FabricObject, PencilBrush, FabricImage } from 'fabric';
 import {ref, type Ref} from 'vue';
 export class ImageBuffer {
     public canvas: Canvas;
@@ -69,6 +69,9 @@ export class ImageBuffer {
     else if (objectType == "gaussian") {
       console.log("gaussian")
       this.rasterizeGaussian(obj);
+    }
+    else if (objectType == "image") {
+      this.rasterizeImage(obj as FabricImage);
     }
 
   }
@@ -154,6 +157,28 @@ export class ImageBuffer {
     }
     console.log(this.floatBuffer)
 }
+  private rasterizeImage(obj : FabricImage){
+    const width = Math.floor(obj.width || 0) * (obj.scaleX || 1);
+    const height = Math.floor(obj.height || 0) * (obj.scaleY || 1);
+    const left = obj.left!;
+    const top = obj.top!;
+
+    const minX = Math.max(0, Math.floor(left));
+    const maxX = Math.min(this.width, Math.ceil(left + width));
+    const minY = Math.max(0, Math.floor(top));
+    const maxY = Math.min(this.height, Math.ceil(top + height));
+    const ctx = this.canvas.getContext();
+    const imageData = ctx.getImageData(minX,minY, (maxX - minX),(maxY - minY)).data;
+
+    for (let y = minY; y < maxY; y++) {
+      for (let x = minX; x < maxX; x++) {
+          const localIdx = (y - minY) * (maxX - minX) + (x-minX);
+          const bufferIdx = y * this.width + x;
+          this.floatBuffer[bufferIdx] = imageData[localIdx * 4]! / 255;
+      }
+    }
+    console.log(this.floatBuffer)
+  }
 }
 
 export function getObjectGrayscale(obj : FabricObject) {

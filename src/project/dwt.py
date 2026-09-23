@@ -27,10 +27,8 @@ async def compute_dct_grayscale(request: Request):
     
     body_bytes = await request.body()
 
-    img_array = np.frombuffer(body_bytes, dtype=np.uint8).reshape((x_image_height, x_image_width))
-
-    img_array = img_array.astype(np.float32)
-    
+    img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
+    print(img_array)
     dwt = pywt.wavedec2(img_array, "haar", level=levels)
     
     # Normalize first, then convert coefficients to array
@@ -55,7 +53,7 @@ async def compute_dct_grayscale(request: Request):
     arr_coefficients, slices = pywt.coeffs_to_array(normalized_dwt)
 
     vis_arr = arr_coefficients.astype(np.uint8)
-
+    print(arr_coefficients)
 
     res_img = Image.fromarray(vis_arr)
     buf = io.BytesIO()

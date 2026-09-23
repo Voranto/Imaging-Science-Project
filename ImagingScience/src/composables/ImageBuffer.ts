@@ -73,6 +73,9 @@ export class ImageBuffer {
     else if (objectType == "image") {
       this.rasterizeImage(obj as FabricImage);
     }
+    else{
+      console.warn("Object was not classified", obj)
+    }
 
   }
   private rasterizeRect(obj : FabricObject) {

@@ -171,3 +171,27 @@ export function changeTransformType(mode: string) {
         transformType.value = mode;
     }
 }
+
+export function renderTransformToCanvas() {
+    if (getTransformType() === "none") return;
+    const height = imageBuffer.value?.height;
+    const width = imageBuffer.value?.width;
+    if (!height || !width) return;
+    if (!transformCanvas.value) return;
+
+    const imgCopy = new Image();
+    imgCopy.src = transformCanvas.value.toDataURL({ format: 'png', multiplier: 1 });
+    imgCopy.onload = () => {
+
+        const image = new FabricImage(imgCopy);
+        image.set({ 
+            originX: 'left',
+            originY: 'top',
+        })
+        image.set("customType", "image")
+
+        imageBuffer.value?.canvas.add(image);
+        imageBuffer.value?.canvas.setActiveObject(image);
+        imageBuffer.value?.syncFloatBuffer();
+    };
+}

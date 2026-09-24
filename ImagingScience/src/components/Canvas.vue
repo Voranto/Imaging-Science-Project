@@ -266,7 +266,6 @@ window.addEventListener('keydown', (e) => {
 <template>
     <div class="canvas-container">
     <div class="toolbar">
-      BRUSH NOT WORKING
       <button @click="updateBrushSize(); imageBuffer!.toggleBrush()">
         {{ imageBuffer?.isDrawing.value ? 'Stop Drawing' : 'Draw with Brush' }}
       </button>
@@ -274,7 +273,7 @@ window.addEventListener('keydown', (e) => {
       <button @click="addBox">Add Rectangle</button>
       <button @click="addCircle">Add Circle</button>
       <button @click="addGaussian">Add Gaussian</button>
-      <input type="range" min="0" max="255" id="objectColorSelector" value="0" @input="updateObjectColor">
+      Color: <input type="range" min="0" max="255" id="objectColorSelector" value="0" @input="updateObjectColor">
       <button @click="clearCanvas">Clear Canvas</button>
       <button @click="getFFT">Generate FFT</button>
       <button @click="getDCT">Generate DCT</button>

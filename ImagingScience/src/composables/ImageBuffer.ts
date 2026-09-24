@@ -1,4 +1,4 @@
-import { Canvas, FabricObject, PencilBrush, FabricImage } from 'fabric';
+import { Canvas, FabricObject, PencilBrush, FabricImage, Path } from 'fabric';
 import {ref, type Ref} from 'vue';
 export class ImageBuffer {
     public canvas: Canvas;
@@ -73,7 +73,10 @@ export class ImageBuffer {
     else if (objectType == "image") {
       this.rasterizeImage(obj as FabricImage);
     }
-    else{
+    else if (obj.type === 'path') {
+      this.rasterizePath(obj as Path);
+    }
+    else {
       console.warn("Object was not classified", obj)
     }
 
@@ -182,6 +185,40 @@ export class ImageBuffer {
     }
     console.log(this.floatBuffer)
   }
+  private rasterizePath(obj: Path) {
+    const offscreen = document.createElement('canvas');
+    offscreen.width = this.width;
+    offscreen.height = this.height;
+
+    const ctx = offscreen.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, this.width, this.height);
+
+    obj.render(ctx);
+
+    const imgData = ctx.getImageData(0, 0, this.width, this.height);
+    const data = imgData.data;
+
+    const bound = obj.getBoundingRect();
+    const minX = Math.max(0, Math.floor(bound.left));
+    const maxX = Math.min(this.width, Math.ceil(bound.left + bound.width));
+    const minY = Math.max(0, Math.floor(bound.top));
+    const maxY = Math.min(this.height, Math.ceil(bound.top + bound.height));
+
+    const color = getObjectGrayscale(obj);
+
+    for (let y = minY; y < maxY; y++) {
+      for (let x = minX; x < maxX; x++) {
+        const pixelIdx = (y * this.width + x) * 4;
+        const alpha = data[pixelIdx + 3];
+        if (alpha == 0) continue;
+        const bufferIdx = y * this.width + x;
+
+        this.floatBuffer[bufferIdx] = color;
+      }
+    }
+}
 }
 
 export function getObjectGrayscale(obj : FabricObject) {

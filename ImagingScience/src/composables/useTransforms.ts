@@ -23,6 +23,10 @@ export async function getIFFT() {
     instanceFFT.applyInverse();
 }
 
+export async function getIDCT(){
+    instanceDCT.applyInverse();
+}
+
 export async function getDCT() {
     instanceDCT.applyTransform();
 }

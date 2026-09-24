@@ -3,8 +3,11 @@ from fastapi.responses import Response
 from PIL import Image
 import numpy as np
 import io
-from scipy.fftpack import dctn
+from scipy.fftpack import dctn, idctn
+import uuid
+from cachetools import Cache
 
+dct_cache = Cache(maxsize=50)
 router = APIRouter(
     prefix="/dct",
     tags=["DCT Transforms"]
@@ -28,10 +31,42 @@ async def compute_dct_grayscale(request: Request):
 
     img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
     
-    dct = np.log1p(np.abs(dctn(img_array , type=2, norm='ortho')))
+    dct = dctn(img_array , type=2, norm='ortho')
+    # Store true DCT matrix
+    image_id = str(uuid.uuid4())
+    dct_cache[image_id] = dct
+
+    dct = np.log1p(np.abs(dct))
+
     min_val, max_val =     dct.min(),     dct.max()
     normalized = (255 * (dct - min_val) / (max_val - min_val + 1e-8)).astype(np.uint8)
     res_img = Image.fromarray(normalized)
+    buf = io.BytesIO()
+    res_img.save(buf, format="PNG")
+
+    return Response(content=buf.getvalue(), media_type="image/png",headers={
+            "X-Image-ID": image_id,
+            "Access-Control-Expose-Headers": "X-Image-ID",
+        },)
+
+
+@router.post("/inverse/grayscale")
+async def compute_inverse_dct_grayscale(image_id : str):
+    # Returns a 2 dimensional array of the Image reversing the DCT
+    print(image_id, dct_cache)
+    if image_id not in dct_cache:
+        raise HTTPException(
+            status_code=404,
+            detail="Session expired or Image ID not found in cache",
+        )
+    dct = dct_cache[image_id]
+    
+    image_array = idctn(dct, type=2, norm="ortho")
+
+    scaled = image_array * 255.0
+
+    final_bytes = np.clip(scaled, 0, 255).astype(np.uint8)
+    res_img = Image.fromarray(final_bytes)
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")
 

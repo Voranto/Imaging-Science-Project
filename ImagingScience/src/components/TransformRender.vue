@@ -3,7 +3,7 @@
 <script setup>
 import { ref } from 'vue';
 import {transformRequested , updateImageTransform, getTransformType, renderTransformToCanvas} from '../composables/transform.ts'
-import {getDWT, getIFFT} from '../composables/useTransforms.ts'
+import {getDWT, getIFFT, getIDCT} from '../composables/useTransforms.ts'
 
 const dwtLevel = ref(1);
 
@@ -22,7 +22,9 @@ const dwtLevel = ref(1);
         <div v-show="getTransformType() == 'fft'">
             <button @click="getIFFT">IFFT</button>
         </div>
-
+        <div v-show="getTransformType() == 'dct'">
+            <button @click="getIDCT">IDCT</button>
+        </div>
         <div v-show="getTransformType() == 'dwt'">
             Level: <input type="range" v-model.number="dwtLevel" @change="getDWT" id="dwtLevel" min="0" max="10">
             <span class="threshold-value">{{ dwtLevel }}</span>

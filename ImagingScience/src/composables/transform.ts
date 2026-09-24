@@ -178,7 +178,6 @@ export abstract class  Transform {
                     left: canvas!.width / 2,
                     top: canvas!.height / 2
                 });
-
                 tCanvas.add(img);
                 tCanvas.requestRenderAll();
             }

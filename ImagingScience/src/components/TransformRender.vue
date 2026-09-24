@@ -3,7 +3,7 @@
 <script setup>
 import { ref } from 'vue';
 import {transformRequested , updateImageTransform, getTransformType, renderTransformToCanvas} from '../composables/transform.ts'
-import {getDWT} from '../composables/useTransforms.ts'
+import {getDWT, getIFFT} from '../composables/useTransforms.ts'
 
 const dwtLevel = ref(1);
 
@@ -12,12 +12,16 @@ const dwtLevel = ref(1);
     <div class="overlay-screen">
         <button @click="updateImageTransform" >Close </button>
         <button @click="renderTransformToCanvas" >Paint transform to Canvas</button>
+        
         <select name="transformType" id="transformType" style="display: none;">
           <option value="none" selected="selected">none</option>
           <option value="fft">fft</option>
           <option value="dct">dct</option>
           <option value="dwt">dwt</option>
         </select>
+        <div v-show="getTransformType() == 'fft'">
+            <button @click="getIFFT">IFFT</button>
+        </div>
 
         <div v-show="getTransformType() == 'dwt'">
             Level: <input type="range" v-model.number="dwtLevel" @change="getDWT" id="dwtLevel" min="0" max="10">

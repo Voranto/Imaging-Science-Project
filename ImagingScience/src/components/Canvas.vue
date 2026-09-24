@@ -96,6 +96,8 @@ const addCircle = () => {
     top: 100,
     fill: `rgb(${color}, ${color}, ${color})`,
     radius: 60,
+    originX: 'left',
+    originY: 'top',
     uniformScaling: false,
     uniScaleKey: 'shiftKey',
     objectCaching: false,     
@@ -264,6 +266,7 @@ window.addEventListener('keydown', (e) => {
 <template>
     <div class="canvas-container">
     <div class="toolbar">
+      BRUSH NOT WORKING
       <button @click="updateBrushSize(); imageBuffer!.toggleBrush()">
         {{ imageBuffer?.isDrawing.value ? 'Stop Drawing' : 'Draw with Brush' }}
       </button>

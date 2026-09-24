@@ -1,12 +1,12 @@
 Add lines and more structures for the canvas 
 
 think of some way to reverse the fft canvas. Either preserve the state and do some sort 
-of mix, or some other alternative
+of mix, or some other alternative. Either make the API calls return the true array and then convert,
+ or separate the api calls, one for image one for matrix.
+
+We can just cache the result
+
 
 Add more transforms
 Add Filters (corner detection) 
-Im not too happy with the DWT
-
-Preserve image data into a float32 array so that no artifacts appear. When something is added, deleted or stops moving: fabricCanvas.on('object:modified', () => {
-  syncFloatBuffer(); // Executes rasterization ONCE after drop
-});
+Im not too happy with the DWT, some small artifacting appears

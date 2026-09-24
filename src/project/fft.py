@@ -1,8 +1,12 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException, Request, Header
+from fastapi import APIRouter, File, UploadFile, HTTPException, Request
 from fastapi.responses import Response
 from PIL import Image
 import numpy as np
 import io
+import uuid
+from cachetools import Cache
+
+fft_cache = Cache(maxsize=50)
 
 router = APIRouter(
     prefix="/fft",
@@ -12,7 +16,6 @@ router = APIRouter(
 @router.post("/grayscale")
 async def compute_fft_grayscale(request: Request):
     # Returns a 2 dimensional array of the FFT
-    
     try:
         x_image_width = int(request.headers.get("x-image-width"))
         x_image_height = int(request.headers.get("x-image-height"))
@@ -24,10 +27,15 @@ async def compute_fft_grayscale(request: Request):
 
     
     body_bytes = await request.body()
-
+    
     img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
     
     fft_shifted = np.fft.fftshift(np.fft.fft2(img_array))
+
+    # Store true FFT matrix
+    image_id = str(uuid.uuid4())
+    fft_cache[image_id] = fft_shifted
+
     magnitude = np.log1p(np.abs(fft_shifted))
 
     min_val, max_val = magnitude.min(), magnitude.max()
@@ -36,34 +44,30 @@ async def compute_fft_grayscale(request: Request):
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")
 
-    return Response(content=buf.getvalue(), media_type="image/png")
+    # Return the image_id
+    return Response(content=buf.getvalue(), media_type="image/png",headers={
+            "X-Image-ID": image_id,
+            "Access-Control-Expose-Headers": "X-Image-ID",
+        },)
 
 @router.post("/inverse/grayscale")
-async def compute_inverse_fft_grayscale(request: Request):
+async def compute_inverse_fft_grayscale(image_id : str):
     # Returns a 2 dimensional array of the Image reversing the FFT
-    
-    try:
-        x_image_width = int(request.headers.get("x-image-width"))
-        x_image_height = int(request.headers.get("x-image-height"))
-    except (TypeError, ValueError):
+    print(image_id, image_id in fft_cache)
+    if image_id not in fft_cache:
         raise HTTPException(
-            status_code=422, 
-            detail="Missing or invalid 'x-image-width' / 'x-image-height' headers"
+            status_code=404,
+            detail="Session expired or Image ID not found in cache",
         )
-
+    fft_shifted= fft_cache[image_id]
     
-    body_bytes = await request.body()
+    image_array = np.fft.ifft2(np.fft.ifftshift(fft_shifted))
+    magnitude = np.abs(image_array)
 
-    fft_array = np.frombuffer(body_bytes, dtype=np.uint8).reshape((x_image_height, x_image_width))
+    scaled = magnitude * 255.0
 
-    fft_array = fft_array.astype(np.float32)
-    
-    image_array = np.fft.ifft2(np.fft.ifftshift(img_array))
-    magnitude = np.log1p(np.abs(fft_shifted))
-
-    min_val, max_val = magnitude.min(), magnitude.max()
-    normalized = (255 * (magnitude - min_val) / (max_val - min_val + 1e-8)).astype(np.uint8)
-    res_img = Image.fromarray(normalized)
+    final_bytes = np.clip(scaled, 0, 255).astype(np.uint8)
+    res_img = Image.fromarray(final_bytes)
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")
 

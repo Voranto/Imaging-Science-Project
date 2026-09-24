@@ -19,6 +19,9 @@ const instanceDWT = new DWT();
 export async function getFFT() {
     instanceFFT.applyTransform();
 }
+export async function getIFFT() {
+    instanceFFT.applyInverse();
+}
 
 export async function getDCT() {
     instanceDCT.applyTransform();

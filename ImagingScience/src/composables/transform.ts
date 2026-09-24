@@ -8,6 +8,7 @@ var canvas = imageBuffer.value?.canvas;
 
 export const transformRequested : Ref<boolean> = ref(false);
 export const transformCanvas = ref<Canvas | null>(null);
+export var imageID = ref("");
 
 export abstract class  Transform {
     abstract baseURL : string;
@@ -34,6 +35,20 @@ export abstract class  Transform {
         await this.requestTransform(height, width, grayArray);
 
         this.retrieveActiveObject();
+    }
+
+    public async applyInverse() : Promise<void> {
+        try {
+            const response = await axios.post<Blob>(this.baseURL + "/inverse/grayscale", {},{
+            params: { image_id: imageID.value },
+            responseType: 'blob',
+            });
+            this.hideTransformContainer();
+
+            await this.projectResultOnCanvas(response);
+        } catch (error) {
+            console.error('Inverse computation failed:', error);
+        }
     }
 
     private async storeActiveObject() {
@@ -68,14 +83,18 @@ export abstract class  Transform {
             headers: this.getHeaders(height, width),
             responseType: 'blob',
             });
-            
+            const id = response.headers['x-image-id'];
+            if (!id) {
+                console.error("Transform did not return an imageID");
+            }
+            imageID.value = id;
 
             this.visibilizeTransformContainer();
 
             this.initializeTransformCanvas();
 
             
-            await this.projectResultOnCanvas(response);
+            await this.projectResultOnTCanvas(response);
             
         } catch (error) {
             console.error('Upload failed:', error);
@@ -84,7 +103,6 @@ export abstract class  Transform {
     }
 
     private getHeaders(height :number, width: number) {
-        console.log("Headers,", Math.floor(width), Math.floor(height))
         var headers = new AxiosHeaders({
                 'Content-Type': 'application/octet-stream',
                 'x-image-width': Math.floor(width).toString(),
@@ -115,6 +133,33 @@ export abstract class  Transform {
     private async projectResultOnCanvas(response: AxiosResponse<any, Float32Array>) {
         const newImageUrl = URL.createObjectURL(response.data);
 
+            if (imageBuffer && imageBuffer.value){
+                const canvas = imageBuffer.value.canvas;
+
+                canvas.clear();
+                canvas.backgroundColor = "white";
+
+                const img = await FabricImage.fromURL(newImageUrl);
+                img.set({
+                    customType: "image",
+                    width: canvas!.width,
+                    height: canvas!.height,
+                    
+                    left: 0,
+                    top: 0
+                });
+                img.set("originX", "top");
+                img.set("originY", "left");
+                canvas.add(img);
+                canvas.requestRenderAll();
+                imageBuffer.value.syncFloatBuffer();
+            }
+            URL.revokeObjectURL(newImageUrl);
+    }
+
+    private async projectResultOnTCanvas(response: AxiosResponse<any, Float32Array>) {
+        const newImageUrl = URL.createObjectURL(response.data);
+
             if (transformCanvas && transformCanvas.value){
                 const tCanvas = transformCanvas.value;
                 tCanvas.setDimensions({
@@ -142,6 +187,10 @@ export abstract class  Transform {
 
     private async visibilizeTransformContainer() {
         transformRequested.value = true;
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+    private async hideTransformContainer() {
+        transformRequested.value = false;
         await new Promise((resolve) => requestAnimationFrame(resolve));
     }
 
@@ -189,6 +238,10 @@ export function renderTransformToCanvas() {
             originY: 'top',
         })
         image.set("customType", "image")
+
+        // TODO: Make the decision if clearing the canvas is worth it
+        imageBuffer.value!.canvas.clear();
+        imageBuffer.value!.canvas.backgroundColor = "white";
 
         imageBuffer.value?.canvas.add(image);
         imageBuffer.value?.canvas.setActiveObject(image);

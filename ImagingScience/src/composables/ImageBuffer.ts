@@ -12,7 +12,7 @@ export class ImageBuffer {
     this.height = Math.floor(height);
     this.canvas = new Canvas(canvasElement, { width, height });
     this.floatBuffer = new Float32Array(this.width * this.height);
-
+    this.floatBuffer.fill(1.0);
     this.isDrawing = ref(false);
     this.initEventListeners();
     this.canvas.freeDrawingBrush = new PencilBrush(this.canvas);
@@ -50,7 +50,7 @@ export class ImageBuffer {
     });
 
     this.floatBuffer = new Float32Array(Math.floor(newWidth) * Math.floor(newHeight));
-    
+    this.floatBuffer.fill(1.0);
     this.canvas.renderAll();
     this.syncFloatBuffer();
   }
@@ -70,7 +70,6 @@ export class ImageBuffer {
       this.rasterizeCircle(obj);
     }
     else if (objectType == "gaussian") {
-      console.log("gaussian")
       this.rasterizeGaussian(obj);
     }
     else if (objectType == "image") {
@@ -95,11 +94,9 @@ export class ImageBuffer {
     const minY = Math.max(0, Math.floor(top));
     const maxY = Math.min(this.height, Math.ceil(top + rectH));
     const color = getObjectGrayscale(obj) / 255.0;
-    console.log(color);
     for (let y = minY; y < maxY; y++) {
       for (let x = minX; x < maxX; x++) {
         const idx = y * this.width + x;
-        if (idx===0) console.log(idx);
         this.floatBuffer[idx] = color;
       }
     }
@@ -151,7 +148,6 @@ export class ImageBuffer {
     const maxX = Math.min(this.width, Math.ceil(left + width));
     const minY = Math.max(0, Math.floor(top));
     const maxY = Math.min(this.height, Math.ceil(top + height));
-    console.log(minX,minY,maxX,maxY)
     for (let y = minY; y < maxY; y++) {
       for (let x = minX; x < maxX; x++) {
           const dx = (x + 0.5) - centerX;
@@ -164,7 +160,6 @@ export class ImageBuffer {
           this.floatBuffer[idx] = Math.min(1.0, val);
       }
     }
-    console.log(this.floatBuffer)
 }
   private rasterizeImage(obj : FabricImage){
     const width = Math.floor(obj.width || 0) * (obj.scaleX || 1);
@@ -186,7 +181,6 @@ export class ImageBuffer {
           this.floatBuffer[bufferIdx] = imageData[localIdx * 4]! / 255;
       }
     }
-    console.log(this.floatBuffer)
   }
   private rasterizePath(obj: Path) {
     const offscreen = document.createElement('canvas');

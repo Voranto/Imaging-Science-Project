@@ -17,6 +17,11 @@ const uniformNoiseRange = ref(0);
 const gaussianNoiseMean = ref(0);
 const gaussianNoiseSigma= ref(1);
 const uniformMultNoiseRange= ref(0);
+const gaussianMultNoiseMean = ref(0);
+const gaussianMultNoiseSigma = ref(1);
+const impulseNoiseHigh = ref(255);
+const impulseNoiseLow = ref(0);
+const impulseNoiseProbability = ref(0);
 
 // Toggle dropdown visibility
 const toggleMenu = (menuName: 'add' | 'transform' | 'filter' | 'config') => {
@@ -119,7 +124,7 @@ onUnmounted(() => {
                 max="255" 
                 v-model.number="gaussianNoiseSigma"
             />
-            <label for="gaussianNoiseSigma">Mean:</label>
+            <label for="gaussianNoiseMean">Mean:</label>
             <input 
                 type="number" 
                 id="gaussianNoiseMean"
@@ -138,6 +143,51 @@ onUnmounted(() => {
                 v-model.number="uniformMultNoiseRange"
             />
             <button class="primary" @click="handleAddNoise('multiplicative-uniform')">Uniform Noise</button>
+        </div>
+        <div class="inline-group">
+            <label for="gaussianMultNoiseSigma">Sigma:</label>
+            <input 
+                type="number" 
+                id="gaussianMultNoiseSigma"
+                min="0" 
+                max="255" 
+                v-model.number="gaussianMultNoiseSigma"
+            />
+            <label for="gaussianMultNoiseMean">Mean:</label>
+            <input 
+                type="number" 
+                id="gaussianMultNoiseMean"
+                v-model.number="gaussianMultNoiseMean"
+            />
+            <button class="primary" @click="handleAddNoise('multiplicative-gaussian')">Gaussian Noise</button>
+        </div>
+        <h4>Other Noises</h4>
+        <div class="inline-group">
+            <label for="impulseNoiseLow">Low value:</label>
+            <input 
+                type="number" 
+                id="impulseNoiseLow"
+                min="0" 
+                max="255" 
+                v-model.number="impulseNoiseLow"
+            />
+            <label for="impulseNoiseHigh">High value:</label>
+            <input 
+                type="number" 
+                id="impulseNoiseHigh"
+                min="0" 
+                max="255" 
+                v-model.number="impulseNoiseHigh"
+            />
+            <label for="impulseNoiseProbability">Probability (%):</label>
+            <input 
+                type="number" 
+                id="impulseNoiseProbability"
+                min="0" 
+                max="100"
+                v-model.number="impulseNoiseProbability"
+            />
+            <button class="primary" @click="handleAddNoise('impulse')">Impulse Noise</button>
         </div>
         <h4>Brush</h4>
         <button @click="$emit('toggleBrush')">Toggle Drawing Brush</button>

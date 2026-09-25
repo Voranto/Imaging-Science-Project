@@ -7,7 +7,7 @@ export class MultiplicativeUniformNoise extends Noise {
     public constructor() {
         super();
         this.baseURL = "http://localhost:8000/api/noise/multiplicative/uniform";
-        this.noiseType = NoiseType.multiplicative;
+        this.noiseType = NoiseType.multiplicative_uniform;
     }
 
     public getParameters() : Array<any> {

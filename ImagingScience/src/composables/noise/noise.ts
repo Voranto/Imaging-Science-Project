@@ -24,7 +24,6 @@ export abstract class  Noise {
         const height = Math.floor(canvas.height);
 
         const grayArray = this.getGrayscaleArray();
-            
 
         await this.requestNoise(height, width, grayArray);
 
@@ -101,5 +100,7 @@ export abstract class  Noise {
 export enum NoiseType {
     additive = "additive",
     gaussian = "gaussian",
-    multiplicative = "multiplicative",
+    multiplicative_uniform = "multiplicative_uniform",
+    multiplicative_gaussian = "multiplicative_gaussian",
+    impulse = "impulse"
 }

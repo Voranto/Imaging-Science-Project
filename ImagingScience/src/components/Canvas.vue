@@ -8,7 +8,7 @@ import { getFFT, getDCT, getDWT } from '../composables/transform/useTransforms.t
 import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection } from '../composables/filters.ts'
 import { useImageBufferState } from '../composables/useImageBufferState.ts';
 import Toolbar from './Toolbar.vue';
-import { applyUniformNoise, applyGaussianNoise, applyMultiplicativeUniformNoise } from '@/composables/noise/applyNoise.ts';
+import { applyUniformNoise, applyGaussianNoise, applyMultiplicativeUniformNoise, applyMultiplicativeGaussianNoise, applyImpulseNoise } from '@/composables/noise/applyNoise.ts';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 // Reference to the canvas object
 const canvasRef = useTemplateRef<HTMLCanvasElement>("canvasObject");
@@ -287,6 +287,8 @@ const handleAddNoise = (type: string) => {
   if (type === 'uniform') applyUniformNoise();
   if (type === 'gaussian') applyGaussianNoise();
   if (type === 'multiplicative-uniform') applyMultiplicativeUniformNoise();
+  if(type == "multiplicative-gaussian") applyMultiplicativeGaussianNoise();
+  if(type == "impulse") applyImpulseNoise();
 };
 
 const fitCanvasToObjects = () => {

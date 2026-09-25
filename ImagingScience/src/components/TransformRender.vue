@@ -2,8 +2,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import {transformRequested , updateImageTransform, getTransformType, renderTransformToCanvas} from '../composables/transform.ts'
-import {getDWT, getIFFT, getIDCT} from '../composables/useTransforms.ts'
+import {transformRequested , updateImageTransform, getTransformType, renderTransformToCanvas} from '../composables/transform/transform.ts'
+import {getDWT, getIFFT, getIDCT} from '../composables/transform/useTransforms.ts'
 
 const dwtLevel = ref(1);
 

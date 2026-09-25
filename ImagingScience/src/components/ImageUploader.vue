@@ -55,5 +55,6 @@
         canvas.setActiveObject(img);
         canvas.renderAll();
         emit("closeActiveMenu");
+        imageBuffer.value?.syncFloatBuffer();
     }
 </script>

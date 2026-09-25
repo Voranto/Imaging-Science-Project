@@ -1,7 +1,7 @@
 import { ref, type Ref, useTemplateRef } from 'vue';
 import axios, {type AxiosResponse, AxiosHeaders} from 'axios';
 import { Canvas, FabricImage, FabricObject } from 'fabric'
-import { useImageBufferState } from '../composables/useImageBufferState.ts';
+import { useImageBufferState } from '../useImageBufferState.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 var canvas = imageBuffer.value?.canvas;
@@ -21,12 +21,11 @@ export abstract class  Transform {
 
         await this.storeActiveObject();
 
-
         // Round the height and weight to prevent issues when sending it through axios
         const width = Math.floor(canvas.width);
         const height = Math.floor(canvas.height);
 
-        // Set the transform type in TransformRender to DWT
+        // Set the transform type in TransformRender to its appropiate type
         changeTransformType(this.transformType.toString());
 
         const grayArray = this.getGrayscaleArray();

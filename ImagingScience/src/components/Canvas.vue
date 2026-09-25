@@ -4,11 +4,11 @@
 import { ref, onMounted, onUnmounted, useTemplateRef,shallowRef , type ShallowRef } from 'vue';
 import { Canvas, Rect, FabricImage, PencilBrush, Circle, FabricObject, ActiveSelection } from 'fabric'; 
 import { ImageBuffer, getObjectGrayscale } from '../composables/ImageBuffer.ts'
-import { getFFT, getDCT, getDWT } from '../composables/useTransforms.ts'
+import { getFFT, getDCT, getDWT } from '../composables/transform/useTransforms.ts'
 import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection } from '../composables/filters.ts'
 import { useImageBufferState } from '../composables/useImageBufferState.ts';
 import Toolbar from './Toolbar.vue';
-
+import { applyUniformNoise, applyGaussianNoise, applyMultiplicativeUniformNoise } from '@/composables/noise/applyNoise.ts';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 // Reference to the canvas object
 const canvasRef = useTemplateRef<HTMLCanvasElement>("canvasObject");
@@ -283,6 +283,11 @@ const handleFilter = (type: string) => {
   if (type === 'lowpass') getLowpassFilter();
   if (type === 'gamma') getGammaCorrection();
 };
+const handleAddNoise = (type: string) => {
+  if (type === 'uniform') applyUniformNoise();
+  if (type === 'gaussian') applyGaussianNoise();
+  if (type === 'multiplicative-uniform') applyMultiplicativeUniformNoise();
+};
 
 const fitCanvasToObjects = () => {
   canvasFitToScreen.value = false;
@@ -340,6 +345,7 @@ const fitCanvasToScreen = () => {
       @clearCanvas="clearCanvas"
       @fitCanvasToObjects="fitCanvasToObjects"
       @fitCanvasToScreen="fitCanvasToScreen"
+      @addNoise="handleAddNoise"
     />
     <canvas ref="canvasObject" id="imageCanvas" style="border:1px solid #000000"></canvas>
   </div>

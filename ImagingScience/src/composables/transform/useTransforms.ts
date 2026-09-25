@@ -4,7 +4,7 @@ import { Canvas, FabricImage } from 'fabric'
 import { FFT } from './FFT.ts'
 import { DCT } from './DCT.ts'
 import { DWT } from './DWT.ts'
-import { useImageBufferState } from '../composables/useImageBufferState.ts';
+import { useImageBufferState } from '../useImageBufferState.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 

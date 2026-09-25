@@ -4,7 +4,7 @@ import ImageUploader from './components/ImageUploader.vue';
 import Canvas from './components/Canvas.vue';
 import FilterRender from './components/FilterRender.vue'
 import TransformRender from './components/TransformRender.vue';
-import {transformRequested} from './composables/transform.ts'
+import {transformRequested} from './composables/transform/transform.ts'
 import {filterRequested} from './composables/filters.ts'
 
 </script>

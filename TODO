@@ -1,12 +1,7 @@
 Add lines and more structures for the canvas 
 
-think of some way to reverse the fft canvas. Either preserve the state and do some sort 
-of mix, or some other alternative. Either make the API calls return the true array and then convert,
- or separate the api calls, one for image one for matrix.
-
-We can just cache the result
-
-
 Add more transforms
 Add Filters (corner detection) 
 Im not too happy with the DWT, some small artifacting appears
+
+Refactor filter functions to also use ImageBuffer

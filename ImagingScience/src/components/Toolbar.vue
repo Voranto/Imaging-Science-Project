@@ -13,6 +13,10 @@ const brushSize = ref(10);
 const color = ref(0);
 const gaussianSigma = ref(1);
 const selectedShape = ref<'box' | 'circle' | 'gaussian'>('box');
+const uniformNoiseRange = ref(0);
+const gaussianNoiseMean = ref(0);
+const gaussianNoiseSigma= ref(1);
+const uniformMultNoiseRange= ref(0);
 
 // Toggle dropdown visibility
 const toggleMenu = (menuName: 'add' | 'transform' | 'filter' | 'config') => {
@@ -29,7 +33,8 @@ const emit = defineEmits([
   'applyFilter', 
   'clearCanvas',
   'fitCanvasToObjects',
-  'fitCanvasToScreen'
+  'fitCanvasToScreen',
+  'addNoise'
 ]);
 
 const handleAddShape = () => {
@@ -46,6 +51,12 @@ const handleFilter = (type: string) => {
   emit('applyFilter', type);
   activeMenu.value = null;
 };
+
+const handleAddNoise = (type : string) => {
+    emit("addNoise", type);
+    activeMenu.value = null;
+}
+
 const closeActiveMenu = () => {
     activeMenu.value = null;
 }
@@ -75,7 +86,7 @@ onUnmounted(() => {
       <div v-show="activeMenu === 'add'" class="dropdown-panel">
         <h4>Image</h4>
         <ImageUploader  @closeActiveMenu="closeActiveMenu"></ImageUploader>
-        <h4>Shapes & Brush</h4>
+        <h4>Shapes</h4>
         <div class="form-control">
           <label>Shape Type:</label>
           <select v-model="selectedShape">
@@ -87,7 +98,48 @@ onUnmounted(() => {
           <input v-show="selectedShape == 'gaussian'"type="value" min="1" max="500" v-model="gaussianSigma">
         </div>
         <button class="primary" @click="handleAddShape">Add Selected Shape</button>
-        <hr>
+        <h4>Additive Noise</h4>
+        <div class="inline-group">
+            <label for="uniformNoiseRange">Range:</label>
+            <input 
+                type="number" 
+                id="uniformNoiseRange"
+                min="0" 
+                max="255" 
+                v-model.number="uniformNoiseRange"
+            />
+            <button class="primary" @click="handleAddNoise('uniform')">Uniform Noise</button>
+        </div>
+        <div class="inline-group">
+            <label for="gaussianNoiseSigma">Sigma:</label>
+            <input 
+                type="number" 
+                id="gaussianNoiseSigma"
+                min="0" 
+                max="255" 
+                v-model.number="gaussianNoiseSigma"
+            />
+            <label for="gaussianNoiseSigma">Mean:</label>
+            <input 
+                type="number" 
+                id="gaussianNoiseMean"
+                v-model.number="gaussianNoiseMean"
+            />
+            <button class="primary" @click="handleAddNoise('gaussian')">Gaussian Noise</button>
+        </div>
+        <h4>Multiplicative Noise</h4>
+        <div class="inline-group">
+            <label for="uniformMultNoiseRange">Range:</label>
+            <input 
+                type="number" 
+                id="uniformMultNoiseRange"
+                min="0" 
+                max="255" 
+                v-model.number="uniformMultNoiseRange"
+            />
+            <button class="primary" @click="handleAddNoise('multiplicative-uniform')">Uniform Noise</button>
+        </div>
+        <h4>Brush</h4>
         <button @click="$emit('toggleBrush')">Toggle Drawing Brush</button>
         <label>Brush Active: {{ imageBuffer?.isDrawing.value }}</label>
       </div>
@@ -140,6 +192,30 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.inline-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.inline-group label {
+  font-size: 0.85rem;
+  white-space: nowrap; /* Prevents "Range:" text from wrapping */
+}
+
+.inline-group input[type="number"] {
+  width: 60px; /* Small fixed width for numeric input */
+  padding: 4px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.inline-group button {
+  flex: 1; /* Allows button to fill remaining space cleanly */
+  white-space: nowrap;
+}
+
 .toolbar {
   display: flex;
   gap: 12px;

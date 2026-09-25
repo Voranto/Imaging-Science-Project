@@ -1,5 +1,4 @@
 <template>
-    Upload your Image here
     <input type="file"  ref="imageInput" @change="handleImageUpload">
 </template> 
 
@@ -8,7 +7,9 @@
     import { useImageBufferState } from '../composables/useImageBufferState.ts';
 
     const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
-
+    const emit = defineEmits([
+    'closeActiveMenu', 
+    ]);
 
     const  handleImageUpload = async (e : Event) => {
         const target = e.target as HTMLInputElement;
@@ -46,12 +47,13 @@
         }
         img.scaleToWidth(targetImageWidth);
         img.scaleToHeight(targetImageHeight);
-        img.set({ left: targetImageX + targetImageWidth / 2, top: targetImageY + targetImageHeight  /2});
+        img.set({ left: targetImageX, top: targetImageY});
         img.set("customType", "image");
         img.set("originX", "top");
         img.set("originY", "left");
         canvas.add(img);
         canvas.setActiveObject(img);
         canvas.renderAll();
+        emit("closeActiveMenu");
     }
 </script>

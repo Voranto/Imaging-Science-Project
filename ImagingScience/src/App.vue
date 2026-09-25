@@ -11,8 +11,6 @@ import {filterRequested} from './composables/filters.ts'
 
 <template>
   <main>
-    <ImageUploader></ImageUploader>
-    <hr>
     <div id="canvas">
       <Canvas></Canvas>
     </div>

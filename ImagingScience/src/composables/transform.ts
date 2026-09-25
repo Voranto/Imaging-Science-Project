@@ -29,7 +29,7 @@ export abstract class  Transform {
         // Set the transform type in TransformRender to DWT
         changeTransformType(this.transformType.toString());
 
-        const grayArray = this.getGrayscaleArray(height, width);
+        const grayArray = this.getGrayscaleArray();
             
 
         await this.requestTransform(height, width, grayArray);
@@ -69,8 +69,7 @@ export abstract class  Transform {
         }
     }
 
-    private getGrayscaleArray(height: number, width: number) : Float32Array<any>{
-        imageBuffer.value?.resizeCanvas();
+    private getGrayscaleArray() : Float32Array<any>{
         const arr = imageBuffer.value?.floatBuffer;
         if (!arr) return new Float32Array();
         return arr;

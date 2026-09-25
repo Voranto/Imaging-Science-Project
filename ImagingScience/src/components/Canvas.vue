@@ -7,6 +7,7 @@ import { ImageBuffer, getObjectGrayscale } from '../composables/ImageBuffer.ts'
 import { getFFT, getDCT, getDWT } from '../composables/useTransforms.ts'
 import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection } from '../composables/filters.ts'
 import { useImageBufferState } from '../composables/useImageBufferState.ts';
+import Toolbar from './Toolbar.vue';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 // Reference to the canvas object
@@ -14,9 +15,11 @@ const canvasRef = useTemplateRef<HTMLCanvasElement>("canvasObject");
 
 const brushSize = ref(10);
 
+const canvasFitToScreen = ref(true);
 // Actual canvas object from fabric
-
 const handleCanvasResize = () => {
+  if (!canvasFitToScreen.value) return;
+
   imageBuffer.value!.resizeCanvas();
 }
 onMounted(() => {
@@ -65,7 +68,7 @@ const addBox = () => {
   const canvas = imageBuffer.value?.canvas;
   if (!canvas) return;
   var colorSelector = document.getElementById("objectColorSelector");
-  const color = (colorSelector! as HTMLSelectElement).value
+  var color = (colorSelector as HTMLSelectElement).value;
   const rect = new Rect({
     left: 100,
     top: 100,
@@ -113,12 +116,11 @@ const addCircle = () => {
   })
   canvas.setActiveObject(rect);
 };
-const addGaussian = () => {
+const addGaussian = (sigma: number) => {
   const canvas = imageBuffer.value?.canvas; 
   if (!canvas) return;
-  var sigma = 100;
-  var height = canvas.height +100;
-  var width = canvas.width + 100;
+  var height = canvas.height;
+  var width = canvas.width;
   const gaussianObj = createGaussianImage(width, height, sigma);
   gaussianObj.set({
     originX: 'left',
@@ -160,14 +162,14 @@ function createGaussianImage(rawWidth: number, rawHeight: number, sigma: number)
 
 
 const updateObjectColor = () => {
-    const colorSelectorValue = (document.getElementById("objectColorSelector")! as HTMLSelectElement).value;
+  var colorSelector = document.getElementById("objectColorSelector");
+  const c = (colorSelector as HTMLSelectElement).value;
     if (imageBuffer.value!.isDrawing && imageBuffer.value!.canvas.freeDrawingBrush) {
-        imageBuffer.value!.canvas.freeDrawingBrush.color = `rgb(${colorSelectorValue}, ${colorSelectorValue}, ${colorSelectorValue})`;
+        imageBuffer.value!.canvas.freeDrawingBrush.color = `rgb(${c}, ${c}, ${c})`;
     }
-
     var obj = imageBuffer.value!.canvas.getActiveObject();
     if (!obj) return;
-    obj.set("fill", `rgb(${colorSelectorValue}, ${colorSelectorValue}, ${colorSelectorValue})`);
+    obj.set("fill", `rgb(${c}, ${c}, ${c})`);
     imageBuffer.value!.canvas.renderAll();
     imageBuffer.value?.syncFloatBuffer();
 }
@@ -262,29 +264,83 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+const handleAddObject = ({ shape, gaussianSigma }: { shape: string, gaussianSigma:number }) => {
+  if (shape === 'box') addBox();
+  else if (shape === 'circle') addCircle();
+  else if (shape === 'gaussian') addGaussian(gaussianSigma);
+};
+
+const handleTransform = (type: string) => {
+  if (type === 'fft') getFFT();
+  if (type === 'dct') getDCT();
+  if (type === 'dwt') getDWT();
+};
+
+const handleFilter = (type: string) => {
+  if (type === 'simple-edge') getSimpleEdges();
+  if (type === 'canny') getCannys();
+  if (type === 'highpass') getHighpassFilter();
+  if (type === 'lowpass') getLowpassFilter();
+  if (type === 'gamma') getGammaCorrection();
+};
+
+const fitCanvasToObjects = () => {
+  canvasFitToScreen.value = false;
+  const canvas = imageBuffer.value?.canvas;
+  if (!canvas) return;
+  const objects = canvas.getObjects();
+  if (objects.length === 0) {
+    console.error("No objects to fit the canvas to");
+  }
+  var minX = canvas.width;
+  var minY = canvas.height;
+  var maxX = 0;
+  var maxY = 0;
+  for (const obj of objects) {
+    const boundingRect = obj.getBoundingRect();
+
+    minX = Math.min(minX, boundingRect.left);
+    minY = Math.min(minY, boundingRect.top);
+    maxX = Math.max(maxX, boundingRect.left + boundingRect.width);
+    maxY = Math.max(maxY, boundingRect.top + boundingRect.height);
+  }
+
+  minX = Math.max(0, minX);
+  minY = Math.max(0, minY);
+  maxX = Math.min(canvas.width, maxX);
+  maxY = Math.min(canvas.height, maxY);
+
+  if (minX >= maxX || minY >= maxY) {
+    console.error("Something went wrong with the dimensions");
+  }
+  for (const obj of objects) {
+    obj.set({
+      left: obj.left - minX,
+      top: obj.top - minY,
+    });
+    obj.setCoords(); 
+  }
+  imageBuffer.value?.setCanvasDimensions(maxY - minY, maxX - minX);
+  canvas.renderAll();
+}
+const fitCanvasToScreen = () => {
+  canvasFitToScreen.value = true;
+  handleCanvasResize();
+}
 </script>
 <template>
     <div class="canvas-container">
-    <div class="toolbar">
-      <button @click="updateBrushSize(); imageBuffer!.toggleBrush()">
-        {{ imageBuffer?.isDrawing.value ? 'Stop Drawing' : 'Draw with Brush' }}
-      </button>
-      <label>Brush size: </label><input type="range" min="1" max="100" id="brushSize" @input="updateBrushSize" value="10">
-      <button @click="addBox">Add Rectangle</button>
-      <button @click="addCircle">Add Circle</button>
-      <button @click="addGaussian">Add Gaussian</button>
-      Color: <input type="range" min="0" max="255" id="objectColorSelector" value="0" @input="updateObjectColor">
-      <button @click="clearCanvas">Clear Canvas</button>
-      <button @click="getFFT">Generate FFT</button>
-      <button @click="getDCT">Generate DCT</button>
-      <button @click="getDWT">Generate DWT</button>
-      <button @click="getSimpleEdges">Simple Edge Detector</button>
-      <button @click="getCannys">Cannys Edge Detector</button>
-      <button @click="getHighpassFilter">Highpass Filter</button>
-      <button @click="getLowpassFilter">Lowpass Filter</button>
-      <button @click="getGammaCorrection">Gamma Correction</button>
-    </div>
-
+    <Toolbar 
+      @toggleBrush="imageBuffer?.toggleBrush()"
+      @updateBrush="() => updateBrushSize()"
+      @updateColor="() => updateObjectColor()"
+      @addObject="handleAddObject"
+      @applyTransform="handleTransform"
+      @applyFilter="handleFilter"
+      @clearCanvas="clearCanvas"
+      @fitCanvasToObjects="fitCanvasToObjects"
+      @fitCanvasToScreen="fitCanvasToScreen"
+    />
     <canvas ref="canvasObject" id="imageCanvas" style="border:1px solid #000000"></canvas>
   </div>
 </template> 

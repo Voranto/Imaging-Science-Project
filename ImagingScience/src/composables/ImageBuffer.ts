@@ -39,6 +39,9 @@ export class ImageBuffer {
     const newWidth = window.innerWidth * 0.9;
     const newHeight = window.innerHeight * 0.9;
 
+    this.setCanvasDimensions(newHeight,newWidth);
+  }
+  public setCanvasDimensions(newHeight:number, newWidth: number) {
     this.width = Math.floor(newWidth);
     this.height = Math.floor(newHeight);
     this.canvas.setDimensions({

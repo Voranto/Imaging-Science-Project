@@ -5,7 +5,7 @@ import { ref, onMounted, onUnmounted, useTemplateRef,shallowRef , type ShallowRe
 import { Canvas, Rect, FabricImage, PencilBrush, Circle, FabricObject, ActiveSelection } from 'fabric'; 
 import { ImageBuffer, getObjectGrayscale } from '../composables/ImageBuffer.ts'
 import { getFFT, getDCT, getDWT } from '../composables/transform/useTransforms.ts'
-import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection } from '../composables/filters/useFilter.ts'
+import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection, getCornerTomasi } from '../composables/filters/useFilter.ts'
 import { useImageBufferState } from '../composables/useImageBufferState.ts';
 import Toolbar from './Toolbar.vue';
 import { applyUniformNoise, applyGaussianNoise, applyMultiplicativeUniformNoise, applyMultiplicativeGaussianNoise, applyImpulseNoise } from '@/composables/noise/applyNoise.ts';
@@ -282,6 +282,7 @@ const handleFilter = (type: string) => {
   if (type === 'highpass') getHighpassFilter();
   if (type === 'lowpass') getLowpassFilter();
   if (type === 'gamma') getGammaCorrection();
+  if (type === 'tomasi') getCornerTomasi();
 };
 const handleAddNoise = (type: string) => {
   if (type === 'uniform') applyUniformNoise();

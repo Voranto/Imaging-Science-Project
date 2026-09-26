@@ -213,6 +213,8 @@ onUnmounted(() => {
         <h4>Edge Detectors</h4>
         <button @click="handleFilter('simple-edge')">Simple Edge</button>
         <button @click="handleFilter('canny')">Canny Edge</button>
+        <h4>Corner Detectors</h4>
+        <button @click="handleFilter('tomasi')">Tomasi/Kanade</button>
         <h4>Frequency Filters</h4>
         <button @click="handleFilter('highpass')">Highpass Filter</button>
         <button @click="handleFilter('lowpass')">Lowpass Filter</button>

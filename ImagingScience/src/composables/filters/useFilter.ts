@@ -7,6 +7,7 @@ import { Highpass } from './Highpass.ts';
 import { Lowpass } from './Lowpass.ts';
 import { SimpleEdges } from './SimpleEdges.ts';
 import { GammaCorrection } from './GammaCorrection.ts';
+import { Corner } from './Corner.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
@@ -18,6 +19,8 @@ const highpassInstance = new Highpass();
 const lowpassInstance = new Lowpass();
 const simpleEdgeInstance = new SimpleEdges();
 const gammaCorrectionInstance = new GammaCorrection();
+const cornerTomasiInstance = new Corner("first","tomasi");
+
 
 export function getSimpleEdges() {
     simpleEdgeInstance.applyFilter();
@@ -34,6 +37,9 @@ export function getLowpassFilter() {
 }
 export function getGammaCorrection() {
     gammaCorrectionInstance.applyFilter();
+}
+export function getCornerTomasi(){
+    cornerTomasiInstance.applyFilter();
 }
 
 export function updateImageTransform() {
@@ -60,3 +66,12 @@ export function changeFilterType(mode: string) {
         filterType.value = mode;
     }
 }
+export function updateCurrentFilter() {
+    const type = getFilterType();
+  if (type === 'simpleEdge') getSimpleEdges();
+  if (type === 'canny') getCannys();
+  if (type === 'highpass') getHighpassFilter();
+  if (type === 'lowpass') getLowpassFilter();
+  if (type === 'gammaCorrection') getGammaCorrection();
+  if (type === 'cornerTomasi') getCornerTomasi();
+};

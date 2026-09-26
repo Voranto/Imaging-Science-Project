@@ -12,6 +12,7 @@ dependencies = [
     "fastapi[standard]>=0.141.1",
     "pywavelet>=0.2.10",
     "pywavelets>=1.10.0",
+    "structure-tensor>=0.3.4",
 ]
 
 [project.scripts]

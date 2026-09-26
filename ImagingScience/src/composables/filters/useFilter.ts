@@ -25,7 +25,6 @@ const cornerHarrisInstance = new Corner("first", "harris")
 
 export function getSimpleEdges() {
     simpleEdgeInstance.applyFilter();
-    console.log(getFilterType());
 }
 export function getCannys() {
     cannyInstance.applyFilter();

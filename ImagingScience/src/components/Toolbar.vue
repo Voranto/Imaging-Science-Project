@@ -235,7 +235,7 @@ onUnmounted(() => {
             <button @click="handleFilter('lowpass')" class="btn-item">Lowpass Filter</button>
           </div>
         </CollapsibleToolbarItem>
-        <CollapsibleToolbarItem title="Morphological Filters" :isOpen="activeSection === 'Morphological Filters'" @toggle="toggleSection('Morphological Filters')">
+        <CollapsibleToolbarItem title="Nonlinear Filters" :isOpen="activeSection === 'Nonlinear Filters'" @toggle="toggleSection('Nonlinear Filters')">
           <div class="button-grid">
             <button @click="handleFilter('dilation')" class="btn-item">Dilation</button>
             <button @click="handleFilter('erosion')" class="btn-item">Erosion</button>

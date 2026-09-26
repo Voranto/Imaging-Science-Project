@@ -2,7 +2,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection } from '../composables/filters.ts'
+import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection } from '../composables/filters/useFilter.ts'
 
 const thresholdSimpleEdge = ref(50)
 const thresholdCannyWeak = ref(50)
@@ -18,19 +18,19 @@ const gammaCorrectionValue = ref(1.0)
         <button @click="filterRequested=false" >Close </button>
         <select name="filterType" id="filterType" style="display: none;">
           <option value="none" selected="selected">none</option>
-          <option value="simple_edge">simple_edge</option>
-          <option value="cannys_edge">cannys_edge</option>
+          <option value="simpleEdge">simpleEdge</option>
+          <option value="cannys">cannys</option>
           <option value="highpass">highpass</option>
           <option value="lowpass">lowpass</option>
           <option value="gammaCorrection">gammaCorrection</option>
         </select>
-        <div v-show="getFilterType() == 'simple_edge'">
+        <div v-show="getFilterType() == 'simpleEdge'">
             Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
             <span class="threshold-value">{{ thresholdSimpleEdge }}</span>
             <label>Apply Gaussian Smoothing</label><input type="checkbox" id="applyGaussianSimpleEdges" @change="getSimpleEdges" checked>
         </div>
         
-        <div v-show="getFilterType() == 'cannys_edge'">
+        <div v-show="getFilterType() == 'cannys'">
             Weak Threshold: <input type="range" v-model.number="thresholdCannyWeak" @change="getCannys" id="thresholdCannyWeak" min="0" max="250">
             <span class="threshold-value">{{ thresholdCannyWeak }}</span>
             

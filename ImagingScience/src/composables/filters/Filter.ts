@@ -2,19 +2,19 @@ import { ref, type Ref, useTemplateRef } from 'vue';
 import axios, {type AxiosResponse, AxiosHeaders} from 'axios';
 import { Canvas, FabricImage, FabricObject } from 'fabric'
 import { useImageBufferState } from '../useImageBufferState.ts';
-import { transformImageSrc, getTransformType, changeTransformType, transformRequested  } from './useTransforms.ts';
+import { filterImageSrc, filterRequested, getFilterType, changeFilterType  } from './useFilter.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 var canvas = imageBuffer.value?.canvas;
 
 export var imageID = ref("");
 
-export abstract class  Transform {
+export abstract class  Filter {
     abstract baseURL : string;
-    abstract transformType : TransformType;
+    abstract filterType : FilterType;
     activeObject : FabricObject | undefined;
 
-    public async applyTransform() : Promise<void> {
+    public async applyFilter() : Promise<void> {
         this.initializeCanvas();
         if (!canvas) return;
 
@@ -25,30 +25,14 @@ export abstract class  Transform {
         const height = Math.floor(canvas.height);
 
         // Set the transform type in TransformRender to its appropiate type
-        changeTransformType(this.transformType.toString());
+        changeFilterType(this.filterType.toString());
 
         const grayArray = this.getGrayscaleArray();
-            
-
-        await this.requestTransform(height, width, grayArray);
+        
+        await this.requestFilter(height, width, grayArray);
 
         this.retrieveActiveObject();
     }
-
-    public async applyInverse() : Promise<void> {
-        try {
-            const response = await axios.post<Blob>(this.baseURL + "/inverse/grayscale", {},{
-            params: { image_id: imageID.value },
-            responseType: 'blob',
-            });
-            this.hideTransformContainer();
-
-            await this.projectResultOnMainCanvas(response);
-        } catch (error) {
-            console.error('Inverse computation failed:', error);
-        }
-    }
-
     private async storeActiveObject() {
         if(!canvas) return;
 
@@ -73,20 +57,15 @@ export abstract class  Transform {
         return arr;
     }
 
-    private async requestTransform(height: number, width: number, grayArray : Float32Array<any>) {
+    private async requestFilter(height: number, width: number, grayArray : Float32Array<any>) {
          try {
             
-            const response = await axios.post(this.baseURL + "/grayscale", grayArray, {
+            const response = await axios.post(this.baseURL, grayArray, {
             headers: this.getHeaders(height, width),
             responseType: 'blob',
             });
-            const id = response.headers['x-image-id'];
-            if (!id) {
-                console.error("Transform did not return an imageID");
-            }
-            imageID.value = id;
 
-            this.visibilizeTransformContainer();
+            this.visibilizeFilterContainer();
             
             await this.renderImageResult(response);
             
@@ -114,35 +93,21 @@ export abstract class  Transform {
         canvas = imageBuffer.value?.canvas;
     }
 
-    private async projectResultOnMainCanvas(response: AxiosResponse<any, Float32Array>) {
+    private async renderImageResult(response: AxiosResponse<any, Float32Array>) {
         const newImageUrl = URL.createObjectURL(response.data);
-
-            if (imageBuffer && imageBuffer.value){
-                const canvas = imageBuffer.value.canvas;
-
-                canvas.clear();
-                canvas.backgroundColor = "white";
-
-                const img = await FabricImage.fromURL(newImageUrl);
-                img.set({
-                    customType: "image",
-                    width: canvas!.width,
-                    height: canvas!.height,
-                    
-                    left: 0,
-                    top: 0
-                });
-                img.set("originX", "top");
-                img.set("originY", "left");
-                canvas.add(img);
-                canvas.requestRenderAll();
-                imageBuffer.value.syncFloatBuffer();
-            }
-            URL.revokeObjectURL(newImageUrl);
+        filterImageSrc.value = newImageUrl
     }
 
-    public async renderTransformToCanvas() {
-        if (getTransformType() === "none") return;
+    private async visibilizeFilterContainer() {
+        filterRequested.value = true;
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+    private async hideFilterContainer() {
+        filterRequested.value = false;
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+    public async renderFilterToCanvas() {
+        if (getFilterType() === "none") return;
         const height = imageBuffer.value?.height;
         const width = imageBuffer.value?.width;
         if (!height || !width) return;
@@ -167,23 +132,8 @@ export abstract class  Transform {
 
             imageBuffer.value?.syncFloatBuffer();
         };
-        this.hideTransformContainer();
+        this.hideFilterContainer();
     }
-
-    private async renderImageResult(response: AxiosResponse<any, Float32Array>) {
-        const newImageUrl = URL.createObjectURL(response.data);
-        transformImageSrc.value = newImageUrl
-    }
-
-    private async visibilizeTransformContainer() {
-        transformRequested.value = true;
-        await new Promise((resolve) => requestAnimationFrame(resolve));
-    }
-    private async hideTransformContainer() {
-        transformRequested.value = false;
-        await new Promise((resolve) => requestAnimationFrame(resolve));
-    }
-
     private getImageSrc() {
         const imageElement = document.getElementById("transformImage") as HTMLImageElement;
         return imageElement.src;
@@ -191,9 +141,10 @@ export abstract class  Transform {
 
     public abstract getParameters() : Array<[string, string]>;
 }
-export enum TransformType {
-    fft = "fft",
-    dwt = "dwt",
-    dct = "dct"
+export enum FilterType {
+    simpleEdge = "simpleEdge",
+    cannys = "cannys",
+    highpass = "highpass",
+    lowpass = "lowpass",
+    gammaCorrection = "gammaCorrection",
 }
-

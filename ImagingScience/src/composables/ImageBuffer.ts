@@ -23,7 +23,10 @@ export class ImageBuffer {
     this.canvas.on('object:added', () => this.syncFloatBuffer());
     this.canvas.on('object:removed', () => this.syncFloatBuffer());
   }
-  public syncFloatBuffer() {
+  public async syncFloatBuffer() {
+    // Have to wait before syncing float buffer, to avoid adding and then syncing
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
     this.floatBuffer.fill(1.0);
 
     const objects = this.canvas.getObjects();

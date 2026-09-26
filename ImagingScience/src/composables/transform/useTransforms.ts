@@ -5,11 +5,12 @@ import { FFT } from './FFT.ts'
 import { DCT } from './DCT.ts'
 import { DWT } from './DWT.ts'
 import { useImageBufferState } from '../useImageBufferState.ts';
+import { TransformType } from './transform.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
 export const transformRequested : Ref<boolean> = ref(false);
-export const transformCanvas = ref<Canvas | null>(null);
+export var transformImageSrc : Ref<string> = ref("");
 
 const instanceFFT = new FFT();
 const instanceDCT = new DCT();
@@ -40,6 +41,20 @@ export function updateImageTransform() {
     transformRequested.value =false; 
 }
 
+export function renderTransformToCanvas() {
+    const transformType = getTransformType();
+    console.log(transformType);
+    if (transformType == TransformType.fft) {
+        instanceFFT.renderTransformToCanvas();
+    }
+    else if (transformType == TransformType.dct) {
+        instanceDCT.renderTransformToCanvas();
+    }
+    else if (transformType == TransformType.dwt) {
+        instanceDWT.renderTransformToCanvas();
+    }
+}
+
 export function getTransformType() {
     const transformType : HTMLSelectElement | null = document.getElementById("transformType") as HTMLSelectElement;
     if (transformType) {
@@ -48,7 +63,7 @@ export function getTransformType() {
     return null;
 }
 
-function changeTransformType(mode: string) {
+export function changeTransformType(mode: string) {
     const transformType : HTMLSelectElement | null = document.getElementById("transformType") as HTMLSelectElement;
     if (transformType) {
         transformType.value = mode;

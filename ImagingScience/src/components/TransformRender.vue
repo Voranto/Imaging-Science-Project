@@ -2,8 +2,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import {transformRequested , updateImageTransform, getTransformType, renderTransformToCanvas} from '../composables/transform/transform.ts'
-import {getDWT, getIFFT, getIDCT} from '../composables/transform/useTransforms.ts'
+import { transformRequested } from '@/composables/transform/useTransforms';
+import {getDWT, getIFFT, getIDCT , transformImageSrc, updateImageTransform, getTransformType, renderTransformToCanvas} from '../composables/transform/useTransforms.ts'
 
 const dwtLevel = ref(1);
 
@@ -29,7 +29,7 @@ const dwtLevel = ref(1);
             Level: <input type="range" v-model.number="dwtLevel" @change="getDWT" id="dwtLevel" min="0" max="10">
             <span class="threshold-value">{{ dwtLevel }}</span>
         </div>
-        <canvas v-show="transformRequested" ref="transformImageCanvas" style="border:1px solid #000000" id="transformImageCanvas"></canvas>
+        <img v-show="transformRequested" :src="transformImageSrc" id="transformImage">
   <div class="overlay-content">
     
   </div>

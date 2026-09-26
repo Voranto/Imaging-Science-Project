@@ -26,9 +26,9 @@ async def compute_lowpass_filter(request: Request):
 
     body_bytes = await request.body()
 
-    img_array = np.frombuffer(body_bytes, dtype=np.uint8).reshape((x_image_height, x_image_width))
+    img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
 
-    img_array = img_array.astype(np.float32)
+    img_array = img_array * 255
 
     img_array = gaussian_filter(img_array, sigma=sigma)   
 
@@ -52,9 +52,9 @@ async def compute_highpass_filter(request: Request):
 
     body_bytes = await request.body()
 
-    img_array = np.frombuffer(body_bytes, dtype=np.uint8).reshape((x_image_height, x_image_width))
-
-    img_array = img_array.astype(np.float32)
+    img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
+    
+    img_array = img_array * 255
 
     highpass =  img_array - gaussian_filter(img_array, sigma=sigma)   
 
@@ -87,9 +87,9 @@ async def compute_gamma_correction(request: Request):
     
         body_bytes = await request.body()
     
-        img_array = np.frombuffer(body_bytes, dtype=np.uint8).reshape((x_image_height, x_image_width))
-    
-        img_array = img_array.astype(np.float32)
+        img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
+        
+        img_array = img_array * 255
     
         gamma_corrected = 255.0 * (img_array / 255.0) ** gamma
 

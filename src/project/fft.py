@@ -53,18 +53,15 @@ async def compute_fft_grayscale(request: Request):
 @router.post("/inverse/grayscale")
 async def compute_inverse_fft_grayscale(image_id : str):
     # Returns a 2 dimensional array of the Image reversing the FFT
-    print(image_id, image_id in fft_cache)
     if image_id not in fft_cache:
         raise HTTPException(
             status_code=404,
             detail="Session expired or Image ID not found in cache",
         )
     fft_shifted= fft_cache[image_id]
-    print(fft_shifted)
     image_array = np.fft.ifft2(np.fft.ifftshift(fft_shifted))
     magnitude = np.abs(image_array)
     
-    print(magnitude)
     final_bytes = np.clip(magnitude, 0, 255).astype(np.uint8)
     res_img = Image.fromarray(final_bytes)
     buf = io.BytesIO()

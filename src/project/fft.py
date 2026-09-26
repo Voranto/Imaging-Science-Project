@@ -30,7 +30,7 @@ async def compute_fft_grayscale(request: Request):
     
     img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
     
-    fft_shifted = np.fft.fftshift(np.fft.fft2(img_array))
+    fft_shifted = np.fft.fftshift(np.fft.fft2(img_array * 255))
 
     # Store true FFT matrix
     image_id = str(uuid.uuid4())

@@ -29,7 +29,7 @@ async def compute_dct_grayscale(request: Request):
 
     img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
     print(img_array)
-    dwt = pywt.wavedec2(img_array, "haar", level=levels)
+    dwt = pywt.wavedec2(img_array * 255, "haar", level=levels, mode="symmetric")
     
     # Normalize first, then convert coefficients to array
     cA_3 = dwt[0]

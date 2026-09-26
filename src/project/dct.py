@@ -31,7 +31,7 @@ async def compute_dct_grayscale(request: Request):
 
     img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
     
-    dct = dctn(img_array , type=2, norm='ortho')
+    dct = dctn(img_array * 255 , type=2, norm='ortho')
     # Store true DCT matrix
     image_id = str(uuid.uuid4())
     dct_cache[image_id] = dct

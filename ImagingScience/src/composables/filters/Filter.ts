@@ -148,4 +148,6 @@ export enum FilterType {
     lowpass = "lowpass",
     gammaCorrection = "gammaCorrection",
     cornerTomasi = "cornerTomasi",
+    cornerRohr = "cornerRohr",
+    cornerHarris = "cornerHarris",
 }

@@ -2,6 +2,8 @@ import { Filter, FilterType } from "./Filter";
 
 const FILTER_TYPE_MAP: Record<string, FilterType> = {
   tomasi: FilterType.cornerTomasi,
+  harris: FilterType.cornerHarris,
+  rohr: FilterType.cornerRohr,
 };
 
 export class Corner extends Filter {

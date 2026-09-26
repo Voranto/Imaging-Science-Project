@@ -20,7 +20,8 @@ const lowpassInstance = new Lowpass();
 const simpleEdgeInstance = new SimpleEdges();
 const gammaCorrectionInstance = new GammaCorrection();
 const cornerTomasiInstance = new Corner("first","tomasi");
-
+const cornerRohrInstance = new Corner("first", "rohr")
+const cornerHarrisInstance = new Corner("first", "harris")
 
 export function getSimpleEdges() {
     simpleEdgeInstance.applyFilter();
@@ -42,13 +43,17 @@ export function getCornerTomasi(){
     cornerTomasiInstance.applyFilter();
 }
 
+export function getCornerRohr(){
+    cornerRohrInstance.applyFilter();
+}
+
+export function getCornerHarris(){
+    cornerHarrisInstance.applyFilter();
+}
+
 export function updateImageTransform() {
     changeFilterType("none")
     filterRequested.value =false; 
-}
-
-export function renderTransformToCanvas() {
-
 }
 
 export function getFilterType() {
@@ -74,4 +79,6 @@ export function updateCurrentFilter() {
   if (type === 'lowpass') getLowpassFilter();
   if (type === 'gammaCorrection') getGammaCorrection();
   if (type === 'cornerTomasi') getCornerTomasi();
+  if (type === 'cornerRohr') getCornerRohr();
+  if (type === 'cornerHarris') getCornerHarris();
 };

@@ -2,7 +2,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection, getCornerTomasi, updateCurrentFilter } from '../composables/filters/useFilter.ts'
+import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection, updateCurrentFilter } from '../composables/filters/useFilter.ts'
 
 const thresholdSimpleEdge = ref(50)
 const thresholdCannyWeak = ref(50)
@@ -28,6 +28,8 @@ const cornerThreshold = ref(20);
           <option value="lowpass">lowpass</option>
           <option value="gammaCorrection">gammaCorrection</option>
           <option value="cornerTomasi">cornerTomasi</option>
+          <option value="cornerRohr">cornerRohr</option>
+          <option value="cornerHarris">cornerHarris</option>
         </select>
         <div v-show="getFilterType() == 'simpleEdge'">
             Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
@@ -60,7 +62,7 @@ const cornerThreshold = ref(20);
             <span class="threshold-value">{{ cornerSigma }}</span>
             Rho: <input type="range" v-model.number="cornerRho" @change="updateCurrentFilter" id="cornerRho" min="{{ cornerRho }}" max="20" step="0.1">
             <span class="threshold-value">{{ cornerRho }}</span>
-            Threshold: <input type="range" v-model.number="cornerThreshold" @change="updateCurrentFilter" id="cornerThreshold" min="0.1" max="150" step="0.1">
+            Threshold: <input type="range" v-model.number="cornerThreshold" @change="updateCurrentFilter" id="cornerThreshold" min="0.1" max="250" step="0.1">
             <span class="threshold-value">{{ cornerThreshold }}</span>
         </div>
 

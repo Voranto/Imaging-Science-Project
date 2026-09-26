@@ -60,13 +60,12 @@ async def compute_inverse_fft_grayscale(image_id : str):
             detail="Session expired or Image ID not found in cache",
         )
     fft_shifted= fft_cache[image_id]
-    
+    print(fft_shifted)
     image_array = np.fft.ifft2(np.fft.ifftshift(fft_shifted))
     magnitude = np.abs(image_array)
-
-    scaled = magnitude * 255.0
-
-    final_bytes = np.clip(scaled, 0, 255).astype(np.uint8)
+    
+    print(magnitude)
+    final_bytes = np.clip(magnitude, 0, 255).astype(np.uint8)
     res_img = Image.fromarray(final_bytes)
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")

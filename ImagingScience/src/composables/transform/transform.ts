@@ -128,7 +128,6 @@ export abstract class  Transform {
                     customType: "image",
                     width: canvas!.width,
                     height: canvas!.height,
-                    
                     left: 0,
                     top: 0
                 });

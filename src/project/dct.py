@@ -63,9 +63,8 @@ async def compute_inverse_dct_grayscale(image_id : str):
     
     image_array = idctn(dct, type=2, norm="ortho")
 
-    scaled = image_array * 255.0
 
-    final_bytes = np.clip(scaled, 0, 255).astype(np.uint8)
+    final_bytes = np.clip(image_array, 0, 255).astype(np.uint8)
     res_img = Image.fromarray(final_bytes)
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")

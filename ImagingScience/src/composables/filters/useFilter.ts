@@ -115,8 +115,9 @@ export const handleFilter = (type: string) => {
   if (type === 'highpass') getHighpassFilter();
   if (type === 'lowpass') getLowpassFilter();
   if (type === 'gamma') getGammaCorrection();
-  if (type === 'tomasi') getCornerTomasi();
-  if (type === 'rohr') getCornerRohr();
+  if (type === 'cornerTomasi') getCornerTomasi();
+  if (type === 'cornerRohr') getCornerRohr();
+  if (type === 'cornerHarris') getCornerHarris();
   if (type === 'erosion') getErosion();
   if (type === 'dilation') getDilation();
   if (type === 'opening') getOpening();

@@ -6,6 +6,8 @@ export class ImageBuffer {
     public width: number;
     public height: number;
     public isDrawing: Ref<boolean>;
+    public mean: number;
+    public variance: number;
     
     constructor(canvasElement: HTMLCanvasElement, width: number, height: number) {
     this.width = Math.floor(width);
@@ -16,6 +18,9 @@ export class ImageBuffer {
     this.isDrawing = ref(false);
     this.initEventListeners();
     this.canvas.freeDrawingBrush = new PencilBrush(this.canvas);
+
+    this.mean = 0;
+    this.variance = 0;
   }
 
   private initEventListeners() {
@@ -35,7 +40,28 @@ export class ImageBuffer {
       this.rasterizeObject(obj);
     }
 
+    // Afterwards, compute all the stats
+    this.computeImageStats();
     console.log("Float buffer synchronized with Fabric.js objects.");
+  }
+
+  private computeImageStats() {
+    // Compute both mean and variance
+    var mean = 0;
+    for (var i = 0; i < this.floatBuffer.length; i++ ){
+      mean += this.floatBuffer[i]!;
+    }
+    mean *= 255;
+    mean /= this.floatBuffer.length;
+
+    var variance = 0;
+    for (var i = 0; i < this.floatBuffer.length; i++ ){
+      variance += (this.floatBuffer[i]!*255 - mean)**2;
+    }
+    variance /= this.floatBuffer.length;
+
+    this.mean = mean;
+    this.variance = variance;
   }
 
   public resizeCanvas() {

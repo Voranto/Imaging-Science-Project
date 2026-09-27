@@ -6,7 +6,8 @@ import CollapsibleToolbarItem from './CollapsibleToolbarItem.vue';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
 // Menu visibility state
-const activeMenu = ref<'add' | 'transform' | 'filter' | 'config' | null>(null);
+const activeMenu = ref<'add' | 'transform' | 'filter' | 'config' | 'stats' | null>(null);
+
 
 // Form configurations
 const brushSize = ref(10);
@@ -23,7 +24,7 @@ const impulseNoiseHigh = ref(255);
 const impulseNoiseLow = ref(0);
 const impulseNoiseProbability = ref(20);
 
-const toggleMenu = (menuName: 'add' | 'transform' | 'filter' | 'config') => {
+const toggleMenu = (menuName: 'add' | 'transform' | 'filter' | 'config' | 'stats') => {
   activeMenu.value = activeMenu.value === menuName ? null : menuName;
 };
 
@@ -224,9 +225,9 @@ onUnmounted(() => {
         </CollapsibleToolbarItem>
         <CollapsibleToolbarItem title="Corner Detectors" :isOpen="activeSection === 'Corner Detectors'" @toggle="toggleSection('Corner Detectors')">
           <div class="button-grid">
-            <button @click="handleFilter('tomasi')"  class="btn-item">Tomasi/Kanade</button>
-            <button @click="handleFilter('rohr')"  class="btn-item">Rohr</button>
-            <button @click="handleFilter('harris')" class="btn-item">Harris/Förstner</button>
+            <button @click="handleFilter('cornerTomasi')"  class="btn-item">Tomasi/Kanade</button>
+            <button @click="handleFilter('cornerRohr')"  class="btn-item">Rohr</button>
+            <button @click="handleFilter('cornerHarris')" class="btn-item">Harris/Förstner</button>
           </div>
         </CollapsibleToolbarItem>
         <CollapsibleToolbarItem title="Frequency Filters" :isOpen="activeSection === 'Frequency Filters'" @toggle="toggleSection('Frequency Filters')">
@@ -271,6 +272,13 @@ onUnmounted(() => {
         <button @click="$emit('fitCanvasToScreen'); activeMenu = null">Fit Canvas to Screen</button>
         <button class="danger" @click="$emit('clearCanvas'); activeMenu = null">Clear Entire Canvas</button>
       </div>
+    </div>
+    <div class="menu-group">
+      <button @click="toggleMenu('stats')">Stats ▾</button>
+      <div v-show="activeMenu === 'stats'" class="dropdown-panel">
+        Mean: <span id="mean">{{ imageBuffer?.mean }}</span>
+        Variance: <span id="variance"> {{imageBuffer?.variance}}</span>
+     </div>
     </div>
   </div>
 </template>

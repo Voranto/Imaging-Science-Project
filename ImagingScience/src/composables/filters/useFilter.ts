@@ -10,6 +10,7 @@ import { GammaCorrection } from './GammaCorrection.ts';
 import { Corner } from './Corner.ts';
 import { Morphological } from './Morphological.ts';
 import { Median } from './Median.ts';
+import { WaveletShrinkage } from './WaveletShrinkage.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
@@ -34,7 +35,7 @@ const whiteTopHatInstance = new Morphological("whiteTopHat");
 const blackTopHatInstance = new Morphological("blackTopHat");
 const selfdualTopHatInstance = new Morphological("selfdualTopHat");
 const medianInstance = new Median();
-
+const waveletShrinkage = new WaveletShrinkage();
 
 export function getSimpleEdges() {
     simpleEdgeInstance.applyFilter();
@@ -88,6 +89,9 @@ export function getSelfdualTopHat(){
 export function getMedian() {
     medianInstance.applyFilter();
 }
+export function getWaveletShrinkage() {
+    waveletShrinkage.applyFilter();
+}
 
 export function updateImageTransform() {
     changeFilterType("none")
@@ -126,6 +130,7 @@ export const handleFilter = (type: string) => {
   if (type === 'blackTopHat') getBlackTopHat();
   if (type === 'selfdualTopHat') getSelfdualTopHat();
   if (type === 'median') getMedian();
+  if (type === "waveletShrinkage") getWaveletShrinkage();
 };
 export function updateCurrentFilter() {
     const type = getFilterType();

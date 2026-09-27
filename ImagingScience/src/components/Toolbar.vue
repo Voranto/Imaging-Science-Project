@@ -246,6 +246,7 @@ onUnmounted(() => {
             <button @click="handleFilter('blackTopHat')" class="btn-item">Black Top Hat</button>
             <button @click="handleFilter('selfdualTopHat')" class="btn-item">Selfdual Top Hat</button>
             <button @click="handleFilter('median')" class="btn-item">Median Filter</button>
+            <button @click="handleFilter('waveletShrinkage')" class="btn-item">Wavelet Shrinkage</button>
           </div>
         </CollapsibleToolbarItem>
         <CollapsibleToolbarItem title="Corrections" :isOpen="activeSection === 'Corrections'" @toggle="toggleSection('Corrections')">

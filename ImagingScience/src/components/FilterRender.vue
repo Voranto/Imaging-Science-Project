@@ -20,6 +20,9 @@ const cornerThreshold = ref(20);
 const morphologicalFilters = ["dilation","erosion","opening","closing","whiteTopHat","blackTopHat","selfdualTopHat","medianFilter",]
 const morphologicalRadius = ref(1);
 const medianRadius = ref(1);
+
+const waveletShrinkageMode = ref("hard");
+const waveletShrinkageThreshold = ref(1);
 </script>
 <template>
     <div class="overlay-screen">
@@ -42,6 +45,7 @@ const medianRadius = ref(1);
           <option value="blackTopHat">blackTopHat</option>
           <option value="selfdualTopHat">selfdualTopHat</option>
           <option value="median">median</option>
+          <option value="waveletShrinkage">waveletShrinkage</option>
         </select>
         <div v-show="getFilterType() == 'simpleEdge'">
             Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
@@ -90,7 +94,15 @@ const medianRadius = ref(1);
             Radius: <input type="range" v-model.number="medianRadius" @change="updateCurrentFilter" id="medianRadius" min="0" max="25" step="1">
             <span class="threshold-value">{{ medianRadius }}</span>
         </div>
-
+        <div v-show="getFilterType() === 'waveletShrinkage'">
+            Threshold: <input type="range" v-model.number="waveletShrinkageThreshold" @change="updateCurrentFilter" id="waveletShrinkageThreshold" min="0" max="100" step="1">
+            <span class="threshold-value">{{ waveletShrinkageThreshold }}</span>
+            <select v-model="waveletShrinkageMode" id="waveletShrinkageMode">
+                <option value="hard">hard</option>
+                <option value="soft">soft</option>
+                <option value="garrote">garrote</option>
+            </select>
+        </div>
         <img :src="filterImageSrc" id="filterImage">
     <div class="overlay-content">
     

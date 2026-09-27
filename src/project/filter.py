@@ -8,6 +8,9 @@ import math
 from enum import Enum
 from scipy.signal import medfilt2d
 import cv2
+import pywt
+
+
 router = APIRouter(
     prefix="/filter",
     tags=["General Filters"]
@@ -125,3 +128,39 @@ async def compute_median_filter(request: Request):
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")
     return Response(content=buf.getvalue(), media_type="image/png")
+
+
+@router.post("/wavelet")
+async def compute_wavelet_shrinkage(request: Request):
+    try:
+        x_image_width = int(request.headers.get("x-image-width"))
+        x_image_height = int(request.headers.get("x-image-height"))
+        shrinkageType = request.headers.get("type")
+        t_1 = float(request.headers.get("threshold"))
+    except (TypeError, ValueError):
+            raise HTTPException(
+                status_code=422, 
+                detail="Missing or invalid headers"
+            )
+    print(shrinkageType)
+    body_bytes = await request.body()
+
+    img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
+
+    dwt = pywt.wavedec2(img_array * 255, "haar", mode="symmetric")
+    cA = dwt[0]
+    details = dwt[1:]
+    thresholded_details = []
+    for cH, cV, cD in details:
+        cH_t = pywt.threshold(cH, t_1, mode=shrinkageType)
+        cV_t = pywt.threshold(cV, t_1, mode=shrinkageType)
+        cD_t = pywt.threshold(cD, t_1, mode=shrinkageType)
+        thresholded_details.append((cH_t, cV_t, cD_t))
+    dwt_thresholded = [cA] + thresholded_details
+    img_array = pywt.waverec2(dwt_thresholded, "haar", mode="symmetric")
+
+    res_img = Image.fromarray(img_array.astype(np.uint8))
+    buf = io.BytesIO()
+    res_img.save(buf, format="PNG")
+    return Response(content=buf.getvalue(), media_type="image/png")
+

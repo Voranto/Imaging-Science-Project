@@ -5,7 +5,7 @@ import { ref, onMounted, onUnmounted, useTemplateRef,shallowRef , type ShallowRe
 import { Canvas, Rect, FabricImage, PencilBrush, Circle, FabricObject, ActiveSelection } from 'fabric'; 
 import { ImageBuffer, getObjectGrayscale } from '../composables/ImageBuffer.ts'
 import { getFFT, getDCT, getDWT } from '../composables/transform/useTransforms.ts'
-import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection, getCornerTomasi, getCornerRohr, getCornerHarris } from '../composables/filters/useFilter.ts'
+import { getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection, getCornerTomasi, getCornerRohr, getCornerHarris, getErosion, getDilation, getOpening, getClosing, getWhiteTopHat, getBlackTopHat, getSelfdualTopHat, handleFilter } from '../composables/filters/useFilter.ts'
 import { useImageBufferState } from '../composables/useImageBufferState.ts';
 import Toolbar from './Toolbar.vue';
 import { applyUniformNoise, applyGaussianNoise, applyMultiplicativeUniformNoise, applyMultiplicativeGaussianNoise, applyImpulseNoise } from '@/composables/noise/applyNoise.ts';
@@ -208,38 +208,29 @@ const copyObject = async () => {
   const activeObject = imageBuffer.value!.canvas.getActiveObject();
   if (!activeObject) return;
 
-  clipboard = await activeObject.clone();
+  clipboard = await activeObject.clone(['customType']);
+  console.log((activeObject as any).customType);
 };
 
 const pasteObject = async () => {
   const canvas = imageBuffer.value?.canvas;
   if (!canvas || !clipboard) return;
 
-  const clonedObj = await clipboard.clone();
-
+  const clonedObj = await clipboard.clone(['customType']);
+  console.log((clonedObj as any).customType)
   canvas.discardActiveObject();
 
   clonedObj.set({
     left: clonedObj.left + 20,
     top: clonedObj.top + 20,
     evented: true,
+    customType: (clonedObj as any).customType
   });
-
-  if (clonedObj.type === 'activeSelection') {
-    const selection = clonedObj as ActiveSelection;
-    
-    selection.canvas = canvas;
-    selection.forEachObject((obj) => {
-      canvas.add(obj);
-    });
-    
-    selection.setCoords();
-  } else {
-    imageBuffer.value!.canvas.add(clonedObj);
-  }
+  imageBuffer.value!.canvas.add(clonedObj);
 
   canvas.setActiveObject(clonedObj);
   canvas.renderAll();
+  imageBuffer.value?.syncFloatBuffer();
 };
 
 
@@ -260,6 +251,7 @@ window.addEventListener('keydown', (e) => {
   }
   if (isCmdOrCtrl && e.key === 'v') {
     e.preventDefault();
+    e.stopPropagation();
     pasteObject();
   }
 });
@@ -274,17 +266,6 @@ const handleTransform = (type: string) => {
   if (type === 'fft') getFFT();
   if (type === 'dct') getDCT();
   if (type === 'dwt') getDWT();
-};
-
-const handleFilter = (type: string) => {
-  if (type === 'simple-edge') getSimpleEdges();
-  if (type === 'canny') getCannys();
-  if (type === 'highpass') getHighpassFilter();
-  if (type === 'lowpass') getLowpassFilter();
-  if (type === 'gamma') getGammaCorrection();
-  if (type === 'tomasi') getCornerTomasi();
-  if (type === 'rohr') getCornerRohr();
-  if (type === 'harris') getCornerHarris();
 };
 const handleAddNoise = (type: string) => {
   if (type === 'uniform') applyUniformNoise();

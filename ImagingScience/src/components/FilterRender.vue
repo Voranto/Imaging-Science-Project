@@ -19,6 +19,7 @@ const cornerThreshold = ref(20);
 
 const morphologicalFilters = ["dilation","erosion","opening","closing","whiteTopHat","blackTopHat","selfdualTopHat","medianFilter",]
 const morphologicalRadius = ref(1);
+const medianRadius = ref(1);
 </script>
 <template>
     <div class="overlay-screen">
@@ -84,6 +85,10 @@ const morphologicalRadius = ref(1);
                 <option value="circle">Circle</option>
                 <option value="square">Square</option>
             </select>
+        </div>
+        <div v-show="getFilterType() === 'median'">
+            Radius: <input type="range" v-model.number="medianRadius" @change="updateCurrentFilter" id="medianRadius" min="0" max="25" step="1">
+            <span class="threshold-value">{{ medianRadius }}</span>
         </div>
 
         <img :src="filterImageSrc" id="filterImage">

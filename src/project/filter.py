@@ -6,7 +6,8 @@ import io
 from scipy.ndimage import convolve, gaussian_filter
 import math
 from enum import Enum
-
+from scipy.signal import medfilt2d
+import cv2
 router = APIRouter(
     prefix="/filter",
     tags=["General Filters"]
@@ -74,7 +75,6 @@ async def compute_highpass_filter(request: Request):
 
 @router.post("/gamma")
 async def compute_gamma_correction(request: Request):
-     # Returns the max value of the image gradient (used to adjust the threshold input)
         try:
             x_image_width = int(request.headers.get("x-image-width"))
             x_image_height = int(request.headers.get("x-image-height"))
@@ -99,3 +99,29 @@ async def compute_gamma_correction(request: Request):
         buf = io.BytesIO()
         res_img.save(buf, format="PNG")
         return Response(content=buf.getvalue(), media_type="image/png")
+
+@router.post("/median")
+async def compute_median_filter(request: Request):
+    # Returns the max value of the image gradient (used to adjust the threshold input)
+    try:
+        x_image_width = int(request.headers.get("x-image-width"))
+        x_image_height = int(request.headers.get("x-image-height"))
+        radius = int(request.headers.get("radius"))
+    except (TypeError, ValueError):
+            raise HTTPException(
+                status_code=422, 
+                detail="Missing or invalid headers"
+            )
+
+    body_bytes = await request.body()
+
+    img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
+    img_uint8 = np.clip(img_array * 255.0, 0, 255).astype(np.uint8)
+
+    kernel_width = 2*radius + 1
+    median_filtered = cv2.medianBlur(img_uint8, kernel_width)
+    
+    res_img = Image.fromarray(median_filtered.astype(np.uint8))
+    buf = io.BytesIO()
+    res_img.save(buf, format="PNG")
+    return Response(content=buf.getvalue(), media_type="image/png")

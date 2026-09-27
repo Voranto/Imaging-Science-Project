@@ -9,6 +9,7 @@ import { SimpleEdges } from './SimpleEdges.ts';
 import { GammaCorrection } from './GammaCorrection.ts';
 import { Corner } from './Corner.ts';
 import { Morphological } from './Morphological.ts';
+import { Median } from './Median.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
@@ -31,7 +32,9 @@ const openingInstance = new Morphological("opening");
 const closingInstance = new Morphological("closing");
 const whiteTopHatInstance = new Morphological("whiteTopHat");
 const blackTopHatInstance = new Morphological("blackTopHat");
-const selfdualTopHatInstance = new Morphological("selfDualTopHat");
+const selfdualTopHatInstance = new Morphological("selfdualTopHat");
+const medianInstance = new Median();
+
 
 export function getSimpleEdges() {
     simpleEdgeInstance.applyFilter();
@@ -82,6 +85,9 @@ export function getBlackTopHat(){
 export function getSelfdualTopHat(){
     selfdualTopHatInstance.applyFilter();
 }
+export function getMedian() {
+    medianInstance.applyFilter();
+}
 
 export function updateImageTransform() {
     changeFilterType("none")
@@ -118,7 +124,7 @@ export const handleFilter = (type: string) => {
   if (type === 'whiteTopHat') getWhiteTopHat();
   if (type === 'blackTopHat') getBlackTopHat();
   if (type === 'selfdualTopHat') getSelfdualTopHat();
-  if (type === 'median') getCornerHarris();
+  if (type === 'median') getMedian();
 };
 export function updateCurrentFilter() {
     const type = getFilterType();

@@ -157,5 +157,5 @@ export enum FilterType {
     whiteTopHat = "whiteTopHat",
     blackTopHat  = "blackTopHat",
     selfdualTopHat = "selfdualTopHat",
-    medianFilter = "medianFilter",
+    median = "median",
 }

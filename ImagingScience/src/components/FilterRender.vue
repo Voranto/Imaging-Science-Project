@@ -16,6 +16,9 @@ const cornerSigma = ref(2);
 const cornerRho = ref(4);
 
 const cornerThreshold = ref(20);
+
+const morphologicalFilters = ["dilation","erosion","opening","closing","whiteTopHat","blackTopHat","selfdualTopHat","medianFilter",]
+const morphologicalRadius = ref(1);
 </script>
 <template>
     <div class="overlay-screen">
@@ -30,6 +33,14 @@ const cornerThreshold = ref(20);
           <option value="cornerTomasi">cornerTomasi</option>
           <option value="cornerRohr">cornerRohr</option>
           <option value="cornerHarris">cornerHarris</option>
+          <option value="dilation">dilation</option>
+          <option value="erosion">erosion</option>
+          <option value="opening">opening</option>
+          <option value="closing">closing</option>
+          <option value="whiteTopHat">whiteTopHat</option>
+          <option value="blackTopHat">blackTopHat</option>
+          <option value="selfdualTopHat">selfdualTopHat</option>
+          <option value="median">median</option>
         </select>
         <div v-show="getFilterType() == 'simpleEdge'">
             Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
@@ -64,6 +75,15 @@ const cornerThreshold = ref(20);
             <span class="threshold-value">{{ cornerRho }}</span>
             Threshold: <input type="range" v-model.number="cornerThreshold" @change="updateCurrentFilter" id="cornerThreshold" min="0.1" max="250" step="0.1">
             <span class="threshold-value">{{ cornerThreshold }}</span>
+        </div>
+        <div v-show="morphologicalFilters.includes(getFilterType())">
+            Radius: <input type="range" v-model.number="morphologicalRadius" @change="updateCurrentFilter" id="morphologicalRadius" min="0" max="25" step="1">
+            <span class="threshold-value">{{ morphologicalRadius }}</span>
+            Mask Type:
+            <select id="morphologicalMaskType" @change="updateCurrentFilter">
+                <option value="circle">Circle</option>
+                <option value="square">Square</option>
+            </select>
         </div>
 
         <img :src="filterImageSrc" id="filterImage">

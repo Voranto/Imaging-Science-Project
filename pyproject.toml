@@ -9,7 +9,9 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "cachetools>=7.2.0",
+    "cv>=1.0.0",
     "fastapi[standard]>=0.141.1",
+    "opencv-python>=5.0.0.93",
     "pywavelet>=0.2.10",
     "pywavelets>=1.10.0",
     "structure-tensor>=0.3.4",

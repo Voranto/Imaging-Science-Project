@@ -8,6 +8,7 @@ import { Lowpass } from './Lowpass.ts';
 import { SimpleEdges } from './SimpleEdges.ts';
 import { GammaCorrection } from './GammaCorrection.ts';
 import { Corner } from './Corner.ts';
+import { Morphological } from './Morphological.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
@@ -19,9 +20,18 @@ const highpassInstance = new Highpass();
 const lowpassInstance = new Lowpass();
 const simpleEdgeInstance = new SimpleEdges();
 const gammaCorrectionInstance = new GammaCorrection();
+
 const cornerTomasiInstance = new Corner("first","tomasi");
 const cornerRohrInstance = new Corner("first", "rohr")
 const cornerHarrisInstance = new Corner("first", "harris")
+
+const dilationInstance = new Morphological("dilation");
+const erosionInstance = new Morphological("erosion");
+const openingInstance = new Morphological("opening");
+const closingInstance = new Morphological("closing");
+const whiteTopHatInstance = new Morphological("whiteTopHat");
+const blackTopHatInstance = new Morphological("blackTopHat");
+const selfdualTopHatInstance = new Morphological("selfDualTopHat");
 
 export function getSimpleEdges() {
     simpleEdgeInstance.applyFilter();
@@ -50,6 +60,29 @@ export function getCornerHarris(){
     cornerHarrisInstance.applyFilter();
 }
 
+export function getDilation(){
+    dilationInstance.applyFilter();
+}
+
+export function getErosion(){
+    erosionInstance.applyFilter();
+}
+export function getOpening(){
+    openingInstance.applyFilter();
+}
+export function getClosing(){
+    closingInstance.applyFilter();
+}
+export function getWhiteTopHat(){
+    whiteTopHatInstance.applyFilter();
+}
+export function getBlackTopHat(){
+    blackTopHatInstance.applyFilter();
+}
+export function getSelfdualTopHat(){
+    selfdualTopHatInstance.applyFilter();
+}
+
 export function updateImageTransform() {
     changeFilterType("none")
     filterRequested.value =false; 
@@ -70,14 +103,25 @@ export function changeFilterType(mode: string) {
         filterType.value = mode;
     }
 }
-export function updateCurrentFilter() {
-    const type = getFilterType();
-  if (type === 'simpleEdge') getSimpleEdges();
+export const handleFilter = (type: string) => {
+  if (type === 'simple-edge') getSimpleEdges();
   if (type === 'canny') getCannys();
   if (type === 'highpass') getHighpassFilter();
   if (type === 'lowpass') getLowpassFilter();
-  if (type === 'gammaCorrection') getGammaCorrection();
-  if (type === 'cornerTomasi') getCornerTomasi();
-  if (type === 'cornerRohr') getCornerRohr();
-  if (type === 'cornerHarris') getCornerHarris();
+  if (type === 'gamma') getGammaCorrection();
+  if (type === 'tomasi') getCornerTomasi();
+  if (type === 'rohr') getCornerRohr();
+  if (type === 'erosion') getErosion();
+  if (type === 'dilation') getDilation();
+  if (type === 'opening') getOpening();
+  if (type === 'closing') getClosing();
+  if (type === 'whiteTopHat') getWhiteTopHat();
+  if (type === 'blackTopHat') getBlackTopHat();
+  if (type === 'selfdualTopHat') getSelfdualTopHat();
+  if (type === 'median') getCornerHarris();
+};
+export function updateCurrentFilter() {
+    const type = getFilterType();
+    if (!type) return;
+    handleFilter(type);
 };

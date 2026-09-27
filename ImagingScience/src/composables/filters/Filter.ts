@@ -150,4 +150,12 @@ export enum FilterType {
     cornerTomasi = "cornerTomasi",
     cornerRohr = "cornerRohr",
     cornerHarris = "cornerHarris",
+    dilation = "dilation",
+    erosion = "erosion",
+    opening = "opening",
+    closing = "closing",
+    whiteTopHat = "whiteTopHat",
+    blackTopHat  = "blackTopHat",
+    selfdualTopHat = "selfdualTopHat",
+    medianFilter = "medianFilter",
 }

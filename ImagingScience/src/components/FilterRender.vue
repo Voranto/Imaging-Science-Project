@@ -26,6 +26,11 @@ const waveletShrinkageThreshold = ref(1);
 
 const bilateralSigmaSpatial = ref(1);
 const bilateralSigmaTonal = ref(1);
+
+const NLMeansRadiusPatch = ref(3);
+const NLMeansRadiusWindow = ref(10);
+const NLMeansStrength = ref(3);
+
 </script>
 <template>
     <div class="overlay-screen">
@@ -117,6 +122,18 @@ const bilateralSigmaTonal = ref(1);
 
             Sigma Tonal: <input type="range" @dragstart.prevent v-model.number="bilateralSigmaTonal" @change="updateCurrentFilter" id="bilateralSigmaTonal" min="0" max="500" step="1">
             <span class="threshold-value">{{ bilateralSigmaTonal }}</span>
+        </div>
+        <div v-show="getFilterType() === 'NLMeans'">
+            Note: Higher Window Size values make the render much slower, so try to avoid changing the bottom two parameters too much
+
+            Filter Strength: <input type="range" v-model.number="NLMeansStrength" @change="updateCurrentFilter" id="NLMeansStrength" min="0" max="100" step="1">
+            <span class="threshold-value">{{ NLMeansStrength }}</span>
+
+            Patch Radius: <input type="range" @dragstart.prevent v-model.number="NLMeansRadiusPatch" @change="updateCurrentFilter" id="NLMeansRadiusPatch" min="0" max="20" step="1">
+            <span class="threshold-value">{{ NLMeansRadiusPatch }}</span>
+
+            Window Radius: <input type="range" @dragstart.prevent v-model.number="NLMeansRadiusWindow" @change="updateCurrentFilter" id="NLMeansRadiusWindow" min="0" max="20" step="1">
+            <span class="threshold-value">{{ NLMeansRadiusWindow }}</span>
         </div>
         <div v-if="Filter.isLoading.value" class="loading-overlay">
             <div class="spinner"></div>

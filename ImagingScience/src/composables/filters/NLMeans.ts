@@ -5,22 +5,27 @@ export class NLMeans extends Filter {
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/filter/nlmeans";
+        this.baseURL = "http://localhost:8000/api/filter/NLMeans";
         this.filterType = FilterType.NLMeans;
     }
 
     public getParameters() : Array<any> {
-        var sigmaObject : HTMLSelectElement | null = document.getElementById("NLMeansSigma") as HTMLSelectElement;
-        var sigma = 0;
-        if (sigmaObject) {
-            sigma = Number(sigmaObject.value);
+        var radiusPatchObject : HTMLSelectElement | null = document.getElementById("NLMeansRadiusPatch") as HTMLSelectElement;
+        var radiusPatch = 0;
+        if (radiusPatchObject) {
+            radiusPatch = Number(radiusPatchObject.value);
         }
-        var radiusObject : HTMLSelectElement | null = document.getElementById("NLMeansRadius") as HTMLSelectElement;
-        var radius = 0;
-        if (radiusObject) {
-            radius = Number(radiusObject.value);
+        var radiusWindowObject : HTMLSelectElement | null = document.getElementById("NLMeansRadiusWindow") as HTMLSelectElement;
+        var radiusWindow = 0;
+        if (radiusWindowObject) {
+            radiusWindow = Number(radiusWindowObject.value);
+        }
+        var strengthObject : HTMLSelectElement | null = document.getElementById("NLMeansStrength") as HTMLSelectElement;
+        var strength = 0;
+        if (strengthObject) {
+            strength = Number(strengthObject.value);
         }
 
-        return [["sigma", sigma], ["maskRadius", radius]]
+        return [["radiusPatch", radiusPatch], ["radiusWindow", radiusWindow], ["filterStrength", strength]]
     }
 }

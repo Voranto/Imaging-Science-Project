@@ -184,3 +184,28 @@ async def compute_bilateral_filter(request: Request):
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")
     return Response(content=buf.getvalue(), media_type="image/png")
+
+@router.post("/NLMeans")
+async def compute_NL_means(request: Request):
+    try:
+        x_image_width = int(request.headers.get("x-image-width"))
+        x_image_height = int(request.headers.get("x-image-height"))
+        patchRadius = int(request.headers.get("radiusPatch"))
+        windowRadius = int(request.headers.get("radiusWindow"))
+        filterStrength = float(request.headers.get("filterStrength"))
+    except (TypeError, ValueError):
+            raise HTTPException(
+                status_code=422, 
+                detail="Missing or invalid headers"
+            )
+    body_bytes = await request.body()
+
+    img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
+    
+    img_array_8bit = (img_array* 255).astype(np.uint8)
+    filter = cv2.fastNlMeansDenoising(img_array_8bit,None, filterStrength, 2*patchRadius + 1, 2*windowRadius + 1)
+    
+    res_img = Image.fromarray(filter.astype(np.uint8))
+    buf = io.BytesIO()
+    res_img.save(buf, format="PNG")
+    return Response(content=buf.getvalue(), media_type="image/png")

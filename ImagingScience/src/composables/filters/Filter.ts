@@ -66,7 +66,8 @@ export abstract class  Filter {
 
     private async requestFilter(height: number, width: number, grayArray : Float32Array<any>) {
         Filter.isLoading.value = true;
-
+        this.visibilizeFilterContainer();
+        
         if (Filter.abortController) {
             Filter.abortController.abort();
         }
@@ -79,8 +80,6 @@ export abstract class  Filter {
             responseType: 'blob',
             signal: Filter.abortController.signal,
             });
-
-            this.visibilizeFilterContainer();
             
             await this.renderImageResult(response);
             

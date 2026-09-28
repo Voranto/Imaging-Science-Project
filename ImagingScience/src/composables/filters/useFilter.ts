@@ -11,6 +11,9 @@ import { Corner } from './Corner.ts';
 import { Morphological } from './Morphological.ts';
 import { Median } from './Median.ts';
 import { WaveletShrinkage } from './WaveletShrinkage.ts';
+import { Bilateral } from './Bilateral.ts';
+import { NLMeans } from './NLMeans.ts';
+import { Diffusion } from './Diffusion.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
@@ -36,6 +39,10 @@ const blackTopHatInstance = new Morphological("blackTopHat");
 const selfdualTopHatInstance = new Morphological("selfdualTopHat");
 const medianInstance = new Median();
 const waveletShrinkage = new WaveletShrinkage();
+const bilateralInstance = new Bilateral();
+const NLMeansInstance = new NLMeans();
+const diffusionInstance = new Diffusion();
+
 
 export function getSimpleEdges() {
     simpleEdgeInstance.applyFilter();
@@ -93,6 +100,16 @@ export function getWaveletShrinkage() {
     waveletShrinkage.applyFilter();
 }
 
+export function getBilateral() {
+    bilateralInstance.applyFilter();
+}
+export function getNLMeans() {
+    NLMeansInstance.applyFilter();
+}
+export function getDiffusion() {
+    diffusionInstance.applyFilter();
+}
+
 export function updateImageTransform() {
     changeFilterType("none")
     filterRequested.value =false; 
@@ -131,6 +148,9 @@ export const handleFilter = (type: string) => {
   if (type === 'selfdualTopHat') getSelfdualTopHat();
   if (type === 'median') getMedian();
   if (type === "waveletShrinkage") getWaveletShrinkage();
+  if (type === "bilateral") getBilateral();
+  if (type === "NLMeans") getNLMeans();
+  if (type === "diffusion") getDiffusion();
 };
 export function updateCurrentFilter() {
     const type = getFilterType();

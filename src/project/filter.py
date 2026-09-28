@@ -164,3 +164,23 @@ async def compute_wavelet_shrinkage(request: Request):
     res_img.save(buf, format="PNG")
     return Response(content=buf.getvalue(), media_type="image/png")
 
+@router.post("/bilateral")
+async def compute_bilateral_filter(request: Request):
+    try:
+        x_image_width = int(request.headers.get("x-image-width"))
+        x_image_height = int(request.headers.get("x-image-height"))
+        sigmaSpatial = float(request.headers.get("sigmaSpatial"))
+        sigmaTonal = float(request.headers.get("sigmaTonal"))
+    except (TypeError, ValueError):
+            raise HTTPException(
+                status_code=422, 
+                detail="Missing or invalid headers"
+            )
+    body_bytes = await request.body()
+
+    img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
+    filter = cv2.bilateralFilter(img_array * 255, -1,sigmaColor=sigmaTonal, sigmaSpace=sigmaSpatial)
+    res_img = Image.fromarray(filter.astype(np.uint8))
+    buf = io.BytesIO()
+    res_img.save(buf, format="PNG")
+    return Response(content=buf.getvalue(), media_type="image/png")

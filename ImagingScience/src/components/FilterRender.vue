@@ -23,6 +23,9 @@ const medianRadius = ref(1);
 
 const waveletShrinkageMode = ref("hard");
 const waveletShrinkageThreshold = ref(1);
+
+const bilateralSigmaSpatial = ref(1);
+const bilateralSigmaTonal = ref(1);
 </script>
 <template>
     <div class="overlay-screen">
@@ -46,6 +49,9 @@ const waveletShrinkageThreshold = ref(1);
           <option value="selfdualTopHat">selfdualTopHat</option>
           <option value="median">median</option>
           <option value="waveletShrinkage">waveletShrinkage</option>
+          <option value="bilateral">bilateral</option>
+          <option value="NLMeans">NLMeans</option>
+          <option value="diffusion">diffusion</option>
         </select>
         <div v-show="getFilterType() == 'simpleEdge'">
             Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
@@ -102,6 +108,15 @@ const waveletShrinkageThreshold = ref(1);
                 <option value="soft">soft</option>
                 <option value="garrote">garrote</option>
             </select>
+        </div>
+        <div v-show="getFilterType() === 'bilateral'">
+            Note: Higher spatial sigma values make the render much slower, try to keep it under 10.
+
+            Sigma Spatial: <input type="range" v-model.number="bilateralSigmaSpatial" @change="updateCurrentFilter" id="bilateralSigmaSpatial" min="0" max="20" step="1">
+            <span class="threshold-value">{{ bilateralSigmaSpatial }}</span>
+
+            Sigma Tonal: <input type="range" @dragstart.prevent v-model.number="bilateralSigmaTonal" @change="updateCurrentFilter" id="bilateralSigmaTonal" min="0" max="1000" step="1">
+            <span class="threshold-value">{{ bilateralSigmaTonal }}</span>
         </div>
         <img :src="filterImageSrc" id="filterImage">
     <div class="overlay-content">

@@ -159,4 +159,7 @@ export enum FilterType {
     selfdualTopHat = "selfdualTopHat",
     median = "median",
     waveletShrinkage = "waveletShrinkage",
+    bilateral = "bilateral",
+    NLMeans = "NLMeans",
+    diffusion = "diffusion",
 }

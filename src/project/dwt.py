@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.post("/grayscale")
-async def compute_dct_grayscale(request: Request):
+async def compute_dwt_grayscale(request: Request):
     # Returns a 2 dimensional array of the DWT
     
     try:
@@ -50,7 +50,7 @@ async def compute_dct_grayscale(request: Request):
             norm_tuple.append(norm_coeff)
         normalized_dwt.append(tuple(norm_tuple))
 
-    arr_coefficients, slices = pywt.coeffs_to_array(normalized_dwt)
+    arr_coefficients, slices = pywt.coeffs_to_array(normalized_dwt, padding=127)
 
     vis_arr = arr_coefficients.astype(np.uint8)
     print(arr_coefficients)

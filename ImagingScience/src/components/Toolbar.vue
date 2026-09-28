@@ -237,8 +237,8 @@ onUnmounted(() => {
             <button @click="handleFilter('lowpass')" class="btn-item">Lowpass Filter</button>
           </div>
         </CollapsibleToolbarItem>
-        <CollapsibleToolbarItem title="Nonlinear Filters" :isOpen="activeSection === 'Nonlinear Filters'" @toggle="toggleSection('Nonlinear Filters')">
-          <div class="button-grid">
+        <CollapsibleToolbarItem title="Morphological Filters" :isOpen="activeSection === 'Morphological Filters'" @toggle="toggleSection('Morphological Filters')">
+        <div class="button-grid">
             <button @click="handleFilter('dilation')" class="btn-item">Dilation</button>
             <button @click="handleFilter('erosion')" class="btn-item">Erosion</button>
             <button @click="handleFilter('opening')" class="btn-item">Opening</button>
@@ -246,8 +246,15 @@ onUnmounted(() => {
             <button @click="handleFilter('whiteTopHat')" class="btn-item">White Top Hat</button>
             <button @click="handleFilter('blackTopHat')" class="btn-item">Black Top Hat</button>
             <button @click="handleFilter('selfdualTopHat')" class="btn-item">Selfdual Top Hat</button>
+          </div>
+        </CollapsibleToolbarItem>
+        <CollapsibleToolbarItem title="Other Nonlinear Filters" :isOpen="activeSection === 'Other Nonlinear Filters'" @toggle="toggleSection('Other Nonlinear Filters')">
+          <div class="button-grid">
             <button @click="handleFilter('median')" class="btn-item">Median Filter</button>
             <button @click="handleFilter('waveletShrinkage')" class="btn-item">Wavelet Shrinkage</button>
+            <button @click="handleFilter('bilateral')" class="btn-item">Bilateral Filter</button>
+            <button @click="handleFilter('NLMeans')" class="btn-item">NL Means</button>
+            <button @click="handleFilter('diffusion')" class="btn-item">Diffusion Filter</button>
           </div>
         </CollapsibleToolbarItem>
         <CollapsibleToolbarItem title="Corrections" :isOpen="activeSection === 'Corrections'" @toggle="toggleSection('Corrections')">

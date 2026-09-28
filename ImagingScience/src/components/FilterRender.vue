@@ -3,7 +3,7 @@
 <script setup>
 import { ref } from 'vue';
 import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection, updateCurrentFilter } from '../composables/filters/useFilter.ts'
-
+import { Filter } from '@/composables/filters/Filter.ts';
 const thresholdSimpleEdge = ref(50)
 const thresholdCannyWeak = ref(50)
 const thresholdCannyStrong = ref(100)
@@ -112,11 +112,16 @@ const bilateralSigmaTonal = ref(1);
         <div v-show="getFilterType() === 'bilateral'">
             Note: Higher spatial sigma values make the render much slower, try to keep it under 10.
 
-            Sigma Spatial: <input type="range" v-model.number="bilateralSigmaSpatial" @change="updateCurrentFilter" id="bilateralSigmaSpatial" min="0" max="20" step="1">
+            Sigma Spatial: <input type="range" v-model.number="bilateralSigmaSpatial" @change="updateCurrentFilter" id="bilateralSigmaSpatial" min="0" max="50" step="1">
             <span class="threshold-value">{{ bilateralSigmaSpatial }}</span>
 
-            Sigma Tonal: <input type="range" @dragstart.prevent v-model.number="bilateralSigmaTonal" @change="updateCurrentFilter" id="bilateralSigmaTonal" min="0" max="1000" step="1">
+            Sigma Tonal: <input type="range" @dragstart.prevent v-model.number="bilateralSigmaTonal" @change="updateCurrentFilter" id="bilateralSigmaTonal" min="0" max="500" step="1">
             <span class="threshold-value">{{ bilateralSigmaTonal }}</span>
+        </div>
+        <div v-if="Filter.isLoading.value" class="loading-overlay">
+            <div class="spinner"></div>
+            <span>Processing image...</span>
+            <button @click="Filter.abortRequest()">Abort current request</button>
         </div>
         <img :src="filterImageSrc" id="filterImage">
     <div class="overlay-content">
@@ -125,6 +130,48 @@ const bilateralSigmaTonal = ref(1);
 </div>
 </template> 
 <style scoped>
+/* Container must be position: relative for absolute overlay positioning */
+.image-preview-container {
+  position: relative;
+  display: inline-block;
+  min-width: 200px;
+  min-height: 200px;
+}
+
+/* Semi-transparent overlay covering the image */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Dims the background image */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  font-weight: 500;
+  z-index: 10;
+  backdrop-filter: blur(2px); /* Optional background blur */
+}
+
+/* CSS Animated Spinner */
+.spinner {
+  width: 36px;
+  height: 36px;
+  margin-bottom: 8px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 .overlay-screen {
   position: fixed;
   top: 0;

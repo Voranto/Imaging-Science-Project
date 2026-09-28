@@ -12,6 +12,8 @@ export var imageID = ref("");
 export abstract class  Filter {
     abstract baseURL : string;
     abstract filterType : FilterType;
+    static isLoading : Ref<boolean> = ref(false);
+    static abortController: AbortController | null = null;
     activeObject : FabricObject | undefined;
 
     public async applyFilter() : Promise<void> {
@@ -33,6 +35,11 @@ export abstract class  Filter {
 
         this.retrieveActiveObject();
     }
+
+    public static abortRequest() {
+        Filter.abortController?.abort();
+    }
+
     private async storeActiveObject() {
         if(!canvas) return;
 
@@ -58,11 +65,19 @@ export abstract class  Filter {
     }
 
     private async requestFilter(height: number, width: number, grayArray : Float32Array<any>) {
-         try {
+        Filter.isLoading.value = true;
+
+        if (Filter.abortController) {
+            Filter.abortController.abort();
+        }
+        Filter.abortController = new AbortController();
+
+        try {
             
             const response = await axios.post(this.baseURL, grayArray, {
             headers: this.getHeaders(height, width),
             responseType: 'blob',
+            signal: Filter.abortController.signal,
             });
 
             this.visibilizeFilterContainer();
@@ -72,7 +87,11 @@ export abstract class  Filter {
         } catch (error) {
             console.error('Upload failed:', error);
         }
-
+        finally{
+            Filter.isLoading.value = false;
+            Filter.abortController = null;
+        }
+        
     }
 
     private getHeaders(height :number, width: number) {

@@ -20,7 +20,12 @@ export class Diffusion extends Filter {
         if (contrastObject) {
             contrast = Number(contrastObject.value);
         }
+        var optionObject : HTMLSelectElement | null = document.getElementById("diffusionOption") as HTMLSelectElement;
+        var option = 0;
+        if (optionObject) {
+            option = Number(optionObject.value);
+        }
 
-        return [["time", time], ["contrast", contrast]]
+        return [["iterations", time], ["contrast", contrast], ["diffusivityOption", option]]
     }
 }

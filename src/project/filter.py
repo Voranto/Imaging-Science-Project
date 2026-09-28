@@ -209,3 +209,56 @@ async def compute_NL_means(request: Request):
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")
     return Response(content=buf.getvalue(), media_type="image/png")
+
+@router.post("/diffusion")
+async def compute_diffusion_filter(request: Request):
+    try:
+        x_image_width = int(request.headers.get("x-image-width"))
+        x_image_height = int(request.headers.get("x-image-height"))
+        iterations = int(request.headers.get("iterations"))
+        contrast = float(request.headers.get("contrast"))
+        diffusivityOption = int(request.headers.get("diffusivityOption"))
+    except (TypeError, ValueError):
+            raise HTTPException(
+                status_code=422, 
+                detail="Missing or invalid headers"
+            )
+    body_bytes = await request.body()
+
+    img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
+    img_array = img_array * 255
+    out = img_array.astype(np.float32, copy=True)
+
+    deltaN = np.zeros_like(out)
+    deltaS = np.zeros_like(out)
+    deltaE = np.zeros_like(out)
+    deltaW = np.zeros_like(out)
+    for i in range(iterations):
+        deltaN[1:, :]  = out[:-1, :] - out[1:, :] 
+        deltaS[:-1, :] = out[1:, :]  - out[:-1, :]
+        deltaW[:, 1:]  = out[:, :-1] - out[:, 1:]
+        deltaE[:, :-1] = out[:, 1:]  - out[:, :-1]
+
+        # 1 is Perona-Malik
+        if diffusivityOption == 1:
+            cN = 1.0 / (1.0 + (deltaN / contrast) ** 2)
+            cS = 1.0 / (1.0 + (deltaS / contrast) ** 2)
+            cE = 1.0 / (1.0 + (deltaE / contrast) ** 2)
+            cW = 1.0 / (1.0 + (deltaW / contrast) ** 2)
+        # 2 is Charbonnier
+        elif diffusivityOption == 2:
+            cN = 1.0 / np.sqrt(1.0 + (deltaN / contrast) ** 2)
+            cS = 1.0 / np.sqrt(1.0 + (deltaS / contrast) ** 2)
+            cE = 1.0 / np.sqrt(1.0 + (deltaE / contrast) ** 2)
+            cW = 1.0 / np.sqrt(1.0 + (deltaW / contrast) ** 2)
+
+        else:
+            raise ValueError("Option must be 1 (PM-Exp), 2 (PM-Rat), or 3 (Charbonnier).")
+
+        # 3. We force the time step to 0.15, otherwise it is just too many parameters
+        out += 0.15 * (cN * deltaN + cS * deltaS + cE * deltaE + cW * deltaW)
+    
+    res_img = Image.fromarray(out.astype(np.uint8))
+    buf = io.BytesIO()
+    res_img.save(buf, format="PNG")
+    return Response(content=buf.getvalue(), media_type="image/png")

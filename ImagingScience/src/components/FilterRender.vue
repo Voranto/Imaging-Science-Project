@@ -31,6 +31,10 @@ const NLMeansRadiusPatch = ref(3);
 const NLMeansRadiusWindow = ref(10);
 const NLMeansStrength = ref(3);
 
+const diffusionContrast = ref(10);
+const diffusionTime = ref(10);
+const diffusionOption = ref(1);
+
 </script>
 <template>
     <div class="overlay-screen">
@@ -134,6 +138,18 @@ const NLMeansStrength = ref(3);
 
             Window Radius: <input type="range" @dragstart.prevent v-model.number="NLMeansRadiusWindow" @change="updateCurrentFilter" id="NLMeansRadiusWindow" min="0" max="20" step="1">
             <span class="threshold-value">{{ NLMeansRadiusWindow }}</span>
+        </div>
+        <div v-show="getFilterType() === 'diffusion'">
+            Diffusion time: <input type="range" v-model.number="diffusionTime" @change="updateCurrentFilter" id="diffusionTime" min="0" max="500" step="1">
+            <span class="threshold-value">{{ diffusionTime }}</span>
+
+            Diffusion Contrast: <input type="range" @dragstart.prevent v-model.number="diffusionContrast" @change="updateCurrentFilter" id="diffusionContrast" min="0" max="20" step="0.1">
+            <span class="threshold-value">{{ diffusionContrast }}</span>
+
+            <select v-model="diffusionOption" id="diffusionOption" @change="updateCurrentFilter">
+                <option value=1>Charbonnier Diffusivity</option>
+                <option value=2>Perona–Malik diffusivity</option>
+            </select>
         </div>
         <div v-if="Filter.isLoading.value" class="loading-overlay">
             <div class="spinner"></div>

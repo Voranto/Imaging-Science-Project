@@ -46,7 +46,8 @@ const emit = defineEmits([
   'clearCanvas',
   'fitCanvasToObjects',
   'fitCanvasToScreen',
-  'addNoise'
+  'addNoise',
+  'resizeCanvasOptimal'
 ]);
 
 const handleAddShape = () => {
@@ -269,6 +270,7 @@ onUnmounted(() => {
           <input type="range" min="0" max="255" v-model="color" @input="$emit('updateColor')" id="objectColorSelector">
         </div>
         <hr>
+        <button @click="$emit('resizeCanvasOptimal'); activeMenu = null">Resize Canvas to 2^n</button>
         <button @click="$emit('fitCanvasToObjects'); activeMenu = null">Fit Canvas to Objects</button>
         <button @click="$emit('fitCanvasToScreen'); activeMenu = null">Fit Canvas to Screen</button>
         <button class="danger" @click="$emit('clearCanvas'); activeMenu = null">Clear Entire Canvas</button>

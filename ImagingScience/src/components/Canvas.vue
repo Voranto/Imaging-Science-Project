@@ -318,6 +318,18 @@ const fitCanvasToScreen = () => {
   canvasFitToScreen.value = true;
   handleCanvasResize();
 }
+
+// Find the smallest 2^n square
+const resizeCanvasOptimal = () => {
+  const width = imageBuffer.value?.width;
+  const height = imageBuffer.value?.height;
+  if (!height || !width) return;
+
+  const min_log = Math.log2(Math.min(height,width));
+  
+  const optimal_dimensions = 2** min_log;
+  imageBuffer.value?.setCanvasDimensions(optimal_dimensions, optimal_dimensions);
+}
 </script>
 <template>
     <div class="canvas-container">
@@ -332,6 +344,7 @@ const fitCanvasToScreen = () => {
       @fitCanvasToObjects="fitCanvasToObjects"
       @fitCanvasToScreen="fitCanvasToScreen"
       @addNoise="handleAddNoise"
+      @resizeCanvasOptimal="resizeCanvasOptimal"
     />
     <canvas ref="canvasObject" id="imageCanvas" style="border:1px solid #000000"></canvas>
   </div>

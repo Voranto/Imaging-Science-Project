@@ -97,7 +97,7 @@ const waveletShrinkageThreshold = ref(1);
         <div v-show="getFilterType() === 'waveletShrinkage'">
             Threshold: <input type="range" v-model.number="waveletShrinkageThreshold" @change="updateCurrentFilter" id="waveletShrinkageThreshold" min="0" max="100" step="1">
             <span class="threshold-value">{{ waveletShrinkageThreshold }}</span>
-            <select v-model="waveletShrinkageMode" id="waveletShrinkageMode">
+            <select v-model="waveletShrinkageMode" id="waveletShrinkageMode" @change="updateCurrentFilter">
                 <option value="hard">hard</option>
                 <option value="soft">soft</option>
                 <option value="garrote">garrote</option>

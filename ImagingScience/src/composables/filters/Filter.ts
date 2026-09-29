@@ -67,7 +67,7 @@ export abstract class  Filter {
     private async requestFilter(height: number, width: number, grayArray : Float32Array<any>) {
         Filter.isLoading.value = true;
         this.visibilizeFilterContainer();
-        
+
         if (Filter.abortController) {
             Filter.abortController.abort();
         }
@@ -126,10 +126,12 @@ export abstract class  Filter {
     }
     public async renderFilterToCanvas() {
         if (getFilterType() === "none") return;
+        console.log("here");
         const height = imageBuffer.value?.height;
         const width = imageBuffer.value?.width;
         if (!height || !width) return;
         const imgURL = this.getImageSrc();
+        console.log(imgURL);
         const imgCopy = new Image();
         imgCopy.src = imgURL;
         imgCopy.onload = async () => {
@@ -153,7 +155,7 @@ export abstract class  Filter {
         this.hideFilterContainer();
     }
     private getImageSrc() {
-        const imageElement = document.getElementById("transformImage") as HTMLImageElement;
+        const imageElement = document.getElementById("filterImage") as HTMLImageElement;
         return imageElement.src;
     }
 
@@ -180,4 +182,5 @@ export enum FilterType {
     bilateral = "bilateral",
     NLMeans = "NLMeans",
     diffusion = "diffusion",
+    affineGrayscale = "affineGrayscale",
 }

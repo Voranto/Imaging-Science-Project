@@ -2,7 +2,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { filterRequested, filterImageSrc, getFilterType, getSimpleEdges, getCannys, getHighpassFilter, getLowpassFilter, getGammaCorrection, updateCurrentFilter } from '../composables/filters/useFilter.ts'
+import { filterRequested, filterImageSrc, getFilterType, updateCurrentFilter, renderFilterToCanvas } from '../composables/filters/useFilter.ts'
 import { Filter } from '@/composables/filters/Filter.ts';
 const thresholdSimpleEdge = ref(50)
 const thresholdCannyWeak = ref(50)
@@ -39,6 +39,7 @@ const diffusionOption = ref(1);
 <template>
     <div class="overlay-screen">
         <button @click="filterRequested=false" >Close </button>
+        <button @click="renderFilterToCanvas" >Paint Filter To Canvas</button>
         <select name="filterType" id="filterType" style="display: none;">
           <option value="none" selected="selected">none</option>
           <option value="simpleEdge">simpleEdge</option>
@@ -63,29 +64,29 @@ const diffusionOption = ref(1);
           <option value="diffusion">diffusion</option>
         </select>
         <div v-show="getFilterType() == 'simpleEdge'">
-            Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="getSimpleEdges" id="simpleEdgeThreshold" min="0" max="250">
+            Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="updateCurrentFilter" id="simpleEdgeThreshold" min="0" max="250">
             <span class="threshold-value">{{ thresholdSimpleEdge }}</span>
-            <label>Apply Gaussian Smoothing</label><input type="checkbox" id="applyGaussianSimpleEdges" @change="getSimpleEdges" checked>
+            <label>Apply Gaussian Smoothing</label><input type="checkbox" id="applyGaussianSimpleEdges" @change="updateCurrentFilter" checked>
         </div>
         
         <div v-show="getFilterType() == 'cannys'">
-            Weak Threshold: <input type="range" v-model.number="thresholdCannyWeak" @change="getCannys" id="thresholdCannyWeak" min="0" max="250">
+            Weak Threshold: <input type="range" v-model.number="thresholdCannyWeak" @change="updateCurrentFilter" id="thresholdCannyWeak" min="0" max="250">
             <span class="threshold-value">{{ thresholdCannyWeak }}</span>
             
-            Strong Threshold: <input type="range" v-model.number="thresholdCannyStrong" @change="getCannys" id="thresholdCannyStrong" min="0" max="250">
+            Strong Threshold: <input type="range" v-model.number="thresholdCannyStrong" @change="updateCurrentFilter" id="thresholdCannyStrong" min="0" max="250">
             <span class="threshold-value">{{ thresholdCannyStrong }}</span>
-            <label>Apply Gaussian Smoothing</label><input type="checkbox" id="applyGaussianCanny" @change="getCannys" checked>
+            <label>Apply Gaussian Smoothing</label><input type="checkbox" id="applyGaussianCanny" @change="updateCurrentFilter" checked>
         </div>
         <div v-show="getFilterType() == 'lowpass'">
-            Sigma: <input type="range" v-model.number="lowpassFilterSigma" @change="getLowpassFilter" id="lowpassFilterSigma" min="0" max="20">
+            Sigma: <input type="range" v-model.number="lowpassFilterSigma" @change="updateCurrentFilter" id="lowpassFilterSigma" min="0" max="20">
             <span class="threshold-value">{{ lowpassFilterSigma }}</span>
         </div>
         <div v-show="getFilterType() == 'highpass'">
-            Sigma: <input type="range" v-model.number="highpassFilterSigma" @change="getHighpassFilter" id="highpassFilterSigma" min="0" max="20">
+            Sigma: <input type="range" v-model.number="highpassFilterSigma" @change="updateCurrentFilter" id="highpassFilterSigma" min="0" max="20">
             <span class="threshold-value">{{ highpassFilterSigma }}</span>
         </div>
         <div v-show="getFilterType() == 'gammaCorrection'">
-            Sigma: <input type="range" v-model.number="gammaCorrectionValue" @change="getGammaCorrection" id="gammaCorrectionValue" min="0.1" max="4.0" step="0.1">
+            Sigma: <input type="range" v-model.number="gammaCorrectionValue" @change="updateCurrentFilter" id="gammaCorrectionValue" min="0.1" max="4.0" step="0.1">
             <span class="threshold-value">{{ gammaCorrectionValue }}</span>
         </div>
         <div v-show="getFilterType()?.startsWith('corner')">

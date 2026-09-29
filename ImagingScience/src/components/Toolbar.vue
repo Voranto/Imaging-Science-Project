@@ -6,7 +6,7 @@ import CollapsibleToolbarItem from './CollapsibleToolbarItem.vue';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
 // Menu visibility state
-const activeMenu = ref<'add' | 'transform' | 'filter' | 'config' | 'stats' | null>(null);
+const activeMenu = ref<string | null>(null);
 
 
 // Form configurations
@@ -24,7 +24,7 @@ const impulseNoiseHigh = ref(255);
 const impulseNoiseLow = ref(0);
 const impulseNoiseProbability = ref(20);
 
-const toggleMenu = (menuName: 'add' | 'transform' | 'filter' | 'config' | 'stats') => {
+const toggleMenu = (menuName: string) => {
   activeMenu.value = activeMenu.value === menuName ? null : menuName;
 };
 
@@ -32,7 +32,6 @@ const toggleMenu = (menuName: 'add' | 'transform' | 'filter' | 'config' | 'stats
 const activeSection = ref<string | null>(null);
 
 const toggleSection = (sectionName: string) => {
-  console.log(activeSection.value);
   activeSection.value = activeSection.value === sectionName ? null : sectionName;
 };
 
@@ -96,7 +95,7 @@ onUnmounted(() => {
   <div class="toolbar" ref="toolbarRef">
     <!-- 1. ADD STUFF MENU -->
     <div class="menu-group">
-      <button @click="toggleMenu('add')">Add Stuff ▾</button>
+      <button @click="toggleMenu('add')">Add ▾</button>
       <div v-show="activeMenu === 'add'" class="dropdown-panel">
         <CollapsibleToolbarItem title="Image" :isOpen="activeSection === 'Image'" @toggle="toggleSection('Image')">
           <div class="section-content">
@@ -202,26 +201,47 @@ onUnmounted(() => {
         </CollapsibleToolbarItem>
       </div>
     </div>
-
+    <div class="menu-group">
+      <button @click="toggleMenu('enhancements')">Enhancements & Adjustments ▾</button>
+      <div v-show="activeMenu === 'enhancements'" class="dropdown-panel">
+        
+        <CollapsibleToolbarItem title="Point Operations" :isOpen="true" @toggle="toggleSection('Point Operations')">
+          <div class="button-grid">
+            <button @click="handleFilter('gamma')" class="btn-item">Gamma Correction</button>
+            <button @click="handleFilter('affineGrayscale')" class="btn-item">Affine Grayscale Transformation</button>
+          </div>
+        </CollapsibleToolbarItem>
+          
+      </div>
+    </div>
     <!-- 2. APPLY TRANSFORM MENU -->
     <div class="menu-group">
-      <button @click="toggleMenu('transform')">Transforms ▾</button>
+      <button @click="toggleMenu('transform')">Transforms (Frequency Domain) ▾</button>
       <div v-show="activeMenu === 'transform'" class="dropdown-panel">
-        <h4>Select Transform</h4>
-        <button @click="handleTransform('fft')">FFT (Fast Fourier)</button>
-        <button @click="handleTransform('dct')">DCT (Discrete Cosine)</button>
-        <button @click="handleTransform('dwt')">DWT (Discrete Wavelet)</button>
+        <CollapsibleToolbarItem title="Transforms" :isOpen="true" @toggle="toggleSection('Transforms')">
+          <div class="button-grid">
+            <button @click="handleTransform('fft')" class="btn-item">FFT (Fast Fourier)</button>
+            <button @click="handleTransform('dct')" class="btn-item">DCT (Discrete Cosine)</button>
+            <button @click="handleTransform('dwt')" class="btn-item">DWT (Discrete Wavelet)</button>
+          </div>
+        </CollapsibleToolbarItem>
       </div>
     </div>
 
     <!-- 3. APPLY FILTER MENU -->
     <div class="menu-group">
-      <button @click="toggleMenu('filter')">Filters ▾</button>
+      <button @click="toggleMenu('filter')">Filters (Spatial Domain) ▾</button>
       <div v-show="activeMenu === 'filter'" class="dropdown-panel">
+        <CollapsibleToolbarItem title="Frequency Filters" :isOpen="activeSection === 'Frequency Filters'" @toggle="toggleSection('Frequency Filters')">
+          <div class="button-grid">
+            <button @click="handleFilter('highpass')" class="btn-item">Highpass Filter</button>
+            <button @click="handleFilter('lowpass')" class="btn-item">Lowpass Filter</button>
+          </div>
+        </CollapsibleToolbarItem>
         <CollapsibleToolbarItem title="Edge Detectors" :isOpen="activeSection === 'Edge Detectors'" @toggle="toggleSection('Edge Detectors')">
           <div class="button-grid">
-            <button @click="handleFilter('simple-edge')"class="btn-item">Simple Edge</button>
-            <button @click="handleFilter('canny')"class="btn-item">Canny Edge</button>
+            <button @click="handleFilter('simpleEdge')"class="btn-item">Simple Edge</button>
+            <button @click="handleFilter('cannys')"class="btn-item">Canny Edge</button>
           </div>
         </CollapsibleToolbarItem>
         <CollapsibleToolbarItem title="Corner Detectors" :isOpen="activeSection === 'Corner Detectors'" @toggle="toggleSection('Corner Detectors')">
@@ -229,12 +249,6 @@ onUnmounted(() => {
             <button @click="handleFilter('cornerTomasi')"  class="btn-item">Tomasi/Kanade</button>
             <button @click="handleFilter('cornerRohr')"  class="btn-item">Rohr</button>
             <button @click="handleFilter('cornerHarris')" class="btn-item">Harris/Förstner</button>
-          </div>
-        </CollapsibleToolbarItem>
-        <CollapsibleToolbarItem title="Frequency Filters" :isOpen="activeSection === 'Frequency Filters'" @toggle="toggleSection('Frequency Filters')">
-          <div class="button-grid">
-            <button @click="handleFilter('highpass')" class="btn-item">Highpass Filter</button>
-            <button @click="handleFilter('lowpass')" class="btn-item">Lowpass Filter</button>
           </div>
         </CollapsibleToolbarItem>
         <CollapsibleToolbarItem title="Morphological Filters" :isOpen="activeSection === 'Morphological Filters'" @toggle="toggleSection('Morphological Filters')">
@@ -248,7 +262,7 @@ onUnmounted(() => {
             <button @click="handleFilter('selfdualTopHat')" class="btn-item">Selfdual Top Hat</button>
           </div>
         </CollapsibleToolbarItem>
-        <CollapsibleToolbarItem title="Other Nonlinear Filters" :isOpen="activeSection === 'Other Nonlinear Filters'" @toggle="toggleSection('Other Nonlinear Filters')">
+        <CollapsibleToolbarItem title="Smoothing/Denoising" :isOpen="activeSection === 'Smoothing/Denoising'" @toggle="toggleSection('Smoothing/Denoising')">
           <div class="button-grid">
             <button @click="handleFilter('median')" class="btn-item">Median Filter</button>
             <button @click="handleFilter('waveletShrinkage')" class="btn-item">Wavelet Shrinkage</button>
@@ -257,23 +271,18 @@ onUnmounted(() => {
             <button @click="handleFilter('diffusion')" class="btn-item">Diffusion Filter</button>
           </div>
         </CollapsibleToolbarItem>
-        <CollapsibleToolbarItem title="Corrections" :isOpen="activeSection === 'Corrections'" @toggle="toggleSection('Corrections')">
-          <div class="button-grid">
-            <button @click="handleFilter('gamma')" class="btn-item">Gamma Correction</button>
-          </div>
-        </CollapsibleToolbarItem>
       </div>
     </div>
 
     <!-- 4. CONFIG MENU -->
     <div class="menu-group">
-      <button @click="toggleMenu('config')">Config ▾</button>
+      <button @click="toggleMenu('config')">Tool & Canvas Config ▾</button>
       <div v-show="activeMenu === 'config'" class="dropdown-panel">
         <h4>Canvas Settings</h4>
         <div class="form-control">
           <label>Brush Size: {{ brushSize }}px</label>
           <input type="range" min="1" max="100" v-model="brushSize" @input="$emit('updateBrush', brushSize)"  id="brushSize">
-          <label>Color: {{ color }}</label>
+          <label>Object Color: {{ color }}</label>
           <input type="range" min="0" max="255" v-model="color" @input="$emit('updateColor')" id="objectColorSelector">
         </div>
         <hr>

@@ -14,7 +14,8 @@ import { WaveletShrinkage } from './WaveletShrinkage.ts';
 import { Bilateral } from './Bilateral.ts';
 import { NLMeans } from './NLMeans.ts';
 import { Diffusion } from './Diffusion.ts';
-
+import { AffineGrayscale } from './AffineGrayscale.ts';
+import { Filter } from './Filter.ts';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
 export const filterRequested : Ref<boolean> = ref(false);
@@ -42,73 +43,7 @@ const waveletShrinkage = new WaveletShrinkage();
 const bilateralInstance = new Bilateral();
 const NLMeansInstance = new NLMeans();
 const diffusionInstance = new Diffusion();
-
-
-export function getSimpleEdges() {
-    simpleEdgeInstance.applyFilter();
-}
-export function getCannys() {
-    cannyInstance.applyFilter();
-}
-export function getHighpassFilter(){
-    highpassInstance.applyFilter();
-}
-export function getLowpassFilter() {
-    lowpassInstance.applyFilter();
-}
-export function getGammaCorrection() {
-    gammaCorrectionInstance.applyFilter();
-}
-export function getCornerTomasi(){
-    cornerTomasiInstance.applyFilter();
-}
-
-export function getCornerRohr(){
-    cornerRohrInstance.applyFilter();
-}
-
-export function getCornerHarris(){
-    cornerHarrisInstance.applyFilter();
-}
-
-export function getDilation(){
-    dilationInstance.applyFilter();
-}
-
-export function getErosion(){
-    erosionInstance.applyFilter();
-}
-export function getOpening(){
-    openingInstance.applyFilter();
-}
-export function getClosing(){
-    closingInstance.applyFilter();
-}
-export function getWhiteTopHat(){
-    whiteTopHatInstance.applyFilter();
-}
-export function getBlackTopHat(){
-    blackTopHatInstance.applyFilter();
-}
-export function getSelfdualTopHat(){
-    selfdualTopHatInstance.applyFilter();
-}
-export function getMedian() {
-    medianInstance.applyFilter();
-}
-export function getWaveletShrinkage() {
-    waveletShrinkage.applyFilter();
-}
-
-export function getBilateral() {
-    bilateralInstance.applyFilter();
-}
-export function getNLMeans() {
-    NLMeansInstance.applyFilter();
-}
-export function getDiffusion() {
-    diffusionInstance.applyFilter();
-}
+const affineGrayscale = new AffineGrayscale();
 
 export function updateImageTransform() {
     changeFilterType("none")
@@ -130,28 +65,42 @@ export function changeFilterType(mode: string) {
         filterType.value = mode;
     }
 }
+export function getFilterInstance(type : string) {
+    if (type === 'simpleEdge') return simpleEdgeInstance;
+    if (type === 'cannys') return cannyInstance;
+    if (type === 'highpass') return highpassInstance;
+    if (type === 'lowpass') return lowpassInstance;
+    if (type === 'gamma') return gammaCorrectionInstance;
+    if (type === 'cornerTomasi') return cornerTomasiInstance;
+    if (type === 'cornerRohr') return cornerRohrInstance;
+    if (type === 'cornerHarris') return cornerHarrisInstance;
+    if (type === 'erosion') return erosionInstance;
+    if (type === 'dilation') return dilationInstance;
+    if (type === 'opening') return openingInstance;
+    if (type === 'closing') return closingInstance;
+    if (type === 'whiteTopHat') return whiteTopHatInstance;
+    if (type === 'blackTopHat') return blackTopHatInstance;
+    if (type === 'selfdualTopHat') return selfdualTopHatInstance;
+    if (type === 'median') return medianInstance;
+    if (type === "waveletShrinkage") return waveletShrinkage;
+    if (type === "bilateral") return bilateralInstance;
+    if (type === "NLMeans") return NLMeansInstance;
+    if (type === "diffusion") return diffusionInstance;
+    if (type === "affineGrayscale") return affineGrayscale;
+    return null;
+}
 export const handleFilter = (type: string) => {
-  if (type === 'simple-edge') getSimpleEdges();
-  if (type === 'canny') getCannys();
-  if (type === 'highpass') getHighpassFilter();
-  if (type === 'lowpass') getLowpassFilter();
-  if (type === 'gamma') getGammaCorrection();
-  if (type === 'cornerTomasi') getCornerTomasi();
-  if (type === 'cornerRohr') getCornerRohr();
-  if (type === 'cornerHarris') getCornerHarris();
-  if (type === 'erosion') getErosion();
-  if (type === 'dilation') getDilation();
-  if (type === 'opening') getOpening();
-  if (type === 'closing') getClosing();
-  if (type === 'whiteTopHat') getWhiteTopHat();
-  if (type === 'blackTopHat') getBlackTopHat();
-  if (type === 'selfdualTopHat') getSelfdualTopHat();
-  if (type === 'median') getMedian();
-  if (type === "waveletShrinkage") getWaveletShrinkage();
-  if (type === "bilateral") getBilateral();
-  if (type === "NLMeans") getNLMeans();
-  if (type === "diffusion") getDiffusion();
+    const instance = getFilterInstance(type);
+    instance?.applyFilter();
 };
+
+export const renderFilterToCanvas = () => {
+    const type = getFilterType();
+    if (!type) return;
+    const instance = getFilterInstance(type);
+    instance?.renderFilterToCanvas()
+}
+
 export function updateCurrentFilter() {
     const type = getFilterType();
     if (!type) return;

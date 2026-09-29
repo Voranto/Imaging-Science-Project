@@ -84,7 +84,6 @@ const addBox = () => {
   canvas.add(rect);
   rect.on("selected", () => {
     var colorSelector = document.getElementById("objectColorSelector");
-    
     (colorSelector! as HTMLSelectElement).value = getObjectGrayscale(rect).toString();
   })
   canvas.setActiveObject(rect);

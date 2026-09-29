@@ -1,3 +1,5 @@
 Add lines and more structures for the canvas 
 
 Im not too happy with the DWT, some small artifacting appears. Don't think this is fixable
+
+Issue with color selector accessing the html value instead of the ref()

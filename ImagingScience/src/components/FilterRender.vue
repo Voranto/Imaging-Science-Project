@@ -2,7 +2,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { filterRequested, filterImageSrc, getFilterType, updateCurrentFilter, renderFilterToCanvas } from '../composables/filters/useFilter.ts'
+import { filterRequested, filterImageSrc, getFilterType, updateCurrentFilter, renderFilterToCanvas, optimalAffineGrayscaleTransform, affineGrayscaleSlope, affineGrayscaleDistance } from '../composables/filters/useFilter.ts'
 import { Filter } from '@/composables/filters/Filter.ts';
 const thresholdSimpleEdge = ref(50)
 const thresholdCannyWeak = ref(50)
@@ -35,6 +35,7 @@ const diffusionContrast = ref(10);
 const diffusionTime = ref(10);
 const diffusionOption = ref(1);
 
+
 </script>
 <template>
     <div class="overlay-screen">
@@ -62,6 +63,7 @@ const diffusionOption = ref(1);
           <option value="bilateral">bilateral</option>
           <option value="NLMeans">NLMeans</option>
           <option value="diffusion">diffusion</option>
+          <option value="affineGrayscale">affineGrayscale</option>
         </select>
         <div v-show="getFilterType() == 'simpleEdge'">
             Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="updateCurrentFilter" id="simpleEdgeThreshold" min="0" max="250">
@@ -151,6 +153,12 @@ const diffusionOption = ref(1);
                 <option value=1>Charbonnier Diffusivity</option>
                 <option value=2>Perona–Malik diffusivity</option>
             </select>
+        </div>
+        <div v-show="getFilterType() === 'affineGrayscale'">
+            Slope: <input type="value" v-model.number="affineGrayscaleSlope" @change="updateCurrentFilter" id="affineGrayscaleSlope">
+
+            Distance: <input type="value" @dragstart.prevent v-model.number="affineGrayscaleDistance" @change="updateCurrentFilter" id="affineGrayscaleDistance">
+            <button @click="optimalAffineGrayscaleTransform(); updateCurrentFilter()">Move image to range [0,255]</button>
         </div>
         <div v-if="Filter.isLoading.value" class="loading-overlay">
             <div class="spinner"></div>

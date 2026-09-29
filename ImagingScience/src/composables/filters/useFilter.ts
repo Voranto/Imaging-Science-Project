@@ -106,3 +106,30 @@ export function updateCurrentFilter() {
     if (!type) return;
     handleFilter(type);
 };
+
+export const affineGrayscaleSlope = ref(1);
+export const affineGrayscaleDistance = ref(0);
+
+export function optimalAffineGrayscaleTransform() {
+    if (!imageBuffer.value) return;
+    var max = 0;
+    var min = Infinity;
+    for (const val of imageBuffer.value.floatBuffer) {
+        max = Math.max(max, val);
+        min = Math.min(min, val);
+    }
+
+    max *= 255;
+    min *= 255;
+
+    // f(min) = 0.0
+    // f(max) = 255.0
+    if (max === min) {
+        console.warn("Image has zero contrast (min === max).");
+        return;
+    }
+    const slope = 255 / (max - min);
+    const distance = -min * slope;
+    affineGrayscaleSlope.value = slope;
+    affineGrayscaleDistance.value = distance;
+}

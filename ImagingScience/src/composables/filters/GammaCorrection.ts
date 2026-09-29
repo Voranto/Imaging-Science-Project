@@ -1,11 +1,14 @@
-import { Filter, FilterType } from "./Filter";
+import { Filter } from "./Filter";
+import { FilterType } from "./FilterType";
+import { API_BASE_URL } from "@/config";
+
 export class GammaCorrection extends Filter {
     baseURL : string;
     filterType: FilterType;
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/filter/gamma";
+        this.baseURL = `${API_BASE_URL}/filter/gamma`;
         this.filterType = FilterType.gammaCorrection;
     }
 

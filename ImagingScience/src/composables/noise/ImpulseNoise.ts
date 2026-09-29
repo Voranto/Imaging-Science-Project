@@ -1,4 +1,6 @@
+import { Filter } from "../filters/Filter";
 import { Noise, NoiseType } from "./noise"
+import { API_BASE_URL } from "@/config";
 
 export class ImpulseNoise extends Noise {
     baseURL : string;
@@ -6,7 +8,7 @@ export class ImpulseNoise extends Noise {
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/noise/impulse";
+        this.baseURL = `${API_BASE_URL}/noise/impulse`;
         this.noiseType = NoiseType.impulse;
     }
 

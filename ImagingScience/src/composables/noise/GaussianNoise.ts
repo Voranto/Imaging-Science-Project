@@ -1,4 +1,6 @@
+import { Filter } from "../filters/Filter";
 import { Noise, NoiseType } from "./noise"
+import { API_BASE_URL } from "@/config";
 
 export class GaussianNoise extends Noise {
     baseURL : string;
@@ -6,7 +8,7 @@ export class GaussianNoise extends Noise {
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/noise/gaussian";
+        this.baseURL = `${API_BASE_URL}/noise/gaussian`;
         this.noiseType = NoiseType.gaussian;
     }
 

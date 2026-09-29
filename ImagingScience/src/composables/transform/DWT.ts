@@ -1,4 +1,6 @@
+import { Filter } from "../filters/Filter";
 import { Transform, TransformType } from "./transform"
+import { API_BASE_URL } from "@/config";
 
 export class DWT extends Transform {
     baseURL : string;
@@ -6,7 +8,7 @@ export class DWT extends Transform {
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/dwt";
+        this.baseURL = `${API_BASE_URL}/dwt`;
         this.transformType = TransformType.dwt;
     }
 

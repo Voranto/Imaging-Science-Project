@@ -1,4 +1,7 @@
-import { Filter, FilterType } from "./Filter";
+import { Filter } from "./Filter";
+import { FilterType } from "./FilterType";
+import { API_BASE_URL } from "@/config";
+
 
 const FILTER_TYPE_MAP: Record<string, FilterType> = {
   tomasi: FilterType.cornerTomasi,
@@ -12,7 +15,7 @@ export class Corner extends Filter {
 
     public constructor(derivative: string,type : string) {
         super();
-        this.baseURL = "http://localhost:8000/api/filter/corner/" + derivative +"/" + type;
+        this.baseURL = `${API_BASE_URL}/filter/corner/` + derivative +"/" + type;
         this.filterType = FILTER_TYPE_MAP[type]!;
     }
 

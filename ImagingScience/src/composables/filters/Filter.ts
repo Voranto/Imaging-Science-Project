@@ -2,7 +2,7 @@ import { ref, type Ref, useTemplateRef } from 'vue';
 import axios, {type AxiosResponse, AxiosHeaders} from 'axios';
 import { Canvas, FabricImage, FabricObject } from 'fabric'
 import { useImageBufferState } from '../useImageBufferState.ts';
-import { filterImageSrc, filterRequested, getFilterType, changeFilterType  } from './useFilter.ts';
+import { filterImageSrc, filterRequested, getFilterType, changeFilterType, FilterType  } from './FilterType.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 var canvas = imageBuffer.value?.canvas;
@@ -15,7 +15,7 @@ export abstract class  Filter {
     static isLoading : Ref<boolean> = ref(false);
     static abortController: AbortController | null = null;
     activeObject : FabricObject | undefined;
-
+    
     public async applyFilter() : Promise<void> {
         this.initializeCanvas();
         if (!canvas) return;
@@ -161,27 +161,4 @@ export abstract class  Filter {
 
     public abstract getParameters() : Array<[string, string]>;
 }
-export enum FilterType {
-    simpleEdge = "simpleEdge",
-    cannys = "cannys",
-    highpass = "highpass",
-    lowpass = "lowpass",
-    gammaCorrection = "gammaCorrection",
-    cornerTomasi = "cornerTomasi",
-    cornerRohr = "cornerRohr",
-    cornerHarris = "cornerHarris",
-    dilation = "dilation",
-    erosion = "erosion",
-    opening = "opening",
-    closing = "closing",
-    whiteTopHat = "whiteTopHat",
-    blackTopHat  = "blackTopHat",
-    selfdualTopHat = "selfdualTopHat",
-    median = "median",
-    waveletShrinkage = "waveletShrinkage",
-    bilateral = "bilateral",
-    NLMeans = "NLMeans",
-    diffusion = "diffusion",
-    affineGrayscale = "affineGrayscale",
-    histogramEqualization = "histogramEqualization"
-}
+

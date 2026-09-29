@@ -1,11 +1,14 @@
-import { Filter, FilterType } from "./Filter";
+import { Filter } from "./Filter";
+import { API_BASE_URL } from "@/config";
+import { FilterType } from "./FilterType";
+
 export class Cannys extends Filter {
     baseURL : string;
     filterType: FilterType;
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/filter/edge/canny";
+        this.baseURL = `${API_BASE_URL}/filter/edge/canny`;
         this.filterType = FilterType.cannys;
     }
 

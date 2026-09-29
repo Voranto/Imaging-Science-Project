@@ -1,4 +1,6 @@
+import { Filter } from "../filters/Filter";
 import { Noise, NoiseType } from "./noise"
+import { API_BASE_URL } from "@/config";
 
 export class UniformNoise extends Noise {
     baseURL : string;
@@ -6,7 +8,7 @@ export class UniformNoise extends Noise {
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/noise/uniform";
+        this.baseURL = `${API_BASE_URL}/noise/uniform`;
         this.noiseType = NoiseType.additive;
     }
 

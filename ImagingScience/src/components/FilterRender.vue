@@ -2,8 +2,10 @@
 
 <script setup>
 import { ref } from 'vue';
-import { filterRequested, filterImageSrc, getFilterType, updateCurrentFilter, renderFilterToCanvas, optimalAffineGrayscaleTransform, affineGrayscaleSlope, affineGrayscaleDistance } from '../composables/filters/useFilter.ts'
+import {  updateCurrentFilter, renderFilterToCanvas, optimalAffineGrayscaleTransform, affineGrayscaleSlope, affineGrayscaleDistance } from '../composables/filters/useFilter.ts'
+import {filterImageSrc, filterRequested, getFilterType } from "../composables/filters/FilterType.ts"
 import { Filter } from '@/composables/filters/Filter.ts';
+import { changeFilterType } from '@/composables/filters/FilterType.ts';
 const thresholdSimpleEdge = ref(50)
 const thresholdCannyWeak = ref(50)
 const thresholdCannyStrong = ref(100)

@@ -5,7 +5,7 @@ import Canvas from './components/Canvas.vue';
 import FilterRender from './components/FilterRender.vue'
 import TransformRender from './components/TransformRender.vue';
 import { transformRequested } from './composables/transform/useTransforms.ts';
-import {filterRequested} from './composables/filters/useFilter.ts'
+import {filterRequested} from './composables/filters/FilterType.ts'
 
 </script>
 

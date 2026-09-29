@@ -1,11 +1,14 @@
-import { Filter, FilterType } from "./Filter";
+import { Filter } from "./Filter";
+import { FilterType } from "./FilterType";
+import { API_BASE_URL } from "@/config";
+
 export class SimpleEdges extends Filter {
     baseURL : string;
     filterType: FilterType;
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/filter/edge/simple";
+        this.baseURL = `${API_BASE_URL}/filter/edge/simple`;
         this.filterType = FilterType.simpleEdge;
     }
 

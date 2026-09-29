@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "@/config";
+import { Filter } from "../filters/Filter";
 import { Transform, TransformType } from "./transform"
 
 export class DCT extends Transform {
@@ -6,7 +8,7 @@ export class DCT extends Transform {
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/dct";
+        this.baseURL = `${API_BASE_URL}/dct`;
         this.transformType = TransformType.dct;
     }
 

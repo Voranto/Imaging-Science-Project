@@ -1,4 +1,6 @@
-import { Filter, FilterType } from "./Filter";
+import { Filter } from "./Filter";
+import { FilterType } from "./FilterType";
+import { API_BASE_URL } from "@/config";
 
 const FILTER_TYPE_MAP: Record<string, FilterType> = {
   dilation: FilterType.dilation,
@@ -16,7 +18,7 @@ export class Morphological extends Filter {
 
     public constructor(type : string) {
         super();
-        this.baseURL = "http://localhost:8000/api/filter/morphological/" + type;
+        this.baseURL = `${API_BASE_URL}/filter/morphological/` + type;
         this.filterType = FILTER_TYPE_MAP[type]!;
     }
 

@@ -1,11 +1,13 @@
-import { Filter, FilterType } from "./Filter";
+import { API_BASE_URL } from "@/config";
+import { Filter } from "./Filter";
+import { FilterType } from "./FilterType";
 export class AffineGrayscale extends Filter {
     baseURL : string;
     filterType: FilterType;
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/filter/affineGrayscale";
+        this.baseURL = `${API_BASE_URL}/filter/affineGrayscale`;
         this.filterType = FilterType.affineGrayscale;
     }
 

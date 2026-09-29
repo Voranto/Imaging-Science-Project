@@ -1,11 +1,15 @@
-import { Filter, FilterType } from "./Filter";
+import { Filter } from "./Filter";
+import { FilterType } from "./FilterType";
+import { API_BASE_URL } from "@/config";
+
 export class Bilateral extends Filter {
     baseURL : string;
     filterType: FilterType;
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/filter/bilateral";
+        this.baseURL = `${API_BASE_URL}/filter/bilateral`;
+        console.log(this.baseURL);
         this.filterType = FilterType.bilateral;
     }
 

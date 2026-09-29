@@ -1,3 +1,6 @@
+import { Filter } from "../filters/Filter";
+import { API_BASE_URL } from "@/config";
+
 import { Transform, TransformType } from "./transform"
 
 export class FFT extends Transform {
@@ -6,7 +9,7 @@ export class FFT extends Transform {
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/fft";
+        this.baseURL = `${API_BASE_URL}/fft`;
         this.transformType = TransformType.fft;
     }
 

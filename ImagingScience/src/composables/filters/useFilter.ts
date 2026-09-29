@@ -2,6 +2,7 @@ import { ref, type Ref } from 'vue';
 import axios from 'axios';
 import { Canvas, FabricImage } from 'fabric'
 import { useImageBufferState } from '../useImageBufferState.ts';
+import { Filter } from './Filter.ts';
 import {Cannys} from "./Cannys.ts"
 import { Highpass } from './Highpass.ts';
 import { Lowpass } from './Lowpass.ts';
@@ -15,12 +16,9 @@ import { Bilateral } from './Bilateral.ts';
 import { NLMeans } from './NLMeans.ts';
 import { Diffusion } from './Diffusion.ts';
 import { AffineGrayscale } from './AffineGrayscale.ts';
-import { Filter } from './Filter.ts';
+import { filterRequested, changeFilterType, getFilterType } from './FilterType.ts';
 import { HistogramEqualization } from './HistogramEqualization.ts';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
-
-export const filterRequested : Ref<boolean> = ref(false);
-export var filterImageSrc : Ref<string> = ref("");
 
 const cannyInstance = new Cannys();
 const highpassInstance = new Highpass();
@@ -51,21 +49,7 @@ export function updateImageTransform() {
     filterRequested.value =false; 
 }
 
-export function getFilterType() {
-    const filterType : HTMLSelectElement | null = document.getElementById("filterType") as HTMLSelectElement;
-    if (filterType) {
-        return filterType.value;
-    }
-    return null;
-}
 
-export function changeFilterType(mode: string) {
-    console.log("here", mode);
-    const filterType : HTMLSelectElement | null = document.getElementById("filterType") as HTMLSelectElement;
-    if (filterType) {
-        filterType.value = mode;
-    }
-}
 export function getFilterInstance(type : string) {
     if (type === 'simpleEdge') return simpleEdgeInstance;
     if (type === 'cannys') return cannyInstance;

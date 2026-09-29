@@ -1,4 +1,6 @@
-import { Filter, FilterType } from "./Filter";
+import { Filter } from "./Filter";
+import { FilterType } from "./FilterType";
+import { API_BASE_URL } from "@/config";
 
 export class WaveletShrinkage extends Filter {
     baseURL : string;
@@ -6,7 +8,7 @@ export class WaveletShrinkage extends Filter {
 
     public constructor() {
         super();
-        this.baseURL = "http://localhost:8000/api/filter/wavelet/";
+        this.baseURL = `${API_BASE_URL}/filter/wavelet/`;
         this.filterType = FilterType.waveletShrinkage;
     }
 

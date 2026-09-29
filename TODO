@@ -1,5 +1,3 @@
 Add lines and more structures for the canvas 
 
 Im not too happy with the DWT, some small artifacting appears. Don't think this is fixable
-
-Begin plan for nonlinear filters. Generic class will be tough

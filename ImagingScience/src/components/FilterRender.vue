@@ -64,6 +64,7 @@ const diffusionOption = ref(1);
           <option value="NLMeans">NLMeans</option>
           <option value="diffusion">diffusion</option>
           <option value="affineGrayscale">affineGrayscale</option>
+          <option value="histogramEqualization">histogramEqualization</option>
         </select>
         <div v-show="getFilterType() == 'simpleEdge'">
             Threshold: <input type="range" v-model.number="thresholdSimpleEdge" @change="updateCurrentFilter" id="simpleEdgeThreshold" min="0" max="250">

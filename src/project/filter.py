@@ -285,3 +285,26 @@ async def compute_affine_grayscale_transformation(request: Request):
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")
     return Response(content=buf.getvalue(), media_type="image/png")
+
+@router.post("/histogramEqualization")
+async def compute_histogram_equalization(request: Request):
+    try:
+        x_image_width = int(request.headers.get("x-image-width"))
+        x_image_height = int(request.headers.get("x-image-height"))
+    except (TypeError, ValueError):
+            raise HTTPException(
+                status_code=422, 
+                detail="Missing or invalid headers"
+            )
+    body_bytes = await request.body()
+
+    img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
+
+    arr_ints = np.round(img_array * 255)
+
+    equalized = cv2.equalizeHist(arr_ints.astype(np.uint8))
+
+    res_img = Image.fromarray(equalized.astype(np.uint8))
+    buf = io.BytesIO()
+    res_img.save(buf, format="PNG")
+    return Response(content=buf.getvalue(), media_type="image/png")

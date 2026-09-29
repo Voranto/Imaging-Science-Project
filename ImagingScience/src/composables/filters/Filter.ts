@@ -183,4 +183,5 @@ export enum FilterType {
     NLMeans = "NLMeans",
     diffusion = "diffusion",
     affineGrayscale = "affineGrayscale",
+    histogramEqualization = "histogramEqualization"
 }

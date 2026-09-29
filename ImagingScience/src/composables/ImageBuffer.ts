@@ -1,5 +1,6 @@
 import { Canvas, FabricObject, PencilBrush, FabricImage, Path } from 'fabric';
 import {ref, type Ref} from 'vue';
+import { computeHistogram, renderHistogram } from './histogram';
 export class ImageBuffer {
     public canvas: Canvas;
     public floatBuffer: Float32Array;
@@ -8,7 +9,8 @@ export class ImageBuffer {
     public isDrawing: Ref<boolean>;
     public mean: number;
     public variance: number;
-    
+
+
     constructor(canvasElement: HTMLCanvasElement, width: number, height: number) {
     this.width = Math.floor(width);
     this.height = Math.floor(height);
@@ -42,6 +44,10 @@ export class ImageBuffer {
 
     // Afterwards, compute all the stats
     this.computeImageStats();
+
+    const hist = computeHistogram(this.floatBuffer);
+    renderHistogram(hist);
+    
     console.log("Float buffer synchronized with Fabric.js objects.");
   }
 

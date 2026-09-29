@@ -16,6 +16,7 @@ import { NLMeans } from './NLMeans.ts';
 import { Diffusion } from './Diffusion.ts';
 import { AffineGrayscale } from './AffineGrayscale.ts';
 import { Filter } from './Filter.ts';
+import { HistogramEqualization } from './HistogramEqualization.ts';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
 export const filterRequested : Ref<boolean> = ref(false);
@@ -44,7 +45,7 @@ const bilateralInstance = new Bilateral();
 const NLMeansInstance = new NLMeans();
 const diffusionInstance = new Diffusion();
 const affineGrayscale = new AffineGrayscale();
-
+const histogramEqualizationInstance = new HistogramEqualization();
 export function updateImageTransform() {
     changeFilterType("none")
     filterRequested.value =false; 
@@ -87,6 +88,7 @@ export function getFilterInstance(type : string) {
     if (type === "NLMeans") return NLMeansInstance;
     if (type === "diffusion") return diffusionInstance;
     if (type === "affineGrayscale") return affineGrayscale;
+    if (type === "histogramEqualization") return histogramEqualizationInstance;
     return null;
 }
 export const handleFilter = (type: string) => {

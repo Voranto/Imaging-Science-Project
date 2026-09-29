@@ -4,7 +4,7 @@ import ImageUploader from './ImageUploader.vue';
 import { useImageBufferState } from '../composables/useImageBufferState.ts';
 import CollapsibleToolbarItem from './CollapsibleToolbarItem.vue';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
-
+import { histogramCanvas } from '@/composables/histogram.ts';
 // Menu visibility state
 const activeMenu = ref<string | null>(null);
 
@@ -89,6 +89,7 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleOutsideClick);
 });
+
 </script>
 
 <template>
@@ -209,6 +210,7 @@ onUnmounted(() => {
           <div class="button-grid">
             <button @click="handleFilter('gamma')" class="btn-item">Gamma Correction</button>
             <button @click="handleFilter('affineGrayscale')" class="btn-item">Affine Grayscale Transformation</button>
+            <button @click="handleFilter('histogramEqualization')" class="btn-item">Histogram Equalization</button>
           </div>
         </CollapsibleToolbarItem>
           
@@ -297,6 +299,10 @@ onUnmounted(() => {
       <div v-show="activeMenu === 'stats'" class="dropdown-panel">
         Mean: <span id="mean">{{ imageBuffer?.mean }}</span>
         Variance: <span id="variance"> {{imageBuffer?.variance}}</span>
+        Histogram:
+        <div class="histogram-container">
+          <canvas ref="histogramCanvas"></canvas>
+        </div>
      </div>
     </div>
   </div>

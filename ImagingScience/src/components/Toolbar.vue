@@ -208,7 +208,7 @@ onUnmounted(() => {
         
         <CollapsibleToolbarItem title="Point Operations" :isOpen="true" @toggle="toggleSection('Point Operations')">
           <div class="button-grid">
-            <button @click="handleFilter('gamma')" class="btn-item">Gamma Correction</button>
+            <button @click="handleFilter('gammaCorrection')" class="btn-item">Gamma Correction</button>
             <button @click="handleFilter('affineGrayscale')" class="btn-item">Affine Grayscale Transformation</button>
             <button @click="handleFilter('histogramEqualization')" class="btn-item">Histogram Equalization</button>
           </div>

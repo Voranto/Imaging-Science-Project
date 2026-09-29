@@ -23,6 +23,9 @@ export class ImageBuffer {
 
     this.mean = 0;
     this.variance = 0;
+
+    const hist = computeHistogram(this.floatBuffer);
+    renderHistogram(hist);
   }
 
   private initEventListeners() {

@@ -71,7 +71,7 @@ export function getFilterInstance(type : string) {
     if (type === 'cannys') return cannyInstance;
     if (type === 'highpass') return highpassInstance;
     if (type === 'lowpass') return lowpassInstance;
-    if (type === 'gamma') return gammaCorrectionInstance;
+    if (type === 'gammaCorrection') return gammaCorrectionInstance;
     if (type === 'cornerTomasi') return cornerTomasiInstance;
     if (type === 'cornerRohr') return cornerRohrInstance;
     if (type === 'cornerHarris') return cornerHarrisInstance;

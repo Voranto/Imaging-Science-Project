@@ -289,6 +289,17 @@ onUnmounted(() => {
           <input type="range" min="0" max="255" v-model="colorSelector" @input="$emit('updateColor')" id="objectColorSelector">
         </div>
         <hr>
+        <div id="control-row">
+        <label>Height: </label>
+        <input @change="imageBuffer.setCanvasDimensions(imageBuffer.height.value, imageBuffer.width.value)" type="number" v-if="imageBuffer" v-model="imageBuffer.height.value">
+        <label> Width:</label> 
+        <input type="number" v-if="imageBuffer" v-model="imageBuffer.width.value" @change="imageBuffer.setCanvasDimensions(imageBuffer.height.value, imageBuffer.width.value)">
+
+        </div>
+        <div id="control-row">
+            <span>Auto resize canvas when resizing window: </span>
+            <input @change="imageBuffer.resizeCanvas" v-if="imageBuffer" v-model="imageBuffer.autoResizeCanvas.value" type="checkbox">
+        </div>
         <button @click="$emit('resizeCanvasOptimal'); activeMenu = null">Resize Canvas to 2^n</button>
         <button @click="$emit('fitCanvasToObjects'); activeMenu = null">Fit Canvas to Objects</button>
         <button @click="$emit('fitCanvasToScreen'); activeMenu = null">Fit Canvas to Screen</button>
@@ -341,7 +352,40 @@ onUnmounted(() => {
   z-index: 100;
   min-width: 320px; /* Expanded for comfortable input display */
 }
+/* Number Inputs */
+.dropdown-panel input[type="number"] {
+  width: 70px;
+  padding: 4px 6px;
+  font-size: 0.85rem;
+  color: #1e293b;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
 
+.dropdown-panel input[type="number"]:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Checkbox */
+.dropdown-panel input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+/* Label Spans inside Dropdown */
+.dropdown-panel span {
+  font-size: 0.85rem;
+  color: #334155;
+  font-weight: 500;
+  vertical-align: middle;
+}
 /* Section Content Wrapper inside Collapsibles */
 .section-content {
   padding: 8px 4px 4px 4px;

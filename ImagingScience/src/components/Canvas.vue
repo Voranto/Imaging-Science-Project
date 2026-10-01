@@ -361,8 +361,8 @@ const fitCanvasToScreen = () => {
 
 // Find the smallest 2^n square
 const resizeCanvasOptimal = () => {
-  const width = imageBuffer.value?.width;
-  const height = imageBuffer.value?.height;
+  const width = imageBuffer.value?.width.value;
+  const height = imageBuffer.value?.height.value;
   if (!height || !width) return;
 
   const min_log = Math.log2(Math.min(height,width));

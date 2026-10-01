@@ -4,24 +4,25 @@ import { computeHistogram, renderHistogram } from './histogram';
 export class ImageBuffer {
     public canvas: Canvas;
     public floatBuffer: Float32Array;
-    public width: number;
-    public height: number;
+    public width: Ref<number>;
+    public height: Ref<number>;
     public isDrawing: Ref<boolean>;
     public mean: number;
     public variance: number;
+    public autoResizeCanvas: Ref<boolean>;
 
     constructor(canvasElement: HTMLCanvasElement, width: number, height: number) {
-    this.width = Math.floor(width);
-    this.height = Math.floor(height);
+    this.width = ref(Math.floor(width));
+    this.height = ref(Math.floor(height));
     this.canvas = new Canvas(canvasElement, { width, height });
-    this.floatBuffer = new Float32Array(this.width * this.height);
+    this.floatBuffer = new Float32Array(this.width.value * this.height.value);
     this.floatBuffer.fill(1.0);
     this.isDrawing = ref(false);
     this.initEventListeners();
     this.canvas.freeDrawingBrush = new PencilBrush(this.canvas);
     this.mean = 0;
     this.variance = 0;
-
+    this.autoResizeCanvas = ref(true);
     const hist = computeHistogram(this.floatBuffer);
     renderHistogram(hist);
   }
@@ -72,14 +73,16 @@ export class ImageBuffer {
   }
 
   public resizeCanvas() {
+    if (!this.autoResizeCanvas.value) return;
     const newWidth = window.innerWidth * 0.9;
     const newHeight = window.innerHeight * 0.9;
 
     this.setCanvasDimensions(newHeight,newWidth);
   }
   public setCanvasDimensions(newHeight:number, newWidth: number) {
-    this.width = Math.floor(newWidth);
-    this.height = Math.floor(newHeight);
+    this.width.value = Math.floor(newWidth);
+    this.height.value = Math.floor(newHeight);
+    console.log(newWidth , newHeight);
     this.canvas.setDimensions({
       width: newWidth,
       height: newHeight
@@ -126,13 +129,13 @@ export class ImageBuffer {
     const top = obj.top!;
 
     const minX = Math.max(0, Math.floor(left));
-    const maxX = Math.min(this.width, Math.ceil(left + rectW));
+    const maxX = Math.min(this.width.value, Math.ceil(left + rectW));
     const minY = Math.max(0, Math.floor(top));
-    const maxY = Math.min(this.height, Math.ceil(top + rectH));
+    const maxY = Math.min(this.height.value, Math.ceil(top + rectH));
     const color = getObjectGrayscale(obj) / 255.0;
     for (let y = minY; y < maxY; y++) {
       for (let x = minX; x < maxX; x++) {
-        const idx = y * this.width + x;
+        const idx = y * this.width.value + x;
         this.floatBuffer[idx] = color;
       }
     }
@@ -149,9 +152,9 @@ export class ImageBuffer {
     const cy = obj.top! + ry;
 
     const minX = Math.max(0, Math.floor(left));
-    const maxX = Math.min(this.width, Math.ceil(left + width));
+    const maxX = Math.min(this.width.value, Math.ceil(left + width));
     const minY = Math.max(0, Math.floor(top));
-    const maxY = Math.min(this.height, Math.ceil(top + height));
+    const maxY = Math.min(this.height.value, Math.ceil(top + height));
     const color = getObjectGrayscale(obj) / 255.0;
 
     const rxSq = rx * rx;
@@ -164,7 +167,7 @@ export class ImageBuffer {
       const dx = (x + 0.5) - cx; 
 
       if ((dx * dx) / rxSq + (dySq / rySq) <= 1.0) {
-        const idx = y * this.width + x;
+        const idx = y * this.width.value + x;
         this.floatBuffer[idx] = color;
       }
     }
@@ -181,9 +184,9 @@ export class ImageBuffer {
     const centerY = top + height / 2;
 
     const minX = Math.max(0, Math.floor(left));
-    const maxX = Math.min(this.width, Math.ceil(left + width));
+    const maxX = Math.min(this.width.value, Math.ceil(left + width));
     const minY = Math.max(0, Math.floor(top));
-    const maxY = Math.min(this.height, Math.ceil(top + height));
+    const maxY = Math.min(this.height.value, Math.ceil(top + height));
     for (let y = minY; y < maxY; y++) {
       for (let x = minX; x < maxX; x++) {
           const dx = (x + 0.5) - centerX;
@@ -191,7 +194,7 @@ export class ImageBuffer {
           const distSq = dx * dx + dy * dy;
 
           const val = Math.exp(-distSq / (2 * (obj as any).sigma * (obj as any).sigma));
-          const idx = y * this.width + x;
+          const idx = y * this.width.value + x;
 
           this.floatBuffer[idx] = Math.min(1.0, val);
       }
@@ -204,49 +207,49 @@ export class ImageBuffer {
     const top = obj.top!;
 
     const minX = Math.max(0, Math.floor(left));
-    const maxX = Math.min(this.width, Math.ceil(left + width));
+    const maxX = Math.min(this.width.value, Math.ceil(left + width));
     const minY = Math.max(0, Math.floor(top));
-    const maxY = Math.min(this.height, Math.ceil(top + height));
+    const maxY = Math.min(this.height.value, Math.ceil(top + height));
     const ctx = this.canvas.getContext();
     const imageData = ctx.getImageData(minX,minY, (maxX - minX),(maxY - minY)).data;
 
     for (let y = minY; y < maxY; y++) {
       for (let x = minX; x < maxX; x++) {
           const localIdx = (y - minY) * (maxX - minX) + (x-minX);
-          const bufferIdx = y * this.width + x;
+          const bufferIdx = y * this.width.value + x;
           this.floatBuffer[bufferIdx] = imageData[localIdx * 4]! / 255;
       }
     }
   }
   private rasterizePath(obj: Path) {
     const offscreen = document.createElement('canvas');
-    offscreen.width = this.width;
-    offscreen.height = this.height;
+    offscreen.width = this.width.value;
+    offscreen.height = this.height.value;
 
     const ctx = offscreen.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, this.width, this.height);
+    ctx.clearRect(0, 0, this.width.value, this.height.value);
 
     obj.render(ctx);
 
-    const imgData = ctx.getImageData(0, 0, this.width, this.height);
+    const imgData = ctx.getImageData(0, 0, this.width.value, this.height.value);
     const data = imgData.data;
 
     const bound = obj.getBoundingRect();
     const minX = Math.max(0, Math.floor(bound.left));
-    const maxX = Math.min(this.width, Math.ceil(bound.left + bound.width));
+    const maxX = Math.min(this.width.value, Math.ceil(bound.left + bound.width));
     const minY = Math.max(0, Math.floor(bound.top));
-    const maxY = Math.min(this.height, Math.ceil(bound.top + bound.height));
+    const maxY = Math.min(this.height.value, Math.ceil(bound.top + bound.height));
 
     const color = getObjectGrayscale(obj);
 
     for (let y = minY; y < maxY; y++) {
       for (let x = minX; x < maxX; x++) {
-        const pixelIdx = (y * this.width + x) * 4;
+        const pixelIdx = (y * this.width.value + x) * 4;
         const alpha = data[pixelIdx + 3];
         if (alpha == 0) continue;
-        const bufferIdx = y * this.width + x;
+        const bufferIdx = y * this.width.value + x;
 
         this.floatBuffer[bufferIdx] = color;
       }

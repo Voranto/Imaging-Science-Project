@@ -28,7 +28,6 @@ const frequencyFilterOption = ref(1);
         <option value="dwt">dwt</option>
       </select>
 
-      <!-- Dynamic Transform Parameters Panel -->
       <div class="filter-controls">
         <div v-show="getTransformType() == 'fft'" class="control-group">
           <p class="filter-note">Note: Leave the Highest Frequency to -1 if you want the threshold uncapped. Frequency filter cannot be undone.</p>

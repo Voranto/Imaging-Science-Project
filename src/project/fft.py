@@ -59,10 +59,18 @@ async def compute_inverse_fft_grayscale(image_id : str):
             detail="Session expired or Image ID not found in cache",
         )
     fft_shifted= fft_cache[image_id]
-    image_array = np.fft.ifft2(np.fft.ifftshift(fft_shifted))
-    magnitude = np.abs(image_array)
+    image_array = np.fft.ifft2(np.fft.ifftshift(fft_shifted)).real
     
-    final_bytes = np.clip(magnitude, 0, 255).astype(np.uint8)
+    
+    min_val, max_val = image_array.min(), image_array.max()
+
+    # Avoid division by zero for a constant image
+    if max_val - min_val > 1e-8:
+        normalized = 255 * (image_array - min_val) / (max_val - min_val)
+    else:
+        normalized = image_array
+
+    final_bytes = normalized.astype(np.uint8)
     res_img = Image.fromarray(final_bytes)
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")
@@ -108,7 +116,7 @@ async def apply_frequency_filter(image_id : str, low:float, high: float, cutoff:
             low_pass = np.ones((rows, cols))
 
         butterworth_mask = high_pass * low_pass
-        fft_shifted = fft_shifted * butterworth_mask
+        fft_shifted = fft_shifted * butterworth_mask        
 
     # Update the image_id
     fft_cache[image_id] = fft_shifted

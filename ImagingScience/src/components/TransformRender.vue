@@ -1,9 +1,12 @@
 <script setup>
 import { ref } from 'vue';
-import { transformRequested } from '@/composables/transform/useTransforms';
+import { applyFrequencyFilterFFT, transformRequested } from '@/composables/transform/useTransforms';
 import { getDWT, getIFFT, getIDCT, transformImageSrc, updateImageTransform, getTransformType, renderTransformToCanvas } from '../composables/transform/useTransforms.ts'
 
 const dwtLevel = ref(1);
+const lowestFrequency = ref(0);
+const highestFrequency = ref(200);
+const frequencyFilterOption = ref(1);
 </script>
 
 <template>
@@ -28,7 +31,19 @@ const dwtLevel = ref(1);
       <!-- Dynamic Transform Parameters Panel -->
       <div class="filter-controls">
         <div v-show="getTransformType() == 'fft'" class="control-group">
+          <p class="filter-note">Note: Leave the Highest Frequency to -1 if you want the threshold uncapped. Frequency filter cannot be undone.</p>
           <button class="btn btn-secondary" @click="getIFFT">IFFT</button>
+          <label>Lowest Frequency:</label>
+          <input class="custom-input" type="range" v-model.number="lowestFrequency"id="lowestFrequency" :min="0" :max="highestFrequency">
+          <span style="color: red;">{{ lowestFrequency }}</span>
+          <label>Highest Frequency:</label>
+          <input class="custom-input" type="range" v-model.number="highestFrequency" id="highestFrequency" :min="lowestFrequency" :max="1000">
+          <span style="color: blue;">{{ highestFrequency }}</span>
+          <select class="custom-select" v-model="frequencyFilterOption" id="frequencyFilterOption">
+            <option :value="1">Hard Cutoff</option>
+            <option :value="2">Butterworth</option>
+          </select>
+          <button class="btn btn-secondary" @click="applyFrequencyFilterFFT">Apply</button>
         </div>
 
         <div v-show="getTransformType() == 'dct'" class="control-group">
@@ -45,6 +60,15 @@ const dwtLevel = ref(1);
 
     <main class="image-viewport">
       <img v-show="transformRequested" :src="transformImageSrc" id="transformImage" alt="Transform preview">
+      <div v-show="getTransformType() === 'fft'">
+        <svg class="image-viewport" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle class="image-viewport" cx="50" cy="50" :r="lowestFrequency * 0.126" fill="none" stroke="red" stroke-width="0.3" />
+        </svg>
+        <svg class="image-viewport" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle class="image-viewport" cx="50" cy="50" :r="highestFrequency * 0.126" fill="none" stroke="blue" stroke-width="0.3" />
+        </svg>
+      </div>
+      
     </main>
 
     <div class="overlay-content"></div>
@@ -52,6 +76,33 @@ const dwtLevel = ref(1);
 </template>
 
 <style scoped>
+.image-viewport {
+  position: relative; /* Establishes positioning context */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80vw;
+  height: 80vh;
+}
+
+/* Ensure the SVG overlays the exact container bounds */
+.image-viewport svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Allows clicks to pass through to the image underneath */
+  z-index: 10;
+}
+.filter-note {
+  width: 100%;
+  margin: 0;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  text-align: center;
+}
+
 /* Fullscreen Overlay Container */
 .overlay-screen {
   position: fixed;
@@ -81,6 +132,16 @@ const dwtLevel = ref(1);
   align-items: center;
   gap: 0.75rem;
   z-index: 20;
+}
+.custom-select,
+.custom-input {
+  background-color: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  outline: none;
+  font-size: 0.85rem;
 }
 
 .toolbar-actions {

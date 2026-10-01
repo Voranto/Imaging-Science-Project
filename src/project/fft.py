@@ -68,3 +68,43 @@ async def compute_inverse_fft_grayscale(image_id : str):
     res_img.save(buf, format="PNG")
 
     return Response(content=buf.getvalue(), media_type="image/png")
+
+@router.post("/filter")
+async def apply_frequency_filter(image_id : str, low:float, high: float, cutoff: int):
+    if image_id not in fft_cache:
+        raise HTTPException(
+            status_code=404,
+            detail="Session expired or Image ID not found in cache",
+        )
+    if low == -1:
+        low = -float('inf')
+    if high == -1:
+        high = float('inf')
+    fft_shifted= fft_cache[image_id]
+    rows, cols = fft_shifted.shape
+
+    crow, ccol = rows // 2, cols // 2
+
+    y, x = np.ogrid[-crow:rows-crow, -ccol:cols-ccol]
+    dist_from_center = np.sqrt(x**2 + y**2)
+
+    bandpass_mask = (dist_from_center >= low) & (dist_from_center <= high)
+
+    fft_shifted = fft_shifted * bandpass_mask
+
+    # Update the image_id
+    fft_cache[image_id] = fft_shifted
+
+    magnitude = np.log1p(np.abs(fft_shifted))
+    
+    min_val, max_val = magnitude.min(), magnitude.max()
+    normalized = (255 * (magnitude - min_val) / (max_val - min_val + 1e-8)).astype(np.uint8)
+    res_img = Image.fromarray(normalized)
+    buf = io.BytesIO()
+    res_img.save(buf, format="PNG")
+
+    # Return the image_id
+    return Response(content=buf.getvalue(), media_type="image/png",headers={
+            "X-Image-ID": image_id,
+            "Access-Control-Expose-Headers": "X-Image-ID",
+        },)

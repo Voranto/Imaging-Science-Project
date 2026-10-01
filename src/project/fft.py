@@ -87,10 +87,28 @@ async def apply_frequency_filter(image_id : str, low:float, high: float, cutoff:
 
     y, x = np.ogrid[-crow:rows-crow, -ccol:cols-ccol]
     dist_from_center = np.sqrt(x**2 + y**2)
+    if cutoff == 1:
 
-    bandpass_mask = (dist_from_center >= low) & (dist_from_center <= high)
+        bandpass_mask = (dist_from_center >= low) & (dist_from_center <= high)
 
-    fft_shifted = fft_shifted * bandpass_mask
+        fft_shifted = fft_shifted * bandpass_mask
+    elif cutoff == 2:
+        dist_from_center[dist_from_center == 0] = 1e-8
+
+        # Hardcoded butterworth order
+        n = 2
+        if low > 0:
+            high_pass = 1 / (1 + (low / dist_from_center) ** (2 * n))
+        else:
+            high_pass = np.ones((rows, cols))
+
+        if high < float('inf'):
+            low_pass = 1 / (1 + (dist_from_center / high) ** (2 * n))
+        else:
+            low_pass = np.ones((rows, cols))
+
+        butterworth_mask = high_pass * low_pass
+        fft_shifted = fft_shifted * butterworth_mask
 
     # Update the image_id
     fft_cache[image_id] = fft_shifted

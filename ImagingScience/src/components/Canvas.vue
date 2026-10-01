@@ -200,35 +200,70 @@ const updateBrushSize = () => {
     }
 }
 
-let clipboard : FabricObject;
-
+let clipboard : Array<FabricObject>;
+let pasteOffsetCount = 0;
 const copyObject = async () => {
   if (!imageBuffer.value!.canvas) return;
 
-  const activeObject = imageBuffer.value!.canvas.getActiveObject();
-  if (!activeObject) return;
+  const activeObjects = imageBuffer.value!.canvas.getActiveObjects();
+  if (!activeObjects || activeObjects.length === 0) return;
+  clipboard = [];
+  pasteOffsetCount = 0;
+  for (const activeObject of activeObjects){
 
-  clipboard = await activeObject.clone(['customType']);
-  console.log((activeObject as any).customType);
+    const center = activeObject.getCenterPoint();
+    const cloned = await activeObject.clone(['customType']);
+    (cloned as any).customType = (activeObject as any).customType;
+    cloned.set({
+      left: center.x - activeObject.width / 2,
+      top: center.y - activeObject.height / 2,
+      originX: 'left',
+      originY: 'top',
+    });
+    clipboard.push(cloned);
+  }  
 };
 
 const pasteObject = async () => {
   const canvas = imageBuffer.value?.canvas;
   if (!canvas || !clipboard) return;
-
-  const clonedObj = await clipboard.clone(['customType']);
-  console.log((clonedObj as any).customType)
   canvas.discardActiveObject();
+  pasteOffsetCount++;
+  const offset = 20 * pasteOffsetCount;
 
-  clonedObj.set({
-    left: clonedObj.left + 20,
-    top: clonedObj.top + 20,
-    evented: true,
-    customType: (clonedObj as any).customType
-  });
-  imageBuffer.value!.canvas.add(clonedObj);
+  const newlyPastedObjects: FabricObject[] = [];
+  for (const obj of clipboard){
+    const clonedObj = await obj.clone(['customType']);
+    const customType = (obj as any).customType;
 
-  canvas.setActiveObject(clonedObj);
+    const coords = obj.getCenterPoint();
+    coords.x -= obj.width / 2;
+    coords.y -= obj.height / 2;
+    clonedObj.set({
+      left: coords.x + offset,
+      top: coords.y + offset,
+      evented: true,
+      customType: customType,
+      originX: 'left',
+      originY: 'top',
+    });
+    (clonedObj as any).customType = customType;
+    clonedObj.setCoords();
+    
+    clonedObj.on("selected", () => {
+  })
+    imageBuffer.value!.canvas.add(clonedObj);
+    newlyPastedObjects.push(clonedObj);
+  }
+  if (newlyPastedObjects.length === 1) {
+    canvas.setActiveObject(newlyPastedObjects[0]!);
+  } else if (newlyPastedObjects.length > 1) {
+    const selection = new ActiveSelection(newlyPastedObjects, {
+      canvas: canvas,
+    });
+    canvas.setActiveObject(selection);
+  }
+
   canvas.renderAll();
   imageBuffer.value?.syncFloatBuffer();
 };

@@ -300,6 +300,7 @@ const handleAddObject = ({ shape, gaussianSigma }: { shape: string, gaussianSigm
   if (shape === 'box') addBox();
   else if (shape === 'circle') addCircle();
   else if (shape === 'gaussian') addGaussian(gaussianSigma);
+  imageBuffer.value?.syncFloatBuffer();
 };
 
 const handleTransform = (type: string) => {

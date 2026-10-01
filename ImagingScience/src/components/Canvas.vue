@@ -164,9 +164,12 @@ const updateObjectColor = () => {
   if (imageBuffer.value!.isDrawing && imageBuffer.value!.canvas.freeDrawingBrush) {
       imageBuffer.value!.canvas.freeDrawingBrush.color = `rgb(${c}, ${c}, ${c})`;
   }
-  var obj = imageBuffer.value!.canvas.getActiveObject();
-  if (!obj) return;
-  obj.set("fill", `rgb(${c}, ${c}, ${c})`);
+  var objs = imageBuffer.value!.canvas.getActiveObjects();
+  for (const obj of objs){
+    if (!obj) return;
+    obj.set("fill", `rgb(${c}, ${c}, ${c})`);
+  }
+  
   imageBuffer.value!.canvas.renderAll();
   imageBuffer.value?.syncFloatBuffer();
 }

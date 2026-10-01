@@ -10,6 +10,7 @@ import { useImageBufferState } from '../composables/useImageBufferState.ts';
 import Toolbar from './Toolbar.vue';
 import { applyUniformNoise, applyGaussianNoise, applyMultiplicativeUniformNoise, applyMultiplicativeGaussianNoise, applyImpulseNoise } from '@/composables/noise/applyNoise.ts';
 import { getColorSelector, setColorSelector } from '@/composables/objectColor.ts';
+import { clone } from 'chart.js/helpers';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 // Reference to the canvas object
 const canvasRef = useTemplateRef<HTMLCanvasElement>("canvasObject");
@@ -82,10 +83,8 @@ const addBox = () => {
     uniScaleKey: 'shiftKey',
   });
   rect.set("customType", "rect")
+  addEventListenersObject(rect);
   canvas.add(rect);
-  rect.on("selected", () => {
-    setColorSelector(getObjectGrayscale(rect));
-  })
   canvas.setActiveObject(rect);
 };
 const addCircle = () => {
@@ -108,10 +107,8 @@ const addCircle = () => {
     noScaleCache: true,
   });
   rect.set("customType", "circle");
+  addEventListenersObject(rect);
   canvas.add(rect);
-  rect.on("selected", () => {
-      setColorSelector(getObjectGrayscale(rect));
-  })
   canvas.setActiveObject(rect);
 };
 const addGaussian = (sigma: number) => {
@@ -126,6 +123,7 @@ const addGaussian = (sigma: number) => {
   });
   gaussianObj.set("customType", "gaussian");
   gaussianObj.set("sigma", sigma.toString())
+  addEventListenersObject(gaussianObj);
   canvas.add(gaussianObj);
   canvas.setActiveObject(gaussianObj);
 };
@@ -158,6 +156,14 @@ function createGaussianImage(rawWidth: number, rawHeight: number, sigma: number)
     return new FabricImage(tempCanvas);
 }
 
+const addEventListenersObject = (obj : FabricObject) => {
+  const type = (obj as any).customType;
+  if (type === "rect" || type === "circle") {
+    obj.on("selected", () => {
+      setColorSelector(getObjectGrayscale(obj));
+    })
+  }
+}
 
 const updateObjectColor = () => {
   const c = getColorSelector();
@@ -250,8 +256,7 @@ const pasteObject = async () => {
     (clonedObj as any).customType = customType;
     clonedObj.setCoords();
     
-    clonedObj.on("selected", () => {
-  })
+    addEventListenersObject(clonedObj);
     imageBuffer.value!.canvas.add(clonedObj);
     newlyPastedObjects.push(clonedObj);
   }

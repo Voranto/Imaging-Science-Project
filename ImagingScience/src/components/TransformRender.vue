@@ -38,7 +38,7 @@ const frequencyFilterOption = ref(1);
           <span style="color: red;">{{ lowestFrequency }}</span>
           <label>Highest Frequency:</label>
           <input class="custom-input" type="range" v-model.number="highestFrequency" id="highestFrequency" :min="lowestFrequency" :max="1000">
-          <span style="color: blue;">{{ highestFrequency }}</span>
+          <span style="color: lightblue;">{{ highestFrequency }}</span>
           <select class="custom-select" v-model="frequencyFilterOption" id="frequencyFilterOption">
             <option :value="1">Hard Cutoff</option>
             <option :value="2">Butterworth</option>

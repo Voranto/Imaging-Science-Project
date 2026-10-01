@@ -169,7 +169,7 @@ export abstract class  Transform {
         this.hideTransformContainer();
     }
 
-    private async renderImageResult(response: AxiosResponse<any, Float32Array>) {
+    protected async renderImageResult(response: AxiosResponse<any, Float32Array>) {
         const newImageUrl = URL.createObjectURL(response.data);
         transformImageSrc.value = newImageUrl
     }

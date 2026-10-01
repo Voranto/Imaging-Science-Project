@@ -69,3 +69,22 @@ export function changeTransformType(mode: string) {
         transformType.value = mode;
     }
 }
+export function applyFrequencyFilterFFT() {
+    const cutoffType : HTMLSelectElement | null = document.getElementById("frequencyFilterOption") as HTMLSelectElement;
+    let type = 0;
+    if (cutoffType) {
+        type = Number(cutoffType.value);
+    }
+    const highObj : HTMLSelectElement | null = document.getElementById("highestFrequency") as HTMLSelectElement;
+    let high = 0;
+    if (highObj) {
+        high = Number(highObj.value);
+    }
+    const lowObj : HTMLSelectElement | null = document.getElementById("lowestFrequency") as HTMLSelectElement;
+    let low = 0;
+    if (lowObj) {
+        low = Number(lowObj.value);
+    }
+
+    instanceFFT.applyFrequencyFilter(low, high, type);
+}

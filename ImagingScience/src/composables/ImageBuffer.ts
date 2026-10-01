@@ -10,7 +10,6 @@ export class ImageBuffer {
     public mean: number;
     public variance: number;
 
-
     constructor(canvasElement: HTMLCanvasElement, width: number, height: number) {
     this.width = Math.floor(width);
     this.height = Math.floor(height);
@@ -20,7 +19,6 @@ export class ImageBuffer {
     this.isDrawing = ref(false);
     this.initEventListeners();
     this.canvas.freeDrawingBrush = new PencilBrush(this.canvas);
-
     this.mean = 0;
     this.variance = 0;
 

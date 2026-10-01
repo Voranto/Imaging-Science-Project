@@ -5,13 +5,14 @@ import { useImageBufferState } from '../composables/useImageBufferState.ts';
 import CollapsibleToolbarItem from './CollapsibleToolbarItem.vue';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 import { histogramCanvas } from '@/composables/histogram.ts';
+import { ImageBuffer } from '@/composables/ImageBuffer.ts';
+import { colorSelector } from '@/composables/objectColor.ts';
 // Menu visibility state
 const activeMenu = ref<string | null>(null);
 
 
 // Form configurations
 const brushSize = ref(10);
-const color = ref(0);
 const gaussianSigma = ref(1);
 const selectedShape = ref<'box' | 'circle' | 'gaussian'>('box');
 const uniformNoiseRange = ref(0);
@@ -284,8 +285,8 @@ onUnmounted(() => {
         <div class="form-control">
           <label>Brush Size: {{ brushSize }}px</label>
           <input type="range" min="1" max="100" v-model="brushSize" @input="$emit('updateBrush', brushSize)"  id="brushSize">
-          <label>Object Color: {{ color }}</label>
-          <input type="range" min="0" max="255" v-model="color" @input="$emit('updateColor')" id="objectColorSelector">
+          <label>Object Color: {{ colorSelector }}</label>
+          <input type="range" min="0" max="255" v-model="colorSelector" @input="$emit('updateColor')" id="objectColorSelector">
         </div>
         <hr>
         <button @click="$emit('resizeCanvasOptimal'); activeMenu = null">Resize Canvas to 2^n</button>

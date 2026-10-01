@@ -9,6 +9,7 @@ import {handleFilter } from '../composables/filters/useFilter.ts'
 import { useImageBufferState } from '../composables/useImageBufferState.ts';
 import Toolbar from './Toolbar.vue';
 import { applyUniformNoise, applyGaussianNoise, applyMultiplicativeUniformNoise, applyMultiplicativeGaussianNoise, applyImpulseNoise } from '@/composables/noise/applyNoise.ts';
+import { getColorSelector, setColorSelector } from '@/composables/objectColor.ts';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 // Reference to the canvas object
 const canvasRef = useTemplateRef<HTMLCanvasElement>("canvasObject");
@@ -83,8 +84,7 @@ const addBox = () => {
   rect.set("customType", "rect")
   canvas.add(rect);
   rect.on("selected", () => {
-    var colorSelector = document.getElementById("objectColorSelector");
-    (colorSelector! as HTMLSelectElement).value = getObjectGrayscale(rect).toString();
+    setColorSelector(getObjectGrayscale(rect));
   })
   canvas.setActiveObject(rect);
 };
@@ -110,8 +110,7 @@ const addCircle = () => {
   rect.set("customType", "circle");
   canvas.add(rect);
   rect.on("selected", () => {
-    var colorSelector = document.getElementById("objectColorSelector");
-    (colorSelector! as HTMLSelectElement).value = getObjectGrayscale(rect).toString();
+      setColorSelector(getObjectGrayscale(rect));
   })
   canvas.setActiveObject(rect);
 };
@@ -161,16 +160,15 @@ function createGaussianImage(rawWidth: number, rawHeight: number, sigma: number)
 
 
 const updateObjectColor = () => {
-  var colorSelector = document.getElementById("objectColorSelector");
-  const c = (colorSelector as HTMLSelectElement).value;
-    if (imageBuffer.value!.isDrawing && imageBuffer.value!.canvas.freeDrawingBrush) {
-        imageBuffer.value!.canvas.freeDrawingBrush.color = `rgb(${c}, ${c}, ${c})`;
-    }
-    var obj = imageBuffer.value!.canvas.getActiveObject();
-    if (!obj) return;
-    obj.set("fill", `rgb(${c}, ${c}, ${c})`);
-    imageBuffer.value!.canvas.renderAll();
-    imageBuffer.value?.syncFloatBuffer();
+  const c = getColorSelector();
+  if (imageBuffer.value!.isDrawing && imageBuffer.value!.canvas.freeDrawingBrush) {
+      imageBuffer.value!.canvas.freeDrawingBrush.color = `rgb(${c}, ${c}, ${c})`;
+  }
+  var obj = imageBuffer.value!.canvas.getActiveObject();
+  if (!obj) return;
+  obj.set("fill", `rgb(${c}, ${c}, ${c})`);
+  imageBuffer.value!.canvas.renderAll();
+  imageBuffer.value?.syncFloatBuffer();
 }
 
 const clearCanvas = () => {

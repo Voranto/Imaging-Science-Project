@@ -14,8 +14,10 @@ const activeMenu = ref<string | null>(null);
 
 // Form configurations
 const brushSize = ref(10);
+const sinusoidalCyclesX = ref(1);
+const sinusoidalCyclesY = ref(1);
 const gaussianSigma = ref(1);
-const selectedShape = ref<'box' | 'circle' | 'gaussian'>('box');
+const selectedShape = ref<string>('box');
 const uniformNoiseRange = ref(0);
 const gaussianNoiseMean = ref(0);
 const gaussianNoiseSigma= ref(1);
@@ -53,7 +55,7 @@ const emit = defineEmits([
 ]);
 
 const handleAddShape = () => {
-  emit('addObject', { shape: selectedShape.value, gaussianSigma: gaussianSigma.value});
+  emit('addObject', { shape: selectedShape.value, gaussianSigma: gaussianSigma.value, sinusoidalCyclesX : sinusoidalCyclesX.value , sinusoidalCyclesY : sinusoidalCyclesY.value});
   activeMenu.value = null;
 };
 
@@ -115,6 +117,7 @@ onUnmounted(() => {
                 <option value="box">Rectangle</option>
                 <option value="circle">Circle</option>
                 <option value="gaussian">Gaussian</option>
+                <option value="sinusoidal">Sinusoidal</option>
               </select>
             </div>
 
@@ -122,7 +125,13 @@ onUnmounted(() => {
               <label>Sigma: <strong>{{ gaussianSigma }}</strong></label>
               <input type="number" min="1" max="500" v-model.number="gaussianSigma" class="input-field" />
             </div>
-
+            <div v-show="selectedShape === 'sinusoidal'" class="form-control">
+              <label>Cycles X: <strong>{{ sinusoidalCyclesX }}</strong></label>
+              <input type="range" min="0" max="100" v-model.number="sinusoidalCyclesX" class="input-field" />
+              <label>Cycles Y: <strong>{{ sinusoidalCyclesY }}</strong></label>
+              <input type="range" min="0" max="100" v-model.number="sinusoidalCyclesY" class="input-field" />
+            
+            </div>
             <button class="primary full-width" @click="handleAddShape">Add Selected Shape</button>
           </div>
         </CollapsibleToolbarItem>

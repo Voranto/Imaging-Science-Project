@@ -129,6 +129,23 @@ const addGaussian = (sigma: number) => {
   canvas.add(gaussianObj);
   canvas.setActiveObject(gaussianObj);
 };
+const addSinusoidal = (cyclesX : number, cyclesY : number) => {
+  const canvas = imageBuffer.value?.canvas; 
+  if (!canvas) return;
+  var height = canvas.height;
+  var width = canvas.width;
+  const sineObj = createSinusoidalImage(width, height, cyclesX, cyclesY);
+  sineObj.set({
+    originX: 'left',
+    originY: 'top',
+  });
+  sineObj.set("customType", "sinusoidal");
+  sineObj.set("cyclesX", cyclesX.toString())
+  sineObj.set("cyclesY", cyclesY.toString())
+  addEventListenersObject(sineObj);
+  canvas.add(sineObj);
+  canvas.setActiveObject(sineObj);
+}
 
 function createGaussianImage(rawWidth: number, rawHeight: number, sigma: number) {
     const height = Math.floor(rawHeight);
@@ -156,6 +173,34 @@ function createGaussianImage(rawWidth: number, rawHeight: number, sigma: number)
     }
     ctx!.putImageData(imgData, 0, 0);
     return new FabricImage(tempCanvas);
+}
+function createSinusoidalImage(rawWidth: number, rawHeight: number, cyclesX: number, cyclesY: number) {
+    const height = Math.floor(rawHeight);
+    const width = Math.floor(rawWidth)
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = Math.floor(width);
+    tempCanvas.height = Math.floor(height);
+    const ctx = tempCanvas.getContext('2d');
+    const imgData = ctx!.createImageData(Math.floor(width), Math.floor(height));
+    const freqX = (2 * Math.PI * cyclesX) / width;
+    const freqY = (2 * Math.PI * cyclesY) / height;
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const idx = (y * width + x) * 4;
+            const val = 127.5 * computeCosine2D(x * freqX, y * freqY) + 127.5;
+            
+            imgData.data[idx]     = val; // R
+            imgData.data[idx + 1] = val; // G
+            imgData.data[idx + 2] = val; // B
+            imgData.data[idx + 3] = 255; // A
+        }
+    }
+    ctx!.putImageData(imgData, 0, 0);
+    return new FabricImage(tempCanvas);
+}
+const computeCosine2D = (x : number, y : number) => {
+  return Math.cos(x) * Math.cos(y);
 }
 
 const addEventListenersObject = (obj : FabricObject) => {
@@ -300,10 +345,11 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-const handleAddObject = ({ shape, gaussianSigma }: { shape: string, gaussianSigma:number }) => {
+const handleAddObject = ({ shape, gaussianSigma, sinusoidalCyclesX, sinusoidalCyclesY }: { shape: string, gaussianSigma:number, sinusoidalCyclesX : number, sinusoidalCyclesY : number }) => {
   if (shape === 'box') addBox();
   else if (shape === 'circle') addCircle();
   else if (shape === 'gaussian') addGaussian(gaussianSigma);
+  else if (shape === 'sinusoidal') addSinusoidal(sinusoidalCyclesX, sinusoidalCyclesY);
   imageBuffer.value?.syncFloatBuffer();
 };
 

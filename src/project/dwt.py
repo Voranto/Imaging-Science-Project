@@ -29,33 +29,22 @@ async def compute_dwt_grayscale(request: Request):
 
     img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
     dwt = pywt.wavedec2(img_array * 255, "haar", level=levels, mode="symmetric")
-    
-    # Normalize first, then convert coefficients to array
-    cA_3 = dwt[0]
-    if (np.max(cA_3) - np.min(cA_3) == 0):
-        cA_3_norm = img_array[:len(cA_3), :len(cA_3[0])] * 255
-        print("check", levels, cA_3_norm)
-    else:
-        cA_3_norm = ((cA_3 - np.min(cA_3)) / (np.max(cA_3) - np.min(cA_3) + 1e-5) * 255)
-    
-    normalized_dwt = [cA_3_norm]
-    
-    # Loop through each detail level tuple (cH, cV, cD)
-    for level_tuples in dwt[1:]:
-        norm_tuple = []
-        for coeff in level_tuples:
-            # Map each individual detail panel safely between 0 and 255
-            c_min, c_max = np.min(coeff), np.max(coeff)
-            if c_max - c_min > 0:
-                norm_coeff = ((coeff - c_min) / (c_max - c_min) * 255)
-            else:
-                norm_coeff = np.zeros_like(coeff)
-            norm_tuple.append(norm_coeff)
-        normalized_dwt.append(tuple(norm_tuple))
 
-    arr_coefficients, slices = pywt.coeffs_to_array(normalized_dwt, padding=127)
+    cA_max = np.abs(dwt[0]).max()
+    if cA_max > 0:
+        dwt[0] /= cA_max
+    for detail_level in range(levels):
+        normalized_details = []
+        for d in dwt[detail_level + 1]:
+            d_max = np.abs(d).max()
+            normalized_details.append(d / d_max if d_max > 0 else d)
+        dwt[detail_level + 1] = normalized_details
 
-    vis_arr = arr_coefficients.astype(np.uint8)
+
+
+    arr, slices = pywt.coeffs_to_array(dwt)
+    vis_arr = ((arr - arr.min()) / (arr.max() - arr.min() + 1e-5) * 255)
+    vis_arr = np.clip(vis_arr, 0, 255).astype(np.uint8)
 
     res_img = Image.fromarray(vis_arr)
     buf = io.BytesIO()

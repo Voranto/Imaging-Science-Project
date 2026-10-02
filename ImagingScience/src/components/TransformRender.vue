@@ -50,6 +50,7 @@ const frequencyFilterOption = ref(1);
         </div>
 
         <div v-show="getTransformType() == 'dwt'" class="control-group">
+          <p class="filter-note">Note: For some reason, using small shapes (like rects) gives trouble with the DWT. Larger detail-heavy images work better.</p>
           <label>Level:</label>
           <input type="range" v-model.number="dwtLevel" @change="getDWT" id="dwtLevel" min="0" max="10">
           <span class="threshold-value">{{ dwtLevel }}</span>

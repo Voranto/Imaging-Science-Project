@@ -208,10 +208,10 @@ export class ImageBuffer {
     const height = (obj.height || 0) * (obj.scaleY || 1);
     const left = obj.left!;
     const top = obj.top!;
-    const cycles = (obj as any).cycles;
-
-    const freqX = (2 * Math.PI * cycles) / width;
-    const freqY = (2 * Math.PI * cycles) / height;
+    const cyclesX = (obj as any).cyclesX;
+    const cyclesY = (obj as any).cyclesY;
+    const freqX = (2 * Math.PI * cyclesX) / width;
+    const freqY = (2 * Math.PI * cyclesY) / height;
 
     const minX = Math.max(0, Math.floor(left));
     const maxX = Math.min(this.width.value, Math.ceil(left + width));
@@ -228,7 +228,6 @@ export class ImageBuffer {
           this.floatBuffer[idx] = Math.min(1.0, val_corrected);
       }
     }
-    console.log(this.floatBuffer);
   }
   private rasterizeImage(obj : FabricImage){
     const width = Math.floor(obj.width || 0) * (obj.scaleX || 1);

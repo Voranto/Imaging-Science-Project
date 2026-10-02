@@ -31,7 +31,7 @@ async def compute_dct_grayscale(request: Request):
 
     img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
     
-    dct = dctn(img_array * 255 , type=2, norm='ortho')
+    dct = dctn(img_array * 255 - 127.5, type=2, norm='ortho')
     # Store true DCT matrix
     image_id = str(uuid.uuid4())
     dct_cache[image_id] = dct
@@ -39,7 +39,11 @@ async def compute_dct_grayscale(request: Request):
     dct = np.log1p(np.abs(dct))
 
     min_val, max_val =     dct.min(),     dct.max()
-    normalized = (255 * (dct - min_val) / (max_val - min_val + 1e-8)).astype(np.uint8)
+    diff = max_val - min_val
+    if diff < 1e-8:
+        normalized = np.zeros_like(dct, dtype=np.uint8)
+    else:
+        normalized = (255 * (dct - min_val) / diff).astype(np.uint8)
     res_img = Image.fromarray(normalized)
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")

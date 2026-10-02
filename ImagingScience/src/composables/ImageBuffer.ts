@@ -117,6 +117,9 @@ export class ImageBuffer {
     else if (obj.type === 'path') {
       this.rasterizePath(obj as Path);
     }
+    else if (objectType === 'sinusoidal') {
+      this.rasterizeSinusoidal(obj);
+    }
     else {
       console.warn("Object was not classified", obj)
     }
@@ -200,6 +203,33 @@ export class ImageBuffer {
       }
     }
 }
+  private rasterizeSinusoidal(obj : FabricObject) {
+    const width = (obj.width || 0) * (obj.scaleX || 1);
+    const height = (obj.height || 0) * (obj.scaleY || 1);
+    const left = obj.left!;
+    const top = obj.top!;
+    const cycles = (obj as any).cycles;
+
+    const freqX = (2 * Math.PI * cycles) / width;
+    const freqY = (2 * Math.PI * cycles) / height;
+
+    const minX = Math.max(0, Math.floor(left));
+    const maxX = Math.min(this.width.value, Math.ceil(left + width));
+    const minY = Math.max(0, Math.floor(top));
+    const maxY = Math.min(this.height.value, Math.ceil(top + height));
+    for (let y = minY; y < maxY; y++) {
+      for (let x = minX; x < maxX; x++) {
+          const localX = x - left;
+          const localY = y - top;
+          const val = Math.cos(localX * freqX) * Math.cos(localY * freqY); // [-1, 1]
+          const val_corrected = (val + 1) / 2;
+          const idx = y * this.width.value + x;
+
+          this.floatBuffer[idx] = Math.min(1.0, val_corrected);
+      }
+    }
+    console.log(this.floatBuffer);
+  }
   private rasterizeImage(obj : FabricImage){
     const width = Math.floor(obj.width || 0) * (obj.scaleX || 1);
     const height = Math.floor(obj.height || 0) * (obj.scaleY || 1);

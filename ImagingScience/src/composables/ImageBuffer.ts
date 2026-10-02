@@ -1,6 +1,7 @@
 import { Canvas, FabricObject, PencilBrush, FabricImage, Path } from 'fabric';
 import {ref, type Ref} from 'vue';
 import { computeHistogram, renderHistogram } from './histogram';
+import { getBackgroundColor } from './backgroundColor';
 export class ImageBuffer {
     public canvas: Canvas;
     public floatBuffer: Float32Array;
@@ -16,7 +17,7 @@ export class ImageBuffer {
     this.height = ref(Math.floor(height));
     this.canvas = new Canvas(canvasElement, { width, height });
     this.floatBuffer = new Float32Array(this.width.value * this.height.value);
-    this.floatBuffer.fill(1.0);
+    this.floatBuffer.fill(getBackgroundColor() / 255);
     this.isDrawing = ref(false);
     this.initEventListeners();
     this.canvas.freeDrawingBrush = new PencilBrush(this.canvas);
@@ -35,8 +36,8 @@ export class ImageBuffer {
   public async syncFloatBuffer() {
     // Have to wait before syncing float buffer, to avoid adding and then syncing
     await new Promise((resolve) => requestAnimationFrame(resolve));
-
-    this.floatBuffer.fill(1.0);
+    console.log("background color", getBackgroundColor() / 255);
+    this.floatBuffer.fill(getBackgroundColor() / 255);
 
     const objects = this.canvas.getObjects();
 
@@ -89,7 +90,6 @@ export class ImageBuffer {
     });
 
     this.floatBuffer = new Float32Array(Math.floor(newWidth) * Math.floor(newHeight));
-    this.floatBuffer.fill(1.0);
     this.canvas.renderAll();
     this.syncFloatBuffer();
   }

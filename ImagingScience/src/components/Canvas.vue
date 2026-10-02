@@ -11,6 +11,7 @@ import Toolbar from './Toolbar.vue';
 import { applyUniformNoise, applyGaussianNoise, applyMultiplicativeUniformNoise, applyMultiplicativeGaussianNoise, applyImpulseNoise } from '@/composables/noise/applyNoise.ts';
 import { getColorSelector, setColorSelector } from '@/composables/objectColor.ts';
 import { clone } from 'chart.js/helpers';
+import { getBackgroundColor } from '@/composables/backgroundColor.ts';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 // Reference to the canvas object
 const canvasRef = useTemplateRef<HTMLCanvasElement>("canvasObject");
@@ -27,34 +28,35 @@ const handleCanvasResize = () => {
 onMounted(() => {
   if (!canvasRef.value) return;
   imageBuffer.value = new ImageBuffer(canvasRef.value, window.innerWidth * 0.9, window.innerHeight * 0.9);
-  imageBuffer.value.canvas.backgroundColor = "white";
+  const color = getBackgroundColor();
+  imageBuffer.value.canvas.backgroundColor = `rgb(${color }, ${color}, ${color})`;
   imageBuffer.value.canvas.on('path:created', (e) => {
-  e.path.set({
-    objectCaching: false,
-    strokeLineCap: 'round',
-    strokeLineJoin: 'round'
+    e.path.set({
+      objectCaching: false,
+      strokeLineCap: 'round',
+      strokeLineJoin: 'round'
+    });
   });
   imageBuffer.value!.canvas.on('object:moving', (e) => {
-  if (!e.target) return;
-  e.target.set({
-    left: Math.round(e.target.left),
-    top: Math.round(e.target.top)
+    if (!e.target) return;
+    e.target.set({
+      left: Math.round(e.target.left),
+      top: Math.round(e.target.top)
+    });
   });
-});
 
-imageBuffer.value!.canvas.on('object:scaling', (e) => {
-  if (!e.target) return;
-  e.target.set({
-    left: Math.round(e.target.left),
-    top: Math.round(e.target.top),
-    width: Math.round(e.target.width * e.target.scaleX),
-    height: Math.round(e.target.height * e.target.scaleY),
-    scaleX: 1,
-    scaleY: 1
+  imageBuffer.value!.canvas.on('object:scaling', (e) => {
+    if (!e.target) return;
+    e.target.set({
+      left: Math.round(e.target.left),
+      top: Math.round(e.target.top),
+      width: Math.round(e.target.width * e.target.scaleX),
+      height: Math.round(e.target.height * e.target.scaleY),
+      scaleX: 1,
+      scaleY: 1
+    });
   });
-});
   imageBuffer.value!.canvas.renderAll();
-});
   window.addEventListener('resize', handleCanvasResize);
   updateBrushSize();
 });
@@ -182,7 +184,9 @@ const updateObjectColor = () => {
 
 const clearCanvas = () => {
     imageBuffer.value!.canvas.clear();
-    imageBuffer.value!.canvas.backgroundColor = "white";
+    const color = getBackgroundColor();
+    updateBackgroundColor();
+    
 }
 
 const deleteActiveObject = () => {
@@ -371,6 +375,12 @@ const resizeCanvasOptimal = () => {
   const optimal_dimensions = 2** min_log;
   imageBuffer.value?.setCanvasDimensions(optimal_dimensions, optimal_dimensions);
 }
+const updateBackgroundColor = () => {
+  const color = getBackgroundColor();
+  imageBuffer.value!.canvas.backgroundColor = `rgb(${color }, ${color}, ${color})`;
+  imageBuffer.value?.canvas.renderAll();
+  imageBuffer.value?.syncFloatBuffer();
+}
 </script>
 <template>
     <div class="canvas-container">
@@ -386,6 +396,7 @@ const resizeCanvasOptimal = () => {
       @fitCanvasToScreen="fitCanvasToScreen"
       @addNoise="handleAddNoise"
       @resizeCanvasOptimal="resizeCanvasOptimal"
+      @updateBackground="updateBackgroundColor"
     />
     <canvas ref="canvasObject" id="imageCanvas" style="border:1px solid #000000"></canvas>
   </div>

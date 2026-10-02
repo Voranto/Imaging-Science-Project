@@ -74,9 +74,6 @@ export abstract class  Noise {
             if (imageBuffer && imageBuffer.value){
                 const canvas = imageBuffer.value.canvas;
 
-                canvas.clear();
-                canvas.backgroundColor = "white";
-
                 const img = await FabricImage.fromURL(newImageUrl);
                 img.set({
                     customType: "image",

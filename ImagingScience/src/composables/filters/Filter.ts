@@ -143,10 +143,6 @@ export abstract class  Filter {
             })
             image.set("customType", "image")
 
-            // TODO: Make the decision if clearing the canvas is worth it
-            imageBuffer.value!.canvas.clear();
-            imageBuffer.value!.canvas.backgroundColor = "white";
-
             imageBuffer.value?.canvas.add(image);
             imageBuffer.value?.canvas.setActiveObject(image);
 

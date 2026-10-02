@@ -120,9 +120,6 @@ export abstract class  Transform {
             if (imageBuffer && imageBuffer.value){
                 const canvas = imageBuffer.value.canvas;
 
-                canvas.clear();
-                canvas.backgroundColor = "white";
-
                 const img = await FabricImage.fromURL(newImageUrl);
                 img.set({
                     customType: "image",
@@ -156,10 +153,6 @@ export abstract class  Transform {
                 originY: 'top',
             })
             image.set("customType", "image")
-
-            // TODO: Make the decision if clearing the canvas is worth it
-            imageBuffer.value!.canvas.clear();
-            imageBuffer.value!.canvas.backgroundColor = "white";
 
             imageBuffer.value?.canvas.add(image);
             imageBuffer.value?.canvas.setActiveObject(image);

@@ -33,7 +33,10 @@ async def compute_dwt_grayscale(request: Request):
     
     # Normalize first, then convert coefficients to array
     cA_3 = dwt[0]
-    cA_3_norm = ((cA_3 - np.min(cA_3)) / (np.max(cA_3) - np.min(cA_3) + 1e-5) * 255)
+    if (np.max(cA_3) - np.min(cA_3) == 0):
+        cA_3_norm = cA_3
+    else:
+        cA_3_norm = ((cA_3 - np.min(cA_3)) / (np.max(cA_3) - np.min(cA_3) + 1e-5) * 255)
     
     normalized_dwt = [cA_3_norm]
     

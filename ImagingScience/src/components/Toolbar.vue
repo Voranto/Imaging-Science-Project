@@ -7,6 +7,7 @@ const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState(
 import { histogramCanvas } from '@/composables/histogram.ts';
 import { ImageBuffer } from '@/composables/ImageBuffer.ts';
 import { colorSelector } from '@/composables/objectColor.ts';
+import { backgroundColorSelector } from '@/composables/backgroundColor.ts';
 // Menu visibility state
 const activeMenu = ref<string | null>(null);
 
@@ -47,7 +48,8 @@ const emit = defineEmits([
   'fitCanvasToObjects',
   'fitCanvasToScreen',
   'addNoise',
-  'resizeCanvasOptimal'
+  'resizeCanvasOptimal',
+  'updateBackground'
 ]);
 
 const handleAddShape = () => {
@@ -287,6 +289,9 @@ onUnmounted(() => {
           <input type="range" min="1" max="100" v-model="brushSize" @input="$emit('updateBrush', brushSize)"  id="brushSize">
           <label>Object Color: {{ colorSelector }}</label>
           <input type="range" min="0" max="255" v-model="colorSelector" @input="$emit('updateColor')" id="objectColorSelector">
+          <label>Background Color: {{ backgroundColorSelector }}</label>
+          <input type="range" min="0" max="255" v-model="backgroundColorSelector" @input="$emit('updateBackground')" id="backgroundColorSelector">
+        
         </div>
         <hr>
         <div id="control-row">

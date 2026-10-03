@@ -1,4 +1,4 @@
-import { ActiveSelection, Circle, FabricImage, FabricObject, Rect } from "fabric";
+import { ActiveSelection, Circle, controlsUtils, FabricImage, FabricObject, Rect } from "fabric";
 import { useImageBufferState } from "./useImageBufferState";
 import { getColorSelector, setColorSelector } from "./objectColor";
 import { getObjectGrayscale } from "./ImageBuffer";
@@ -6,6 +6,7 @@ import { getBackgroundColor } from "./backgroundColor";
 import { ref } from "vue";
 import { getDCT, getDWT, getFFT } from "./transform/useTransforms";
 import { applyGaussianNoise, applyImpulseNoise, applyMultiplicativeGaussianNoise, applyMultiplicativeUniformNoise, applyUniformNoise } from "./noise/applyNoise";
+import { scales } from "chart.js";
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 export const brushSize = ref(10);
@@ -98,7 +99,9 @@ export const addCheckerboard = (rows : number, columns : number) => {
   checkerboardObj.set({
     originX: 'left',
     originY: 'top',
+    scales: true,
   });
+
   checkerboardObj.set("customType", "checkerboard");
   checkerboardObj.set("rows", rows.toString())
   checkerboardObj.set("columns", columns.toString())
@@ -167,8 +170,8 @@ export function createCheckerboard(rawWidth: number, rawHeight: number, rows: nu
     tempCanvas.height = Math.floor(height);
     const ctx = tempCanvas.getContext('2d');
     const imgData = ctx!.createImageData(Math.floor(width), Math.floor(height));
-    const cellWidth =  width / rows;
-    const cellHeight = height / columns;
+    const cellWidth =  width / columns;
+    const cellHeight = height / rows;
 
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {

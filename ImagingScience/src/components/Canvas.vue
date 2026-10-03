@@ -2,7 +2,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, useTemplateRef,shallowRef , type ShallowRef } from 'vue';
-import { Canvas, Rect, FabricImage, PencilBrush, Circle, FabricObject, ActiveSelection } from 'fabric'; 
+import { Canvas, Rect, FabricImage, PencilBrush, Circle, FabricObject, ActiveSelection, controlsUtils  } from 'fabric'; 
 import { ImageBuffer, getObjectGrayscale } from '../composables/ImageBuffer.ts'
 import { getFFT, getDCT, getDWT } from '../composables/transform/useTransforms.ts'
 import {handleFilter } from '../composables/filters/useFilter.ts'
@@ -16,9 +16,6 @@ import { copyObject, deleteActiveObject, fitCanvasToObjects, fitCanvasToScreen, 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 // Reference to the canvas object
 const canvasRef = useTemplateRef<HTMLCanvasElement>("canvasObject");
-
-
-
 onMounted(() => {
   if (!canvasRef.value) return;
   imageBuffer.value = new ImageBuffer(canvasRef.value, window.innerWidth * 0.9, window.innerHeight * 0.9);
@@ -40,7 +37,18 @@ onMounted(() => {
   });
 
   imageBuffer.value!.canvas.on('object:scaling', (e) => {
-    if (!e.target) return;
+    const obj = e.target;
+    if (!obj) return;
+    if (obj.type === 'image') {
+      obj.set({
+        left: Math.round(obj.left),
+        top: Math.round(obj.top),
+        scaleX: obj.scaleX,
+        scaleY: obj.scaleY,
+      });
+      return;
+    }
+
     e.target.set({
       left: Math.round(e.target.left),
       top: Math.round(e.target.top),

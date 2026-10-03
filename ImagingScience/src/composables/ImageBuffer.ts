@@ -238,8 +238,8 @@ export class ImageBuffer {
     const top = obj.top!;
     const rows = (obj as any).rows;
     const columns = (obj as any).columns;
-    const cellWidth = width / rows;
-    const cellHeight = height / columns;
+    const cellWidth = width / columns;
+    const cellHeight = height / rows;
 
     const minX = Math.max(0, Math.floor(left));
     const maxX = Math.min(this.width.value, Math.ceil(left + width));

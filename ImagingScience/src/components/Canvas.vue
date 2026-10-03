@@ -10,7 +10,7 @@ import { useImageBufferState } from '../composables/useImageBufferState.ts';
 import Toolbar from './Toolbar.vue';
 import { applyUniformNoise, applyGaussianNoise, applyMultiplicativeUniformNoise, applyMultiplicativeGaussianNoise, applyImpulseNoise } from '@/composables/noise/applyNoise.ts';
 import { getColorSelector, setColorSelector } from '@/composables/objectColor.ts';
-import { clearCanvas, clone } from 'chart.js/helpers';
+import { clearCanvas } from '../composables/canvas.ts';
 import { getBackgroundColor } from '@/composables/backgroundColor.ts';
 import { copyObject, deleteActiveObject, fitCanvasToObjects, fitCanvasToScreen, handleAddNoise, handleAddObject, handleCanvasResize, handleTransform, pasteObject, resizeCanvasOptimal, updateBackgroundColor, updateBrushSize, updateObjectColor } from '@/composables/canvas.ts';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
@@ -121,7 +121,6 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem;
 }
 
 /* Optional border around the canvas area without interfering with Fabric layers */

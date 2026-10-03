@@ -29,12 +29,12 @@ async def compute_fft_grayscale(request: Request):
     body_bytes = await request.body()
     
     img_array = np.frombuffer(body_bytes, dtype=np.float32).reshape((x_image_height, x_image_width))
-    
+    print(img_array)
     fft_shifted = np.fft.fftshift(np.fft.fft2(img_array * 255))
 
     # Store true FFT matrix
     image_id = str(uuid.uuid4())
-    fft_cache[image_id] = fft_shifted
+    fft_cache[image_id] = (fft_shifted, False)
 
     magnitude = np.log1p(np.abs(fft_shifted))
 
@@ -58,19 +58,21 @@ async def compute_inverse_fft_grayscale(image_id : str):
             status_code=404,
             detail="Session expired or Image ID not found in cache",
         )
-    fft_shifted= fft_cache[image_id]
+    fft_shifted, filter_applied = fft_cache[image_id]
     image_array = np.fft.ifft2(np.fft.ifftshift(fft_shifted)).real
     
     
     min_val, max_val = image_array.min(), image_array.max()
 
-    # Avoid division by zero for a constant image
-    if max_val - min_val > 1e-8:
+    # If filter applied, rescale
+    if max_val - min_val > 1e-8 and filter_applied:
+        
         normalized = 255 * (image_array - min_val) / (max_val - min_val)
+        print(np.min(normalized), np.max(normalized))
     else:
         normalized = image_array
 
-    final_bytes = normalized.astype(np.uint8)
+    final_bytes = np.clip(normalized,0,255).astype(np.uint8)
     res_img = Image.fromarray(final_bytes)
     buf = io.BytesIO()
     res_img.save(buf, format="PNG")
@@ -88,7 +90,7 @@ async def apply_frequency_filter(image_id : str, low:float, high: float, cutoff:
         low = -float('inf')
     if high == -1:
         high = float('inf')
-    fft_shifted= fft_cache[image_id]
+    fft_shifted, filter_applied= fft_cache[image_id]
     rows, cols = fft_shifted.shape
 
     crow, ccol = rows // 2, cols // 2
@@ -119,7 +121,7 @@ async def apply_frequency_filter(image_id : str, low:float, high: float, cutoff:
         fft_shifted = fft_shifted * butterworth_mask        
 
     # Update the image_id
-    fft_cache[image_id] = fft_shifted
+    fft_cache[image_id] = (fft_shifted, True)
 
     magnitude = np.log1p(np.abs(fft_shifted))
     

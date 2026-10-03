@@ -30,7 +30,7 @@ const frequencyFilterOption = ref(1);
 
       <div class="filter-controls">
         <div v-show="getTransformType() == 'fft'" class="control-group">
-          <p class="filter-note">Note: Leave the Highest Frequency to -1 if you want the threshold uncapped. Frequency filter cannot be undone.</p>
+          <p class="filter-note">Note: Leave the Highest Frequency to -1 if you want the threshold uncapped. After a frequency filter, an affine grayscale transform to the range [0,255] is applied. This can make some backgrounds look different.</p>
           <button class="btn btn-secondary" @click="getIFFT">IFFT</button>
           <label>Lowest Frequency:</label>
           <input class="custom-input" type="range" v-model.number="lowestFrequency"id="lowestFrequency" :min="0" :max="highestFrequency">

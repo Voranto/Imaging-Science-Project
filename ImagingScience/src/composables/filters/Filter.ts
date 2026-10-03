@@ -3,6 +3,7 @@ import axios, {type AxiosResponse, AxiosHeaders} from 'axios';
 import { Canvas, FabricImage, FabricObject } from 'fabric'
 import { useImageBufferState } from '../useImageBufferState.ts';
 import { filterImageSrc, filterRequested, getFilterType, changeFilterType, FilterType  } from './FilterType.ts';
+import { clearCanvas } from '../canvas.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 var canvas = imageBuffer.value?.canvas;
@@ -142,6 +143,7 @@ export abstract class  Filter {
                 originY: 'top',
             })
             image.set("customType", "image")
+            clearCanvas()
 
             imageBuffer.value?.canvas.add(image);
             imageBuffer.value?.canvas.setActiveObject(image);

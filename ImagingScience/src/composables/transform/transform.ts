@@ -3,6 +3,7 @@ import axios, {type AxiosResponse, AxiosHeaders} from 'axios';
 import { Canvas, FabricImage, FabricObject } from 'fabric'
 import { useImageBufferState } from '../useImageBufferState.ts';
 import { transformImageSrc, getTransformType, changeTransformType, transformRequested  } from './useTransforms.ts';
+import { clearCanvas } from '../canvas.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 var canvas = imageBuffer.value?.canvas;
@@ -130,6 +131,7 @@ export abstract class  Transform {
                 });
                 img.set("originX", "top");
                 img.set("originY", "left");
+                clearCanvas()
                 canvas.add(img);
                 canvas.requestRenderAll();
                 imageBuffer.value.syncFloatBuffer();
@@ -153,7 +155,7 @@ export abstract class  Transform {
                 originY: 'top',
             })
             image.set("customType", "image")
-
+            clearCanvas()
             imageBuffer.value?.canvas.add(image);
             imageBuffer.value?.canvas.setActiveObject(image);
 

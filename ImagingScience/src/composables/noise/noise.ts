@@ -2,6 +2,7 @@ import { ref, type Ref, useTemplateRef } from 'vue';
 import axios, {type AxiosResponse, AxiosHeaders} from 'axios';
 import { Canvas, FabricImage, FabricObject } from 'fabric'
 import { useImageBufferState } from '../useImageBufferState.ts';
+import { clearCanvas } from '../canvas.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 var canvas = imageBuffer.value?.canvas;
@@ -85,6 +86,7 @@ export abstract class  Noise {
                 });
                 img.set("originX", "top");
                 img.set("originY", "left");
+                clearCanvas()
                 canvas.add(img);
                 canvas.requestRenderAll();
                 await new Promise((resolve) => requestAnimationFrame(resolve));

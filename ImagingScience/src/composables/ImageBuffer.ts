@@ -128,11 +128,6 @@ export class ImageBuffer {
 
   }
   private rasterizeRect(obj : FabricObject) {
-    const rectW = (obj.width || 0) * (obj.scaleX || 1);
-    const rectH = (obj.height || 0) * (obj.scaleY || 1);
-    const c1x = obj.left!;
-    const c1y = obj.top!;
-
     const points = obj.getCoords();
     const p1 = points[0]!;
     const p2 = points[1]!;
@@ -172,10 +167,6 @@ export class ImageBuffer {
 
   }
   private rasterizeCircle(obj : Circle) {
-    const width = (obj.width || 0) * (obj.scaleX || 1);
-    const height = (obj.height || 0) * (obj.scaleY || 1);
-    const left = obj.left!;
-    const top = obj.top!;
 
     const center = obj.getCenterPoint();
     const cx = center.x;

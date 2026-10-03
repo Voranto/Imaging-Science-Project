@@ -1,4 +1,4 @@
-import { Canvas, FabricObject, PencilBrush, FabricImage, Path, Point } from 'fabric';
+import { Canvas, FabricObject, PencilBrush, FabricImage, Path, Point, Circle, type TDegree } from 'fabric';
 import {ref, type Ref} from 'vue';
 import { computeHistogram, renderHistogram } from './histogram';
 import { getBackgroundColor } from './backgroundColor';
@@ -105,7 +105,7 @@ export class ImageBuffer {
         this.rasterizeRect(obj);
     }
     else if (objectType == "circle") {
-      this.rasterizeCircle(obj);
+      this.rasterizeCircle(obj as Circle);
     }
     else if (objectType == "gaussian") {
       this.rasterizeGaussian(obj);
@@ -171,33 +171,45 @@ export class ImageBuffer {
     return (0 <= dot_AM_AB && dot_AM_AB <= dot_AB_AB) && (0 <= dot_AM_AD && dot_AM_AD<= dot_AD_AD)
 
   }
-  private rasterizeCircle(obj : FabricObject) {
+  private rasterizeCircle(obj : Circle) {
     const width = (obj.width || 0) * (obj.scaleX || 1);
     const height = (obj.height || 0) * (obj.scaleY || 1);
     const left = obj.left!;
     const top = obj.top!;
 
-    const rx = width / 2;
-    const ry = height / 2;
-    const cx = obj.left! + rx;
-    const cy = obj.top! + ry;
+    const center = obj.getCenterPoint();
+    const cx = center.x;
+    const cy = center.y;
+    const rx = obj.getRadiusX();
+    const ry = obj.getRadiusY();
 
-    const minX = Math.max(0, Math.floor(left));
-    const maxX = Math.min(this.width.value, Math.ceil(left + width));
-    const minY = Math.max(0, Math.floor(top));
-    const maxY = Math.min(this.height.value, Math.ceil(top + height));
+    const angle = degreesToRadians(obj.angle);
+
+    const points = obj.getCoords();
+    const p1 = points[0]!;
+    const p2 = points[1]!;
+    const p3  = points[2]!;
+    const p4 = points[3]!;
+
+    const minX = Math.max(0, Math.min(Math.floor(p1.x), Math.floor(p2.x),Math.floor(p3.x), Math.floor(p4.x)));
+    const maxY = Math.min(this.height.value, Math.max(Math.floor(p1.y), Math.floor(p2.y),Math.floor(p3.y), Math.floor(p4.y)));
+    const minY = Math.max(0, Math.min(Math.floor(p1.y), Math.floor(p2.y),Math.floor(p3.y), Math.floor(p4.y)));
+    const maxX = Math.min(this.width.value, Math.max(Math.floor(p1.x), Math.floor(p2.x),Math.floor(p3.x), Math.floor(p4.x)));
     const color = getObjectGrayscale(obj) / 255.0;
 
     const rxSq = rx * rx;
     const rySq = ry * ry;
     for (let y = minY; y < maxY; y++) {
-    const dy = (y + 0.5) - cy;
-    const dySq = dy * dy;
 
     for (let x = minX; x < maxX; x++) {
+      const dy = (y + 0.5) - cy;
       const dx = (x + 0.5) - cx; 
-
-      if ((dx * dx) / rxSq + (dySq / rySq) <= 1.0) {
+      const dx_projection = dx* Math.cos(angle) + dy * Math.sin(angle);
+      const dy_projection = -dx* Math.sin(angle) + dy * Math.cos(angle);
+      
+      const dySq = dy_projection * dy_projection;
+      const dXSq = dx_projection * dx_projection;
+      if ((dXSq / rxSq) + (dySq / rySq) <= 1.0) {
         const idx = y * this.width.value + x;
         this.floatBuffer[idx] = color;
       }
@@ -364,4 +376,9 @@ export function getObjectGrayscale(obj : FabricObject) {
   const b = parseInt(computedHex.substring(5, 7), 16);
 
   return Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+}
+
+const degreesToRadians = (angle : TDegree) => {
+  return angle * (Math.PI / 180);
+
 }

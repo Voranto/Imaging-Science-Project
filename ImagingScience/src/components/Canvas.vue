@@ -48,6 +48,10 @@ onMounted(() => {
       });
       return;
     }
+    if (obj.get('customType') === 'circle') {
+      // Let it free for circles, works by itself
+      return;
+    }
 
     e.target.set({
       left: Math.round(e.target.left),

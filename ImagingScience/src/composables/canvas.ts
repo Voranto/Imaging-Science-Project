@@ -49,10 +49,6 @@ export const addCircle = () => {
     originY: 'top',
     uniformScaling: false,
     uniScaleKey: 'shiftKey',
-    objectCaching: false,     
-    strokeWidth: 0,           
-    strokeUniform: true,
-    noScaleCache: true,
     lockSkewingX: true,
     lockSkewingY: true,
   });

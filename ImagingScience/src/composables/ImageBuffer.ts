@@ -279,8 +279,8 @@ export class ImageBuffer {
           const localX = x - left;
           const localY = y - top;
           
-          const posX = (Math.floor(localX / cellWidth) % 2) * 2 - 1 
-          const posY = (Math.floor(localY / cellHeight) % 2) * 2 - 1 
+          const posX = (Math.floor(localX / cellWidth + 1/2) % 2) * 2 - 1 
+          const posY = (Math.floor(localY / cellHeight + 1/2) % 2) * 2 - 1 
 
           const val = posX * posY;
 

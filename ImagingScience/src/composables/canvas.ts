@@ -185,8 +185,8 @@ export function createCheckerboard(rawWidth: number, rawHeight: number, rows: nu
         for (let x = 0; x < width; x++) {
             const idx = (y * width + x) * 4;
             
-            const posX = (Math.floor(x / cellWidth) % 2) * 2 - 1;
-            const posY = (Math.floor(y / cellHeight) % 2) * 2 - 1;
+            const posX = (Math.floor(x  / cellWidth + 1/2) % 2) * 2 - 1;
+            const posY = (Math.floor(y / cellHeight + 1/2) % 2) * 2 - 1;
             const val = posX * posY;
             var color = 255;
             if (val == -1) color = 0;

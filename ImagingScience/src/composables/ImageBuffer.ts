@@ -36,7 +36,6 @@ export class ImageBuffer {
   public async syncFloatBuffer() {
     // Have to wait before syncing float buffer, to avoid adding and then syncing
     await new Promise((resolve) => requestAnimationFrame(resolve));
-    console.log("background color", getBackgroundColor() / 255);
     this.floatBuffer.fill(getBackgroundColor() / 255);
 
     const objects = this.canvas.getObjects();

@@ -231,7 +231,6 @@ const clearCanvas = () => {
     imageBuffer.value!.canvas.clear();
     const color = getBackgroundColor();
     updateBackgroundColor();
-    
 }
 
 const deleteActiveObject = () => {

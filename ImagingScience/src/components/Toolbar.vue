@@ -292,7 +292,7 @@ onUnmounted(() => {
     <div class="menu-group">
       <button @click="toggleMenu('config')">Tool & Canvas Config ▾</button>
       <div v-show="activeMenu === 'config'" class="dropdown-panel">
-        <h4>Canvas Settings</h4>
+        <span><h4>Canvas Settings</h4></span>
         <div class="form-control">
           <label>Brush Size: {{ brushSize }}px</label>
           <input type="range" min="1" max="100" v-model="brushSize" @input="$emit('updateBrush', brushSize)"  id="brushSize">
@@ -304,9 +304,9 @@ onUnmounted(() => {
         </div>
         <hr>
         <div id="control-row">
-        <label>Height: </label>
+        <span>Height: </span>
         <input @change="imageBuffer.setCanvasDimensions(imageBuffer.height.value, imageBuffer.width.value)" type="number" v-if="imageBuffer" v-model="imageBuffer.height.value">
-        <label> Width:</label> 
+        <span> Width:</span> 
         <input type="number" v-if="imageBuffer" v-model="imageBuffer.width.value" @change="imageBuffer.setCanvasDimensions(imageBuffer.height.value, imageBuffer.width.value)">
 
         </div>
@@ -323,9 +323,9 @@ onUnmounted(() => {
     <div class="menu-group">
       <button @click="toggleMenu('stats')">Stats ▾</button>
       <div v-show="activeMenu === 'stats'" class="dropdown-panel">
-        Mean: <span id="mean">{{ imageBuffer?.mean }}</span>
-        Variance: <span id="variance"> {{imageBuffer?.variance}}</span>
-        Histogram:
+        <span>Mean: </span> <span id="mean">{{ imageBuffer?.mean }}</span>
+        <span>Variance: </span><span id="variance"> {{imageBuffer?.variance}}</span>
+        <span>Histogram:</span>
         <div class="histogram-container">
           <canvas ref="histogramCanvas"></canvas>
         </div>

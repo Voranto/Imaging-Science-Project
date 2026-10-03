@@ -51,6 +51,10 @@
         img.set("customType", "image");
         img.set("originX", "top");
         img.set("originY", "left");
+        img.set({
+            lockSkewingX: true,
+            lockSkewingY: true,
+        })
         canvas.add(img);
         canvas.setActiveObject(img);
         canvas.renderAll();

@@ -1,4 +1,4 @@
-import { Canvas, FabricObject, PencilBrush, FabricImage, Path } from 'fabric';
+import { Canvas, FabricObject, PencilBrush, FabricImage, Path, Point } from 'fabric';
 import {ref, type Ref} from 'vue';
 import { computeHistogram, renderHistogram } from './histogram';
 import { getBackgroundColor } from './backgroundColor';
@@ -130,20 +130,46 @@ export class ImageBuffer {
   private rasterizeRect(obj : FabricObject) {
     const rectW = (obj.width || 0) * (obj.scaleX || 1);
     const rectH = (obj.height || 0) * (obj.scaleY || 1);
-    const left = obj.left!;
-    const top = obj.top!;
+    const c1x = obj.left!;
+    const c1y = obj.top!;
 
-    const minX = Math.max(0, Math.floor(left));
-    const maxX = Math.min(this.width.value, Math.ceil(left + rectW));
-    const minY = Math.max(0, Math.floor(top));
-    const maxY = Math.min(this.height.value, Math.ceil(top + rectH));
+    const points = obj.getCoords();
+    const p1 = points[0]!;
+    const p2 = points[1]!;
+    const p3  = points[2]!;
+    const p4 = points[3]!;
+
+    const minX = Math.max(0, Math.min(Math.floor(p1.x), Math.floor(p2.x),Math.floor(p3.x), Math.floor(p4.x)));
+    const maxY = Math.min(this.height.value, Math.max(Math.floor(p1.y), Math.floor(p2.y),Math.floor(p3.y), Math.floor(p4.y)));
+    const minY = Math.max(0, Math.min(Math.floor(p1.y), Math.floor(p2.y),Math.floor(p3.y), Math.floor(p4.y)));
+    const maxX = Math.min(this.width.value, Math.max(Math.floor(p1.x), Math.floor(p2.x),Math.floor(p3.x), Math.floor(p4.x)));
     const color = getObjectGrayscale(obj) / 255.0;
+
+
     for (let y = minY; y < maxY; y++) {
       for (let x = minX; x < maxX; x++) {
-        const idx = y * this.width.value + x;
-        this.floatBuffer[idx] = color;
+        if (this.isPointInrect(x,y, p1,p2,p4)){
+          const idx = y * this.width.value + x;
+          this.floatBuffer[idx] = color;
+        }
+        
       }
     }
+  }
+  // We only need three points
+  private isPointInrect(x : number,y : number ,a: Point,b : Point,c : Point) {
+    const AM = [x - a.x, y - a.y];
+    const AB = [b.x - a.x, b.y - a.y];
+    const AC = [c.x - a.x, c.y - a.y];
+    
+    const dot_AM_AB = AM[0]! * AB[0]! + AM[1]! * AB[1]!;
+    const dot_AB_AB = AB[0]! * AB[0]! + AB[1]! * AB[1]!;
+    
+    const dot_AM_AD = AM[0]! * AC[0]! + AM[1]! * AC[1]!;
+    const dot_AD_AD = AC[0]! * AC[0]! + AC[1]! * AC[1]!;
+    
+    return (0 <= dot_AM_AB && dot_AM_AB <= dot_AB_AB) && (0 <= dot_AM_AD && dot_AM_AD<= dot_AD_AD)
+
   }
   private rasterizeCircle(obj : FabricObject) {
     const width = (obj.width || 0) * (obj.scaleX || 1);

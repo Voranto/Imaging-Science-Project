@@ -27,6 +27,8 @@ export const addBox = () => {
     height: 60,
     uniformScaling: false,
     uniScaleKey: 'shiftKey',
+    lockSkewingX: true,
+    lockSkewingY: true,
   });
   rect.set("customType", "rect")
   addEventListenersObject(rect);
@@ -51,6 +53,8 @@ export const addCircle = () => {
     strokeWidth: 0,           
     strokeUniform: true,
     noScaleCache: true,
+    lockSkewingX: true,
+    lockSkewingY: true,
   });
   circle.set("customType", "circle");
   addEventListenersObject(circle);
@@ -66,6 +70,8 @@ export const addGaussian = (sigma: number) => {
   gaussianObj.set({
     originX: 'left',
     originY: 'top',
+    lockSkewingX: true,
+    lockSkewingY: true,
   });
   gaussianObj.set("customType", "gaussian");
   gaussianObj.set("sigma", sigma.toString())
@@ -82,6 +88,8 @@ export const addSinusoidal = (cyclesX : number, cyclesY : number) => {
   sineObj.set({
     originX: 'left',
     originY: 'top',
+    lockSkewingX: true,
+    lockSkewingY: true,
   });
   sineObj.set("customType", "sinusoidal");
   sineObj.set("cyclesX", cyclesX.toString())
@@ -99,7 +107,8 @@ export const addCheckerboard = (rows : number, columns : number) => {
   checkerboardObj.set({
     originX: 'left',
     originY: 'top',
-    scales: true,
+    lockSkewingX: true,
+    lockSkewingY: true,
   });
 
   checkerboardObj.set("customType", "checkerboard");

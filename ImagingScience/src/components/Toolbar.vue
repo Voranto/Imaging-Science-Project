@@ -207,6 +207,9 @@ onUnmounted(() => {
         <CollapsibleToolbarItem title="Brush" :isOpen="activeSection === 'Brush'" @toggle="toggleSection('Brush')">
           <div class="section-content vertical-stack">
             <button class="secondary full-width" @click="$emit('toggleBrush')">Toggle Drawing Brush</button>
+            
+            <span>Brush Size: {{ brushSize }}px</span>
+            <input type="range" min="1" max="100" v-model="brushSize" @input="$emit('updateBrush', brushSize)"  id="brushSize">
             <div class="status-badge" :class="{ active: imageBuffer?.isDrawing.value }">
               Status: {{ imageBuffer?.isDrawing.value ? 'Active' : 'Inactive' }}
             </div>
@@ -294,8 +297,6 @@ onUnmounted(() => {
       <div v-show="activeMenu === 'config'" class="dropdown-panel">
         <span><h4>Canvas Settings</h4></span>
         <div class="form-control">
-          <label>Brush Size: {{ brushSize }}px</label>
-          <input type="range" min="1" max="100" v-model="brushSize" @input="$emit('updateBrush', brushSize)"  id="brushSize">
           <label>Object Color: {{ colorSelector }}</label>
           <input type="range" min="0" max="255" v-model="colorSelector" @input="$emit('updateColor')" id="objectColorSelector">
           <label>Background Color: {{ backgroundColorSelector }}</label>

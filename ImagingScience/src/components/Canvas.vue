@@ -429,7 +429,7 @@ const updateBackgroundColor = () => {
 }
 </script>
 <template>
-    <div class="canvas-container">
+  <div class="canvas-wrapper">
     <Toolbar 
       @toggleBrush="imageBuffer?.toggleBrush()"
       @updateBrush="() => updateBrushSize()"
@@ -444,6 +444,34 @@ const updateBackgroundColor = () => {
       @resizeCanvasOptimal="resizeCanvasOptimal"
       @updateBackground="updateBackgroundColor"
     />
-    <canvas ref="canvasObject" id="imageCanvas" style="border:1px solid #000000"></canvas>
+    <div class="canvas-border-frame">
+      <canvas ref="canvasObject" id="imageCanvas"></canvas>
+    </div>
   </div>
 </template> 
+
+<style lang="css">
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #121212;
+  box-sizing: border-box;
+}
+/* Main Page Container */
+.canvas-wrapper {
+  background-color: #ffffff;
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+/* Optional border around the canvas area without interfering with Fabric layers */
+.canvas-border-frame {
+  border: 1px solid #a8a6a6;
+  display: inline-block;
+  line-height: 0; /* Eliminates baseline gap under canvas */
+}
+</style>

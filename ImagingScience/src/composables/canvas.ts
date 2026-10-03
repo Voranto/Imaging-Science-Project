@@ -68,6 +68,7 @@ export const addGaussian = (sigma: number) => {
     originY: 'top',
     lockSkewingX: true,
     lockSkewingY: true,
+    lockRotation: true,
   });
   gaussianObj.set("customType", "gaussian");
   gaussianObj.set("sigma", sigma.toString())
@@ -86,6 +87,7 @@ export const addSinusoidal = (cyclesX : number, cyclesY : number) => {
     originY: 'top',
     lockSkewingX: true,
     lockSkewingY: true,
+    lockRotation: true,
   });
   sineObj.set("customType", "sinusoidal");
   sineObj.set("cyclesX", cyclesX.toString())
@@ -105,6 +107,7 @@ export const addCheckerboard = (rows : number, columns : number) => {
     originY: 'top',
     lockSkewingX: true,
     lockSkewingY: true,
+    lockRotation: true,
   });
 
   checkerboardObj.set("customType", "checkerboard");

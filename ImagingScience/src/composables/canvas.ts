@@ -89,6 +89,23 @@ export const addSinusoidal = (cyclesX : number, cyclesY : number) => {
   canvas.add(sineObj);
   canvas.setActiveObject(sineObj);
 }
+export const addCheckerboard = (rows : number, columns : number) => {
+  const canvas = imageBuffer.value?.canvas; 
+  if (!canvas) return;
+  var height = canvas.height;
+  var width = canvas.width;
+  const checkerboardObj = createCheckerboard(width, height, rows, columns);
+  checkerboardObj.set({
+    originX: 'left',
+    originY: 'top',
+  });
+  checkerboardObj.set("customType", "checkerboard");
+  checkerboardObj.set("rows", rows.toString())
+  checkerboardObj.set("columns", columns.toString())
+  addEventListenersObject(checkerboardObj);
+  canvas.add(checkerboardObj);
+  canvas.setActiveObject(checkerboardObj);
+}
 
 export function createGaussianImage(rawWidth: number, rawHeight: number, sigma: number) {
     const height = Math.floor(rawHeight);
@@ -136,6 +153,35 @@ export function createSinusoidalImage(rawWidth: number, rawHeight: number, cycle
             imgData.data[idx]     = val; // R
             imgData.data[idx + 1] = val; // G
             imgData.data[idx + 2] = val; // B
+            imgData.data[idx + 3] = 255; // A
+        }
+    }
+    ctx!.putImageData(imgData, 0, 0);
+    return new FabricImage(tempCanvas);
+}
+export function createCheckerboard(rawWidth: number, rawHeight: number, rows: number, columns: number) { 
+  const height = Math.floor(rawHeight);
+    const width = Math.floor(rawWidth)
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = Math.floor(width);
+    tempCanvas.height = Math.floor(height);
+    const ctx = tempCanvas.getContext('2d');
+    const imgData = ctx!.createImageData(Math.floor(width), Math.floor(height));
+    const cellWidth =  width / rows;
+    const cellHeight = height / columns;
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const idx = (y * width + x) * 4;
+            
+            const posX = (Math.floor(x / cellWidth) % 2) * 2 - 1;
+            const posY = (Math.floor(y / cellHeight) % 2) * 2 - 1;
+            const val = posX * posY;
+            var color = 255;
+            if (val == -1) color = 0;
+            imgData.data[idx]     = color; // R
+            imgData.data[idx + 1] = color; // G
+            imgData.data[idx + 2] = color; // B
             imgData.data[idx + 3] = 255; // A
         }
     }
@@ -267,11 +313,12 @@ export const pasteObject = async () => {
 
 
 
-export const handleAddObject = ({ shape, gaussianSigma, sinusoidalCyclesX, sinusoidalCyclesY }: { shape: string, gaussianSigma:number, sinusoidalCyclesX : number, sinusoidalCyclesY : number }) => {
+export const handleAddObject = ({ shape, gaussianSigma, sinusoidalCyclesX, sinusoidalCyclesY, checkerboardRows, checkerboardColumns }: { shape: string, gaussianSigma:number, sinusoidalCyclesX : number, sinusoidalCyclesY : number, checkerboardRows : number, checkerboardColumns : number }) => {
   if (shape === 'box') addBox();
   else if (shape === 'circle') addCircle();
   else if (shape === 'gaussian') addGaussian(gaussianSigma);
   else if (shape === 'sinusoidal') addSinusoidal(sinusoidalCyclesX, sinusoidalCyclesY);
+  else if (shape === 'checkerboard') addCheckerboard(checkerboardRows, checkerboardColumns);
   imageBuffer.value?.syncFloatBuffer();
 };
 

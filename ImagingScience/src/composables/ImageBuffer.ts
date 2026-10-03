@@ -119,6 +119,9 @@ export class ImageBuffer {
     else if (objectType === 'sinusoidal') {
       this.rasterizeSinusoidal(obj);
     }
+    else if (objectType === 'checkerboard'){
+      this.rasterizeCheckerboard(obj);
+    }
     else {
       console.warn("Object was not classified", obj)
     }
@@ -225,6 +228,41 @@ export class ImageBuffer {
           const idx = y * this.width.value + x;
 
           this.floatBuffer[idx] = Math.min(1.0, val_corrected);
+      }
+    }
+  }
+  private rasterizeCheckerboard(obj : FabricObject) {
+    const width = (obj.width || 0) * (obj.scaleX || 1);
+    const height = (obj.height || 0) * (obj.scaleY || 1);
+    const left = obj.left!;
+    const top = obj.top!;
+    const rows = (obj as any).rows;
+    const columns = (obj as any).columns;
+    const cellWidth = width / rows;
+    const cellHeight = height / columns;
+
+    const minX = Math.max(0, Math.floor(left));
+    const maxX = Math.min(this.width.value, Math.ceil(left + width));
+    const minY = Math.max(0, Math.floor(top));
+    const maxY = Math.min(this.height.value, Math.ceil(top + height));
+    for (let y = minY; y < maxY; y++) {
+      for (let x = minX; x < maxX; x++) {
+          const localX = x - left;
+          const localY = y - top;
+          
+          const posX = (Math.floor(localX / cellWidth) % 2) * 2 - 1 
+          const posY = (Math.floor(localY / cellHeight) % 2) * 2 - 1 
+
+          const val = posX * posY;
+
+          const idx = y * this.width.value + x;
+          if (val == -1){
+            this.floatBuffer[idx] = 0.0;
+          }
+          else{
+            this.floatBuffer[idx] = 1.0;
+          }
+          
       }
     }
   }

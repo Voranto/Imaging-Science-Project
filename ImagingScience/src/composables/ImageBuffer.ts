@@ -337,7 +337,10 @@ export class ImageBuffer {
     const minY = Math.max(0, Math.floor(bound.top));
     const maxY = Math.min(this.height.value, Math.ceil(bound.top + bound.height));
 
-    const color = getObjectGrayscale(obj);
+    // Path color is stored in .stroke, not .fill, so create a temp object
+    const objTemp = new FabricObject();
+    objTemp.fill = obj.stroke;
+    const color = getObjectGrayscale(objTemp);
 
     for (let y = minY; y < maxY; y++) {
       for (let x = minX; x < maxX; x++) {
@@ -346,7 +349,7 @@ export class ImageBuffer {
         if (alpha == 0) continue;
         const bufferIdx = y * this.width.value + x;
 
-        this.floatBuffer[bufferIdx] = color;
+        this.floatBuffer[bufferIdx] = color / 255;
       }
     }
 }

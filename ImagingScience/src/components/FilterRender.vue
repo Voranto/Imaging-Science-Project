@@ -90,144 +90,213 @@ const diffusionOption = ref(1);
 
       <aside v-if="getFilterType() !== 'none'" class="sidebar-controls">
         <div v-show="getFilterType() == 'simpleEdge'" class="control-group">
-          <label>Threshold:</label>
-          <input type="range" v-model.number="thresholdSimpleEdge" @change="updateCurrentFilter" id="simpleEdgeThreshold" min="0" max="250">
-          <span class="threshold-value">{{ thresholdSimpleEdge }}</span>
+          <h3>Simple Edge Detector</h3>
+          <p class="filter-note">This edge detection is done by simply measuring the gradient using Sobel Operators and selecting edges as pixels with a gradient >= Threshold</p>
+          <div class="input-row">
+            <label>Threshold:</label>
+            <input type="range" v-model.number="thresholdSimpleEdge" @change="updateCurrentFilter" id="simpleEdgeThreshold" min="0" max="250">
+            <span class="threshold-value">{{ thresholdSimpleEdge }}</span>
+          </div>
           <label class="checkbox-label">
-            <input type="checkbox" id="applyGaussianSimpleEdges" @change="updateCurrentFilter" checked>
             Apply Gaussian Smoothing
+            <input type="checkbox" id="applyGaussianSimpleEdges" @change="updateCurrentFilter" checked>
           </label>
         </div>
 
         <div v-show="getFilterType() == 'cannys'" class="control-group">
-          <label>Weak Threshold:</label>
-          <input type="range" v-model.number="thresholdCannyWeak" @change="updateCurrentFilter" id="thresholdCannyWeak" min="0" max="250">
-          <span class="threshold-value">{{ thresholdCannyWeak }}</span>
-
-          <label>Strong Threshold:</label>
-          <input type="range" v-model.number="thresholdCannyStrong" @change="updateCurrentFilter" id="thresholdCannyStrong" min="0" max="250">
-          <span class="threshold-value">{{ thresholdCannyStrong }}</span>
-
+          <h3>Canny's Edge Detector</h3>
+          <p class="filter-note">This is a more refined version of the simple edge detector that achieves 1-pixel thick edges. For more info, visit <a href="https://en.wikipedia.org/wiki/Canny_edge_detector" target="_blank">Here</a></p>
+          <div class="input-row">
+            <label>Weak Threshold:</label>
+            <input type="range" v-model.number="thresholdCannyWeak" @change="updateCurrentFilter" id="thresholdCannyWeak" min="0" max="250">
+            <span class="threshold-value">{{ thresholdCannyWeak }}</span>
+          </div>
+          <div class="input-row">
+            <label>Strong Threshold:</label>
+            <input type="range" v-model.number="thresholdCannyStrong" @change="updateCurrentFilter" id="thresholdCannyStrong" min="0" max="250">
+            <span class="threshold-value">{{ thresholdCannyStrong }}</span>
+          </div>
           <label class="checkbox-label">
-            <input type="checkbox" id="applyGaussianCanny" @change="updateCurrentFilter" checked>
             Apply Gaussian Smoothing
+            <input type="checkbox" id="applyGaussianCanny" @change="updateCurrentFilter" checked>
           </label>
         </div>
 
         <div v-show="getFilterType() == 'lowpass'" class="control-group">
-          <label>Sigma:</label>
-          <input type="range" v-model.number="lowpassFilterSigma" @change="updateCurrentFilter" id="lowpassFilterSigma" min="0" max="20">
-          <span class="threshold-value">{{ lowpassFilterSigma }}</span>
+          <h3>Lowpass Filter</h3>
+          <p class="filter-note">This is a lowpass filter computed in the spatial domain by convolving the image with a Gaussian. It's goal is to reduce high-frequent noise by 'blurring' the image. A similar effect can be obtained by applying a frequency filter in the Fourier Domain.</p>
+          <div class="input-row">
+            <label>Variance:</label>
+            <input type="range" v-model.number="lowpassFilterSigma" @change="updateCurrentFilter" id="lowpassFilterSigma" min="0" max="20">
+            <span class="threshold-value">{{ lowpassFilterSigma }}</span>
+          </div>
         </div>
 
         <div v-show="getFilterType() == 'highpass'" class="control-group">
-          <label>Sigma:</label>
-          <input type="range" v-model.number="highpassFilterSigma" @change="updateCurrentFilter" id="highpassFilterSigma" min="0" max="20">
-          <span class="threshold-value">{{ highpassFilterSigma }}</span>
+          <h3>Highpass Filter</h3>
+          <p class="filter-note">This is a highpass filter computed in the spatial domain by subtracting the original image from it's lowpass filter. Afterwards an Affine Grayscale Transformation has to be done, because there is a possibility of obtaining values outside the range [0,255]</p>
+          <div class="input-row">
+            <label>Variance:</label>
+            <input type="range" v-model.number="highpassFilterSigma" @change="updateCurrentFilter" id="highpassFilterSigma" min="0" max="20">
+            <span class="threshold-value">{{ highpassFilterSigma }}</span>
+          </div>
         </div>
 
         <div v-show="getFilterType() == 'gammaCorrection'" class="control-group">
-          <label>Sigma:</label>
-          <input type="range" v-model.number="gammaCorrectionValue" @change="updateCurrentFilter" id="gammaCorrectionValue" min="0.1" max="4.0" step="0.1">
-          <span class="threshold-value">{{ gammaCorrectionValue }}</span>
+          <h3>Gamma Correction</h3>
+          <div class="input-row">
+            <label>Gamma:</label>
+            <input type="range" v-model.number="gammaCorrectionValue" @change="updateCurrentFilter" id="gammaCorrectionValue" min="0.1" max="4.0" step="0.1">
+            <span class="threshold-value">{{ gammaCorrectionValue }}</span>
+          </div>
         </div>
 
         <div v-show="getFilterType()?.startsWith('corner')" class="control-group">
-          <label>Sigma:</label>
-          <input type="range" v-model.number="cornerSigma" @change="updateCurrentFilter" id="cornerSigma" min="0.1" max="20" step="0.1">
-          <span class="threshold-value">{{ cornerSigma }}</span>
-
-          <label>Rho:</label>
-          <input type="range" v-model.number="cornerRho" @change="updateCurrentFilter" id="cornerRho" :min="cornerRho" max="20" step="0.1">
-          <span class="threshold-value">{{ cornerRho }}</span>
-
-          <label>Threshold:</label>
-          <input type="range" v-model.number="cornerThreshold" @change="updateCurrentFilter" id="cornerThreshold" min="0.1" max="250" step="0.1">
-          <span class="threshold-value">{{ cornerThreshold }}</span>
+          <h3>Corner Detection</h3>
+          <p class="filter-note">The corner detection is done via the structure tensor. The parameters sigma and rho represent the components of the gaussian in the structure tensor. Three different methods for checking a corner have been implemented here, each has a different algorithm to determine if a pixel is a corner</p>
+          <div class="input-row">
+            <label>Sigma:</label>
+            <input type="range" v-model.number="cornerSigma" @change="updateCurrentFilter" id="cornerSigma" min="0.1" max="20" step="0.1">
+            <span class="threshold-value">{{ cornerSigma }}</span>
+          </div>
+          <div class="input-row">
+            <label>Rho:</label>
+            <input type="range" v-model.number="cornerRho" @change="updateCurrentFilter" id="cornerRho" :min="cornerRho" max="20" step="0.1">
+            <span class="threshold-value">{{ cornerRho }}</span>
+          </div>
+          <div class="input-row">
+            <label>Threshold:</label>
+            <input type="range" v-model.number="cornerThreshold" @change="updateCurrentFilter" id="cornerThreshold" min="0.1" max="250" step="0.1">
+            <span class="threshold-value">{{ cornerThreshold }}</span>
+          </div>
         </div>
 
         <div v-show="morphologicalFilters.includes(getFilterType())" class="control-group">
+          <h3>Morphological Filters ({{ getFilterType() }})</h3>
+          <p class="filter-note">These filters are mainly used to analyse the shapes of objects in an image.</p>
+          <div class="input-row">
           <label>Radius:</label>
-          <input type="range" v-model.number="morphologicalRadius" @change="updateCurrentFilter" id="morphologicalRadius" min="0" max="25" step="1">
-          <span class="threshold-value">{{ morphologicalRadius }}</span>
-
-          <label>Mask Type:</label>
-          <select class="custom-select" id="morphologicalMaskType" @change="updateCurrentFilter">
-            <option value="circle">Circle</option>
-            <option value="square">Square</option>
-          </select>
+            <input type="range" v-model.number="morphologicalRadius" @change="updateCurrentFilter" id="morphologicalRadius" min="0" max="25" step="1">
+            <span class="threshold-value">{{ morphologicalRadius }}</span>
+          </div>
+          <div class="input-row">
+            <label>Mask Type:</label>
+            <select class="custom-select" id="morphologicalMaskType" @change="updateCurrentFilter">
+              <option value="circle">Circle</option>
+              <option value="square">Square</option>
+            </select>
+          </div>
         </div>
 
         <div v-show="getFilterType() === 'median'" class="control-group">
-          <label>Radius:</label>
-          <input type="range" v-model.number="medianRadius" @change="updateCurrentFilter" id="medianRadius" min="0" max="25" step="1">
-          <span class="threshold-value">{{ medianRadius }}</span>
+          <h3>Median Filter</h3>
+          <p class="filter-note">This filter is excellent against outliers, such as Salt and Pepper Noise (see Add -> Other Noises -> Impulse Noise).</p>
+          
+          <div class="input-row">
+            <label>Radius:</label>
+            <input type="range" v-model.number="medianRadius" @change="updateCurrentFilter" id="medianRadius" min="0" max="25" step="1">
+            <span class="threshold-value">{{ medianRadius }}</span>
+          </div>
         </div>
 
         <div v-show="getFilterType() === 'waveletShrinkage'" class="control-group">
-          <label>Threshold:</label>
-          <input type="range" v-model.number="waveletShrinkageThreshold" @change="updateCurrentFilter" id="waveletShrinkageThreshold" min="0" max="100" step="1">
-          <span class="threshold-value">{{ waveletShrinkageThreshold }}</span>
-
-          <select class="custom-select" v-model="waveletShrinkageMode" id="waveletShrinkageMode" @change="updateCurrentFilter">
-            <option value="hard">hard</option>
-            <option value="soft">soft</option>
-            <option value="garrote">garrote</option>
-          </select>
+          <h3>Wavelet Shrinkage</h3>
+          <p class="filter-note">This filter works by downscaling the wavelet coefficients of small magnitude to try and reduce noise.</p>
+          <div class="input-row">
+            <label>Threshold:</label>
+            <input type="range" v-model.number="waveletShrinkageThreshold" @change="updateCurrentFilter" id="waveletShrinkageThreshold" min="0" max="100" step="1">
+            <span class="threshold-value">{{ waveletShrinkageThreshold }}</span>
+          </div>
+          <div class="input-row">
+            <label>Wavelet Shrinkage Mode: </label>
+            <select class="custom-select" v-model="waveletShrinkageMode" id="waveletShrinkageMode" @change="updateCurrentFilter">
+              <option value="hard">hard</option>
+              <option value="soft">soft</option>
+              <option value="garrote">garrote</option>
+            </select>
+          </div>
         </div>
 
         <div v-show="getFilterType() === 'bilateral'" class="control-group">
-          <p class="filter-note">Note: Higher spatial sigma values slow down rendering (keep under 10).</p>
-          <label>Sigma Spatial:</label>
-          <input type="range" v-model.number="bilateralSigmaSpatial" @change="updateCurrentFilter" id="bilateralSigmaSpatial" min="0" max="50" step="1">
-          <span class="threshold-value">{{ bilateralSigmaSpatial }}</span>
+          <h3>Bilateral Filtering</h3>
+          <p class="filter-note">This filter works by doing a weighted averaging of nearby pixels, taking into account both distance and tonal similarity. These weights are passed through Gaussians, which are parameterized by the inputs below.</p>
 
-          <label>Sigma Tonal:</label>
-          <input type="range" @dragstart.prevent v-model.number="bilateralSigmaTonal" @change="updateCurrentFilter" id="bilateralSigmaTonal" min="0" max="500" step="1">
-          <span class="threshold-value">{{ bilateralSigmaTonal }}</span>
+          <div class="input-row">
+            <label>Spatial Variance:</label>
+            <input type="range" v-model.number="bilateralSigmaSpatial" @change="updateCurrentFilter" id="bilateralSigmaSpatial" min="0" max="50" step="1">
+            <span class="threshold-value">{{ bilateralSigmaSpatial }}</span>
+          </div>
+          <div class="input-row">
+            <label>Tonal Variance:</label>
+            <input type="range" @dragstart.prevent v-model.number="bilateralSigmaTonal" @change="updateCurrentFilter" id="bilateralSigmaTonal" min="0" max="500" step="1">
+            <span class="threshold-value">{{ bilateralSigmaTonal }}</span>
+          </div>
+
         </div>
 
         <div v-show="getFilterType() === 'NLMeans'" class="control-group">
-          <p class="filter-note">Note: Higher window Radius increase render time.</p>
-          <label>Filter Strength:</label>
-          <input type="range" v-model.number="NLMeansStrength" @change="updateCurrentFilter" id="NLMeansStrength" min="0" max="100" step="1">
-          <span class="threshold-value">{{ NLMeansStrength }}</span>
+          <h3>Nonlocal Means</h3>
+          <p class="filter-note">Similar to bilateral filtering, but we are only looking now at tonal similarity, and we look at entire neighborhoods.</p>
 
-          <label>Patch Radius:</label>
-          <input type="range" @dragstart.prevent v-model.number="NLMeansRadiusPatch" @change="updateCurrentFilter" id="NLMeansRadiusPatch" min="0" max="20" step="1">
-          <span class="threshold-value">{{ NLMeansRadiusPatch }}</span>
-
-          <label>Window Radius:</label>
-          <input type="range" @dragstart.prevent v-model.number="NLMeansRadiusWindow" @change="updateCurrentFilter" id="NLMeansRadiusWindow" min="0" max="20" step="1">
-          <span class="threshold-value">{{ NLMeansRadiusWindow }}</span>
+          <p class="filter-note">Note: Higher window Radius WILL increase render time.</p>
+          <div class="input-row">
+            <label>Filter Strength:</label>
+            <input type="range" v-model.number="NLMeansStrength" @change="updateCurrentFilter" id="NLMeansStrength" min="0" max="100" step="1">
+            <span class="threshold-value">{{ NLMeansStrength }}</span>
+          </div>
+          <div class="input-row">
+            <label>Patch Radius:</label>
+            <input type="range" @dragstart.prevent v-model.number="NLMeansRadiusPatch" @change="updateCurrentFilter" id="NLMeansRadiusPatch" min="0" max="20" step="1">
+            <span class="threshold-value">{{ NLMeansRadiusPatch }}</span>
+          </div>
+          <div class="input-row">
+            <label>Window Radius:</label>
+            <input type="range" @dragstart.prevent v-model.number="NLMeansRadiusWindow" @change="updateCurrentFilter" id="NLMeansRadiusWindow" min="0" max="20" step="1">
+            <span class="threshold-value">{{ NLMeansRadiusWindow }}</span>
+          </div>
         </div>
 
         <div v-show="getFilterType() === 'diffusion'" class="control-group">
-            <p class="filter-note">Note: Higher diffusion time drastically increases render time.</p>
-          <label>Diffusion time:</label>
-          <input type="range" v-model.number="diffusionTime" @change="updateCurrentFilter" id="diffusionTime" min="0" max="500" step="1">
-          <span class="threshold-value">{{ diffusionTime }}</span>
+          <h3>Diffusion Filtering</h3>
+          <p class="filter-note">This filter uses Partial Differential Equations as a means of denoising while trying to preserve edges.</p>
 
-          <label>Diffusion Contrast:</label>
-          <input type="range" @dragstart.prevent v-model.number="diffusionContrast" @change="updateCurrentFilter" id="diffusionContrast" min="0" max="20" step="0.1">
-          <span class="threshold-value">{{ diffusionContrast }}</span>
-
-          <select class="custom-select" v-model="diffusionOption" id="diffusionOption" @change="updateCurrentFilter">
-            <option :value="1">Charbonnier Diffusivity</option>
-            <option :value="2">Perona–Malik diffusivity</option>
-          </select>
+          <p class="filter-note">Note: Higher diffusion time drastically increases render time.</p>
+          <div class="input-row">
+            <label>Diffusion time:</label>
+            <input type="range" v-model.number="diffusionTime" @change="updateCurrentFilter" id="diffusionTime" min="0" max="500" step="1">
+            <span class="threshold-value">{{ diffusionTime }}</span>
+          </div>
+          <div class="input-row">
+            <label>Diffusion Contrast:</label>
+            <input type="range" @dragstart.prevent v-model.number="diffusionContrast" @change="updateCurrentFilter" id="diffusionContrast" min="0" max="20" step="0.1">
+            <span class="threshold-value">{{ diffusionContrast }}</span>
+          </div> 
+          <div class="input-row">
+            <select class="custom-select" v-model="diffusionOption" id="diffusionOption" @change="updateCurrentFilter">
+              <option :value="1">Charbonnier Diffusivity</option>
+              <option :value="2">Perona–Malik diffusivity</option>
+            </select>
+          </div>
         </div>
 
         <div v-show="getFilterType() === 'affineGrayscale'" class="control-group">
-          <label>Slope:</label>
-          <input type="number" class="custom-input" v-model.number="affineGrayscaleSlope" @change="updateCurrentFilter" id="affineGrayscaleSlope">
-
-          <label>Distance:</label>
-          <input type="number" class="custom-input" @dragstart.prevent v-model.number="affineGrayscaleDistance" @change="updateCurrentFilter" id="affineGrayscaleDistance">
-          
+          <h3>Affine Grayscale Transformation</h3>
+          <p class="filter-note">We move pixel values as a linear function f(x)=ax + b, with the slope being defined below. Values outside the [0,255] range are clipped. To move existing values to the [0,255] range, just click the button below</p>
+          <div class="input-row">
+            <label>Slope:</label>
+            <input type="number" class="custom-input" v-model.number="affineGrayscaleSlope" @change="updateCurrentFilter" id="affineGrayscaleSlope">
+          </div>
+          <div class="input-row">
+            <label>Distance:</label>
+            <input type="number" class="custom-input" @dragstart.prevent v-model.number="affineGrayscaleDistance" @change="updateCurrentFilter" id="affineGrayscaleDistance">
+          </div>
           <button class="btn btn-secondary" @click="optimalAffineGrayscaleTransform(); updateCurrentFilter()">
             Move image to range [0,255]
           </button>
+        </div>
+        <div v-show="getFilterType() === 'histogramEqualization'" class="control-group">
+          <h3>Histogram Equalization</h3>
+          <p class="filter-note">This algorithm tries to spread pixel values so that the possibility of each pixel value is equal.</p>
         </div>
       </aside>
       </div>

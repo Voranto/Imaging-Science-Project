@@ -53,23 +53,25 @@ const frequencyFilterOption = ref(1);
           <p class="filter-note">Note: Leave the Highest Frequency to -1 if you want the threshold uncapped. After a frequency filter, an affine grayscale transform to the range [0,255] is applied. This can make some backgrounds look different.</p>
           <button class="btn btn-secondary" @click="getIFFT">IFFT</button>
           
-          <label>Lowest Frequency:</label>
+          
           <div class="input-row">
+            <label>Lowest Frequency:</label>
             <input class="custom-input" type="range" v-model.number="lowestFrequency" id="lowestFrequency" :min="0" :max="highestFrequency">
             <span style="color: red;">{{ lowestFrequency }}</span>
           </div>
 
-          <label>Highest Frequency:</label>
           <div class="input-row">
+            <label>Highest Frequency:</label>
             <input v-if="imageBuffer" class="custom-input" type="range" v-model.number="highestFrequency" id="highestFrequency" :min="lowestFrequency" :max="Math.max(imageBuffer.width.value / 2, imageBuffer.height.value/2)*1.5">
             <span style="color: lightblue;">{{ highestFrequency }}</span>
           </div>
-
-          <label>Filter Method:</label>
-          <select class="custom-select" v-model="frequencyFilterOption" id="frequencyFilterOption">
-            <option :value="1">Hard Cutoff</option>
-            <option :value="2">Butterworth</option>
-          </select>
+          <div class="input-row">
+            <label>Filter Method:</label>
+            <select class="custom-select" v-model="frequencyFilterOption" id="frequencyFilterOption">
+              <option :value="1">Hard Cutoff</option>
+              <option :value="2">Butterworth</option>
+            </select>
+          </div>
           <button class="btn btn-secondary" @click="applyFrequencyFilterFFT">Apply</button>
         </div>
 
@@ -81,8 +83,9 @@ const frequencyFilterOption = ref(1);
         <div v-show="getTransformType() == 'dwt'" class="control-group">
           <h3>Discrete Wavelet Transform</h3>
           <p class="filter-note">Note: For some reason, using small shapes (like rects) gives trouble with the DWT. Larger detail-heavy images work better.</p>
-          <label>Level:</label>
+          
           <div class="input-row">
+            <label>Level:</label>
             <input type="range" v-model.number="dwtLevel" @change="getDWT" id="dwtLevel" min="0" max="10">
             <span class="threshold-value">{{ dwtLevel }}</span>
           </div>

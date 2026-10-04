@@ -2,10 +2,14 @@
 import { ref } from 'vue';
 import { applyFrequencyFilterFFT, transformRequested } from '@/composables/transform/useTransforms';
 import { getDWT, getIFFT, getIDCT, transformImageSrc, updateImageTransform, getTransformType, renderTransformToCanvas } from '../composables/transform/useTransforms.ts'
+import { ImageBuffer } from '@/composables/ImageBuffer.ts';
+import { useImageBufferState } from '../composables/useImageBufferState.ts';
+
+const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
 const dwtLevel = ref(1);
 const lowestFrequency = ref(0);
-const highestFrequency = ref(1000);
+const highestFrequency = ref(200);
 const frequencyFilterOption = ref(1);
 </script>
 
@@ -27,17 +31,41 @@ const frequencyFilterOption = ref(1);
         <option value="dct">dct</option>
         <option value="dwt">dwt</option>
       </select>
+    </header>
 
-      <div class="filter-controls">
+    <div class="content-body">
+      <main class="image-viewport">
+        <div class="image-wrapper" v-show="transformRequested">
+          <img v-show="transformRequested" :src="transformImageSrc" id="transformImage" alt="Transform preview">
+          <div v-show="getTransformType() === 'fft'" class="svg-overlay-wrapper">
+            <svg v-if="imageBuffer" class="image-viewport" :viewBox="`0 0 ${imageBuffer.width.value} ${imageBuffer.height.value}`" xmlns="http://www.w3.org/2000/svg">
+              <circle class="image-viewport" :cx="imageBuffer.width.value / 2" :cy="imageBuffer.height.value / 2" :r="lowestFrequency" fill="none" stroke="red" stroke-width="2" />
+            </svg>
+            <svg v-if="imageBuffer" class="image-viewport" :viewBox="`0 0 ${imageBuffer.width.value} ${imageBuffer.height.value}`" xmlns="http://www.w3.org/2000/svg">
+              <circle class="image-viewport" :cx="imageBuffer.width.value / 2" :cy="imageBuffer.height.value / 2" :r="highestFrequency" fill="none" stroke="blue" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+      </main>
+    <aside v-if="getTransformType() !== 'none'" class="sidebar-controls">
         <div v-show="getTransformType() == 'fft'" class="control-group">
+          <h3>FFT Settings</h3>
           <p class="filter-note">Note: Leave the Highest Frequency to -1 if you want the threshold uncapped. After a frequency filter, an affine grayscale transform to the range [0,255] is applied. This can make some backgrounds look different.</p>
           <button class="btn btn-secondary" @click="getIFFT">IFFT</button>
+          
           <label>Lowest Frequency:</label>
-          <input class="custom-input" type="range" v-model.number="lowestFrequency"id="lowestFrequency" :min="0" :max="highestFrequency">
-          <span style="color: red;">{{ lowestFrequency }}</span>
+          <div class="input-row">
+            <input class="custom-input" type="range" v-model.number="lowestFrequency" id="lowestFrequency" :min="0" :max="highestFrequency">
+            <span style="color: red;">{{ lowestFrequency }}</span>
+          </div>
+
           <label>Highest Frequency:</label>
-          <input class="custom-input" type="range" v-model.number="highestFrequency" id="highestFrequency" :min="lowestFrequency" :max="1000">
-          <span style="color: lightblue;">{{ highestFrequency }}</span>
+          <div class="input-row">
+            <input v-if="imageBuffer" class="custom-input" type="range" v-model.number="highestFrequency" id="highestFrequency" :min="lowestFrequency" :max="Math.max(imageBuffer.width.value / 2, imageBuffer.height.value/2)*1.5">
+            <span style="color: lightblue;">{{ highestFrequency }}</span>
+          </div>
+
+          <label>Filter Method:</label>
           <select class="custom-select" v-model="frequencyFilterOption" id="frequencyFilterOption">
             <option :value="1">Hard Cutoff</option>
             <option :value="2">Butterworth</option>
@@ -46,63 +74,26 @@ const frequencyFilterOption = ref(1);
         </div>
 
         <div v-show="getTransformType() == 'dct'" class="control-group">
+          <h3>DCT Settings</h3>
           <button class="btn btn-secondary" @click="getIDCT">IDCT</button>
         </div>
 
         <div v-show="getTransformType() == 'dwt'" class="control-group">
+          <h3>DWT Settings</h3>
           <p class="filter-note">Note: For some reason, using small shapes (like rects) gives trouble with the DWT. Larger detail-heavy images work better.</p>
           <label>Level:</label>
-          <input type="range" v-model.number="dwtLevel" @change="getDWT" id="dwtLevel" min="0" max="10">
-          <span class="threshold-value">{{ dwtLevel }}</span>
+          <div class="input-row">
+            <input type="range" v-model.number="dwtLevel" @change="getDWT" id="dwtLevel" min="0" max="10">
+            <span class="threshold-value">{{ dwtLevel }}</span>
+          </div>
         </div>
-      </div>
-    </header>
-
-    <main class="image-viewport">
-      <img v-show="transformRequested" :src="transformImageSrc" id="transformImage" alt="Transform preview">
-      <div v-show="getTransformType() === 'fft'">
-        <svg class="image-viewport" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <circle class="image-viewport" cx="50" cy="50" :r="lowestFrequency * 0.126" fill="none" stroke="red" stroke-width="0.3" />
-        </svg>
-        <svg class="image-viewport" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <circle class="image-viewport" cx="50" cy="50" :r="highestFrequency * 0.126" fill="none" stroke="blue" stroke-width="0.3" />
-        </svg>
-      </div>
-      
-    </main>
-
+      </aside>
+    </div>
+    
     <div class="overlay-content"></div>
   </div>
 </template>
-
 <style scoped>
-.image-viewport {
-  position: relative; /* Establishes positioning context */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80vw;
-  height: 80vh;
-}
-
-/* Ensure the SVG overlays the exact container bounds */
-.image-viewport svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none; /* Allows clicks to pass through to the image underneath */
-  z-index: 10;
-}
-.filter-note {
-  width: 100%;
-  margin: 0;
-  font-size: 0.8rem;
-  color: #cbd5e1;
-  text-align: center;
-}
-
 /* Fullscreen Overlay Container */
 .overlay-screen {
   position: fixed;
@@ -116,23 +107,136 @@ const frequencyFilterOption = ref(1);
   color: #f1f5f9;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   box-sizing: border-box;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  gap: 1rem;
 }
 
 /* Header & Controls Toolbar */
 .toolbar {
   width: 100%;
-  max-width: 1200px;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 0.75rem;
   z-index: 20;
 }
+
+.toolbar-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Main Split Layout Body */
+.content-body {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: 0; /* Prevents overflow from flex children */
+  gap: 1.5rem;
+  overflow: hidden;
+}
+
+/* Dynamic Image Frame (Flex-based, never clips) */
+.image-viewport {
+  position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Inner wrapper snaps tightly to rendered image bounds */
+.image-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#transformImage {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}
+
+/* SVG wrapper covers only rendered image rect */
+.svg-overlay-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.svg-overlay-wrapper svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sidebar Panel */
+.sidebar-controls {
+  width: 320px;
+  min-width: 320px;
+  height: 100%;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 1.25rem;
+  backdrop-filter: blur(4px);
+  box-sizing: border-box;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.control-group h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #f8fafc;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.input-row input[type="range"] {
+  flex: 1;
+}
+
+.filter-note {
+  width: 100%;
+  margin: 0;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  text-align: left;
+}
+
+/* Form Controls & Inputs */
 .custom-select,
 .custom-input {
   background-color: rgba(15, 23, 42, 0.8);
@@ -144,57 +248,16 @@ const frequencyFilterOption = ref(1);
   font-size: 0.85rem;
 }
 
-.toolbar-actions {
-  display: flex;
-  gap: 0.75rem;
+input[type="range"] {
+  accent-color: #3b82f6;
+  cursor: pointer;
 }
 
-/* Dynamic Filter/Transform Control Panel */
-.filter-controls {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.control-group {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 0.6rem 1.25rem;
-  border-radius: 10px;
-  backdrop-filter: blur(4px);
-  font-size: 0.9rem;
-}
-
-/* Dynamic Image Frame taking ~80% of space */
-.image-viewport {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80vw;
-  height: 80vh;
-  max-width: 80vw;
-  max-height: 80vh;
-  margin: auto;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  background: rgba(0, 0, 0, 0.2);
-}
-
-#transformImage {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  border-radius: 8px;
-  display: block;
+.threshold-value {
+  font-weight: 700;
+  min-width: 2rem;
+  text-align: right;
+  color: #60a5fa;
 }
 
 /* Button UI Components */
@@ -233,18 +296,5 @@ const frequencyFilterOption = ref(1);
 .btn-secondary:hover {
   background-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
-}
-
-/* Dynamic Inputs & Range Controls */
-.threshold-value {
-  font-weight: 700;
-  min-width: 2rem;
-  text-align: right;
-  color: #60a5fa;
-}
-
-input[type="range"] {
-  accent-color: #3b82f6;
-  cursor: pointer;
 }
 </style>

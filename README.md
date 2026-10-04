@@ -10,9 +10,10 @@ This website is based on a Vue.js frontend with a FastAPI backend, and is design
 - The ability to import images, shapes, and draw with your own brush. Some shapes include: Rects, Ellipses, Checkerboard patterns, sinusoidal shapes, gaussians, etc.
 - Histogram Equalization, Gamma Correction, Affine Grayscale Transformations, etc...
 - Visualization of the Mean, Variance and Histogram of the image
+  
 To ensure the accuracy of the transforms and filters, instead of relying on the canvas.getImageData() (which is affected by anti-aliasing and more), all objects have their own custom rasterization algorithms onto a 32-bit imageBuffer, to ensure accuracy of the numbers and not be limited by 8 bits. Imported Images don't get a jump in accuracy (given that they were stored in 8 bits from the beginning, but custom shapes like gaussians are preserved much better, so artifacts are minimized.
 
-Each of these transforms and filters allow to customize the parameters with it's inputs, so that you can tweak the thresholds of edge detection, the variance and mean of the frequency filters, etc. 
+Each of these transforms and filters allow to customize the parameters with it's inputs, so that you can tweak the thresholds of edge detection, the variance and mean of the frequency filters, etc. The updated filter/transform is requested as soon as an input is changed.
 
 This is currently still a Work In Progress and is not finished, so lots of bugs are to be expected. The UI is also not finished, some some elements may look out of place.
 

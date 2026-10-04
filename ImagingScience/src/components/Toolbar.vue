@@ -331,7 +331,7 @@ onUnmounted(() => {
     </div>
     <div class="menu-group">
       <button @click="toggleMenu('stats')">Stats ▾</button>
-      <div v-show="activeMenu === 'stats'" class="dropdown-panel">
+      <div v-show="activeMenu === 'stats'" class="dropdown-panel-reverse">
         <span>Mean: </span> <span id="mean">{{ imageBuffer?.mean }}</span>
         <span>Variance: </span><span id="variance"> {{imageBuffer?.variance}}</span>
         <span>Histogram:</span>
@@ -375,8 +375,25 @@ onUnmounted(() => {
   z-index: 100;
   min-width: 320px; /* Expanded for comfortable input display */
 }
+.dropdown-panel-reverse {
+  position: absolute;
+  top: 100%;
+  right: 0%;
+  margin-top: 6px;
+  margin-right: 6px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 100;
+  min-width: 320px; /* Expanded for comfortable input display */
+}
 /* Number Inputs */
-.dropdown-panel input[type="number"] {
+.dropdown-panel input[type="number"], .dropdown-panel-reverse input[type="number"] {
   width: 70px;
   padding: 4px 6px;
   font-size: 0.85rem;
@@ -388,13 +405,13 @@ onUnmounted(() => {
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.dropdown-panel input[type="number"]:focus {
+.dropdown-panel input[type="number"]:focus, .dropdown-panel-reverse input[type="number"]:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 /* Checkbox */
-.dropdown-panel input[type="checkbox"] {
+.dropdown-panel input[type="checkbox"], .dropdown-panel-reverse input[type="checkbox"] {
   width: 16px;
   height: 16px;
   accent-color: #2563eb;
@@ -403,7 +420,7 @@ onUnmounted(() => {
 }
 
 /* Label Spans inside Dropdown */
-.dropdown-panel span {
+.dropdown-panel span, .dropdown-panel-reverse span {
   font-size: 0.85rem;
   color: #334155;
   font-weight: 500;

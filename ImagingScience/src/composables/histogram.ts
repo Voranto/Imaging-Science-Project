@@ -35,7 +35,6 @@ export const renderHistogram = (histogramData : Array<number>) => {
   if (chartInstance) {
     chartInstance.destroy();
   }
-
   chartInstance = new Chart(histogramCanvas.value, {
     type: 'bar',
     data: {

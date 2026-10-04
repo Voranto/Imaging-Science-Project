@@ -49,7 +49,7 @@ const frequencyFilterOption = ref(1);
       </main>
     <aside v-if="getTransformType() !== 'none'" class="sidebar-controls">
         <div v-show="getTransformType() == 'fft'" class="control-group">
-          <h3>FFT Settings</h3>
+          <h3>Fast Fourier Transform</h3>
           <p class="filter-note">Note: Leave the Highest Frequency to -1 if you want the threshold uncapped. After a frequency filter, an affine grayscale transform to the range [0,255] is applied. This can make some backgrounds look different.</p>
           <button class="btn btn-secondary" @click="getIFFT">IFFT</button>
           
@@ -74,12 +74,12 @@ const frequencyFilterOption = ref(1);
         </div>
 
         <div v-show="getTransformType() == 'dct'" class="control-group">
-          <h3>DCT Settings</h3>
+          <h3>Discrete Cosine Transform</h3>
           <button class="btn btn-secondary" @click="getIDCT">IDCT</button>
         </div>
 
         <div v-show="getTransformType() == 'dwt'" class="control-group">
-          <h3>DWT Settings</h3>
+          <h3>Discrete Wavelet Transform</h3>
           <p class="filter-note">Note: For some reason, using small shapes (like rects) gives trouble with the DWT. Larger detail-heavy images work better.</p>
           <label>Level:</label>
           <div class="input-row">

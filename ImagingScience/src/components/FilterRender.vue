@@ -38,7 +38,6 @@ const diffusionOption = ref(1);
 
 <template>
   <div class="overlay-screen">
-    <!-- Action / Control Toolbar Header -->
     <header class="toolbar">
       <div class="toolbar-actions">
         <button class="btn btn-secondary" @click="filterRequested = false">
@@ -74,8 +73,22 @@ const diffusionOption = ref(1);
         <option value="affineGrayscale">affineGrayscale</option>
         <option value="histogramEqualization">histogramEqualization</option>
       </select>
+      </header>
+      <div class="content-body">
+        <main class="image-viewport">
+          <div v-if="Filter.isLoading.value" class="loading-overlay">
+              <div class="spinner"></div>
+                <span>Processing image...</span>
+                <button class="btn btn-danger btn-sm" @click="Filter.abortRequest()">
+                  Abort current request
+                </button>
+            </div>
+          <div class="image-wrapper" v-show="filterRequested">
+            <img :src="filterImageSrc" id="filterImage" alt="Filter preview">
+          </div>
+        </main>
 
-      <div class="filter-controls">
+      <aside v-if="getFilterType() !== 'none'" class="sidebar-controls">
         <div v-show="getFilterType() == 'simpleEdge'" class="control-group">
           <label>Threshold:</label>
           <input type="range" v-model.number="thresholdSimpleEdge" @change="updateCurrentFilter" id="simpleEdgeThreshold" min="0" max="250">
@@ -216,20 +229,8 @@ const diffusionOption = ref(1);
             Move image to range [0,255]
           </button>
         </div>
+      </aside>
       </div>
-    </header>
-
-    <main class="image-viewport">
-      <div v-if="Filter.isLoading.value" class="loading-overlay">
-        <div class="spinner"></div>
-        <span>Processing image...</span>
-        <button class="btn btn-danger btn-sm" @click="Filter.abortRequest()">
-          Abort current request
-        </button>
-      </div>
-      <img :src="filterImageSrc" id="filterImage" alt="Filter preview">
-    </main>
-
     <div class="overlay-content"></div>
   </div>
 </template>
@@ -248,21 +249,18 @@ const diffusionOption = ref(1);
   color: #f1f5f9;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   box-sizing: border-box;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  gap: 1rem;
 }
 
 /* Header & Controls Toolbar */
 .toolbar {
   width: 100%;
-  max-width: 1200px;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 0.75rem;
   z-index: 20;
 }
 
@@ -271,50 +269,40 @@ const diffusionOption = ref(1);
   gap: 0.75rem;
 }
 
-/* Dynamic Filter Control Panel */
-.filter-controls {
-  width: 100%;
+/* Main Split Layout Body */
+.content-body {
   display: flex;
-  justify-content: center;
-}
-
-.control-group {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 0.6rem 1.25rem;
-  border-radius: 10px;
-  backdrop-filter: blur(4px);
-  font-size: 0.9rem;
-}
-
-.filter-note {
+  flex: 1;
   width: 100%;
-  margin: 0;
-  font-size: 0.8rem;
-  color: #cbd5e1;
-  text-align: center;
+  min-height: 0; /* Prevents overflow from flex children */
+  gap: 1.5rem;
+  overflow: hidden;
 }
 
-/* Dynamic Image Frame taking ~80% of space */
+/* Dynamic Image Frame (Flex-based, never clips) */
 .image-viewport {
   position: relative;
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 80vw;
-  height: 80vh;
-  max-width: 80vw;
-  max-height: 80vh;
-  margin: auto;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
   background: rgba(0, 0, 0, 0.2);
+}
+
+/* Inner wrapper snaps tightly to rendered image bounds */
+.image-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 #filterImage {
@@ -325,6 +313,93 @@ const diffusionOption = ref(1);
   object-fit: contain;
   border-radius: 8px;
   display: block;
+}
+
+/* SVG wrapper covers only rendered image rect */
+.svg-overlay-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.svg-overlay-wrapper svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sidebar Panel */
+.sidebar-controls {
+  width: 320px;
+  min-width: 320px;
+  height: 100%;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 1.25rem;
+  backdrop-filter: blur(4px);
+  box-sizing: border-box;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.control-group h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #f8fafc;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.input-row input[type="range"] {
+  flex: 1;
+}
+
+.filter-note {
+  width: 100%;
+  margin: 0;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  text-align: left;
+}
+
+/* Form Controls & Inputs */
+.custom-select,
+.custom-input {
+  background-color: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  outline: none;
+  font-size: 0.85rem;
+}
+
+input[type="range"] {
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+.threshold-value {
+  font-weight: 700;
+  min-width: 2rem;
+  text-align: right;
+  color: #60a5fa;
 }
 
 /* Button UI Components */
@@ -374,54 +449,6 @@ const diffusionOption = ref(1);
 .btn-danger:hover {
   background-color: #dc2626;
 }
-
-.btn-sm {
-  padding: 0.35rem 0.75rem;
-  font-size: 0.8rem;
-}
-
-/* Dynamic Inputs & Range Controls */
-.threshold-value {
-  font-weight: 700;
-  min-width: 2rem;
-  text-align: right;
-  color: #60a5fa;
-}
-
-input[type="range"] {
-  accent-color: #3b82f6;
-  cursor: pointer;
-}
-
-.custom-select,
-.custom-input {
-  background-color: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 0.35rem 0.6rem;
-  border-radius: 6px;
-  outline: none;
-  font-size: 0.85rem;
-}
-
-.custom-input {
-  width: 70px;
-}
-
-.custom-select:focus,
-.custom-input:focus {
-  border-color: #3b82f6;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  cursor: pointer;
-  margin-left: 0.5rem;
-}
-
-/* Loading Overlay & Spinner */
 .loading-overlay {
   position: absolute;
   inset: 0;

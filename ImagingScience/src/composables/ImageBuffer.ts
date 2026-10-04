@@ -15,7 +15,7 @@ export class ImageBuffer {
     constructor(canvasElement: HTMLCanvasElement, width: number, height: number) {
     this.width = ref(Math.floor(width));
     this.height = ref(Math.floor(height));
-    this.canvas = new Canvas(canvasElement, { width, height });
+    this.canvas = new Canvas(canvasElement, { width, height , enableRetinaScaling: false});
     this.floatBuffer = new Float32Array(this.width.value * this.height.value);
     this.floatBuffer.fill(getBackgroundColor() / 255);
     this.isDrawing = ref(false);

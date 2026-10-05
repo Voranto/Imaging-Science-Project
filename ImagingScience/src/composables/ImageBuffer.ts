@@ -297,15 +297,19 @@ export class ImageBuffer {
     }
   }
   private rasterizeImage(obj : FabricImage){
-    const width = Math.floor(obj.width || 0) * (obj.scaleX || 1);
-    const height = Math.floor(obj.height || 0) * (obj.scaleY || 1);
-    const left = obj.left!;
-    const top = obj.top!;
+    const angle = degreesToRadians(obj.angle);
 
-    const minX = Math.max(0, Math.floor(left));
-    const maxX = Math.min(this.width.value, Math.ceil(left + width));
-    const minY = Math.max(0, Math.floor(top));
-    const maxY = Math.min(this.height.value, Math.ceil(top + height));
+    const points = obj.getCoords();
+    const p1 = points[0]!;
+    const p2 = points[1]!;
+    const p3  = points[2]!;
+    const p4 = points[3]!;
+
+    const minX = Math.max(0, Math.min(Math.floor(p1.x), Math.floor(p2.x),Math.floor(p3.x), Math.floor(p4.x)));
+    const maxY = Math.min(this.height.value, Math.max(Math.floor(p1.y), Math.floor(p2.y),Math.floor(p3.y), Math.floor(p4.y)));
+    const minY = Math.max(0, Math.min(Math.floor(p1.y), Math.floor(p2.y),Math.floor(p3.y), Math.floor(p4.y)));
+    const maxX = Math.min(this.width.value, Math.max(Math.floor(p1.x), Math.floor(p2.x),Math.floor(p3.x), Math.floor(p4.x)));
+    
 
     const cropWidth = maxX - minX;
     const cropHeight = maxY - minY;
@@ -320,6 +324,7 @@ export class ImageBuffer {
     for (let y = minY; y < maxY; y++) {
       for (let x = minX; x < maxX; x++) {
           const localIdx = (y - minY) * (maxX - minX) + (x-minX);
+          if (imageData[localIdx * 4 + 3] === 0) continue;
           const bufferIdx = y * this.width.value + x;
           this.floatBuffer[bufferIdx] = imageData[localIdx * 4]! / 255;
       }

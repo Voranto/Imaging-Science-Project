@@ -4,6 +4,7 @@ import { applyFrequencyFilterFFT, transformRequested } from '@/composables/trans
 import { getDWT, getIFFT, getIDCT, transformImageSrc, updateImageTransform, getTransformType, renderTransformToCanvas } from '../composables/transform/useTransforms.ts'
 import { ImageBuffer } from '@/composables/ImageBuffer.ts';
 import { useImageBufferState } from '../composables/useImageBufferState.ts';
+import { Transform } from '@/composables/transform/transform.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
@@ -35,6 +36,13 @@ const frequencyFilterOption = ref(1);
 
     <div class="content-body">
       <main class="image-viewport">
+        <div v-if="Transform.isLoading.value" class="loading-overlay">
+              <div class="spinner"></div>
+              <span>Processing image...</span>
+              <button class="btn btn-danger btn-sm" @click="Transform.abortRequest()">
+                Abort current request
+              </button>
+          </div>
         <div class="image-wrapper" v-show="transformRequested">
           <img v-show="transformRequested" :src="transformImageSrc" id="transformImage" alt="Transform preview">
           <div v-show="getTransformType() === 'fft'" class="svg-overlay-wrapper">
@@ -299,5 +307,42 @@ input[type="range"] {
 .btn-secondary:hover {
   background-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
+}
+.btn-danger {
+  background-color: #ef4444;
+  color: white;
+  margin-top: 10px;
+}
+.btn-danger:hover {
+  background-color: #dc2626;
+}
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  font-weight: 500;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 12px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

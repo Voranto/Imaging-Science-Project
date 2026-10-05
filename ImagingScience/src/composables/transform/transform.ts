@@ -13,6 +13,8 @@ export var imageID = ref("");
 export abstract class  Transform {
     abstract baseURL : string;
     abstract transformType : TransformType;
+    static isLoading : Ref<boolean> = ref(false);
+    static abortController: AbortController | null = null;
     activeObject : FabricObject | undefined;
 
     public async applyTransform() : Promise<void> {
@@ -75,11 +77,18 @@ export abstract class  Transform {
     }
 
     private async requestTransform(height: number, width: number, grayArray : Float32Array<any>) {
-         try {
+        Transform.isLoading.value = true; 
+        this.visibilizeTransformContainer();
+            if (Transform.abortController) {
+            Transform.abortController.abort();
+        }
+        Transform.abortController = new AbortController();
+        try {
             
             const response = await axios.post(this.baseURL + "/grayscale", grayArray, {
             headers: this.getHeaders(height, width),
             responseType: 'blob',
+            signal: Transform.abortController.signal,
             });
             const id = response.headers['x-image-id'];
             if (!id) {
@@ -87,12 +96,16 @@ export abstract class  Transform {
             }
             imageID.value = id;
 
-            this.visibilizeTransformContainer();
+            
             
             await this.renderImageResult(response);
             
         } catch (error) {
             console.error('Upload failed:', error);
+        }
+        finally{
+            Transform.isLoading.value = false;
+            Transform.abortController = null;
         }
 
     }
@@ -182,7 +195,9 @@ export abstract class  Transform {
         const imageElement = document.getElementById("transformImage") as HTMLImageElement;
         return imageElement.src;
     }
-
+    public static abortRequest() {
+        Transform.abortController?.abort();
+    }
     public abstract getParameters() : Array<[string, string]>;
 }
 export enum TransformType {

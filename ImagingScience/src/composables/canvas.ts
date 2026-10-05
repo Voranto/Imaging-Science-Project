@@ -403,9 +403,9 @@ export const resizeCanvasOptimal = () => {
   const height = imageBuffer.value?.height.value;
   if (!height || !width) return;
 
-  const min_log = Math.log2(Math.min(height,width));
+  const min_log = Math.round(Math.log2(Math.min(height,width)));
   
-  const optimal_dimensions = 2** min_log;
+  const optimal_dimensions = Math.pow(2,min_log);
   imageBuffer.value?.setCanvasDimensions(optimal_dimensions, optimal_dimensions);
 }
 export const updateBackgroundColor = () => {

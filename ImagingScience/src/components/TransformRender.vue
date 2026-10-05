@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { applyFrequencyFilterFFT, transformRequested } from '@/composables/transform/useTransforms';
+import { applyFrequencyFilterFFT, getFFT, transformRequested } from '@/composables/transform/useTransforms';
 import { getDWT, getIFFT, getIDCT, transformImageSrc, updateImageTransform, getTransformType, renderTransformToCanvas } from '../composables/transform/useTransforms.ts'
 import { ImageBuffer } from '@/composables/ImageBuffer.ts';
 import { useImageBufferState } from '../composables/useImageBufferState.ts';
@@ -82,6 +82,7 @@ const frequencyFilterOption = ref(1);
             </select>
           </div>
           <button class="btn btn-secondary" @click="applyFrequencyFilterFFT">Apply</button>
+          <button class="btn btn-secondary" @click="getFFT">Reset </button>
         </div>
 
         <div v-show="getTransformType() == 'dct'" class="control-group">

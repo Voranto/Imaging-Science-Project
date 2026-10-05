@@ -5,7 +5,7 @@ import numpy as np
 import io
 import uuid
 from cachetools import Cache
-
+import math
 fft_cache = Cache(maxsize=50)
 
 router = APIRouter(
@@ -106,7 +106,7 @@ async def apply_frequency_filter(image_id : str, low:float, high: float, cutoff:
         dist_from_center[dist_from_center == 0] = 1e-8
 
         # Hardcoded butterworth order
-        n = 2
+        n = 3
         if low > 0:
             high_pass = 1 / (1 + (low / dist_from_center) ** (2 * n))
         else:
@@ -119,6 +119,19 @@ async def apply_frequency_filter(image_id : str, low:float, high: float, cutoff:
 
         butterworth_mask = high_pass * low_pass
         fft_shifted = fft_shifted * butterworth_mask        
+    elif cutoff == 3:
+        dist_from_center[dist_from_center == 0] = 1e-8
+        if low != -float('inf') and low > 0:
+            gaussian_low = np.exp(-(dist_from_center**2) / (2 * (low**2)))
+        else:
+            gaussian_low = 1.0
+
+        if high != float('inf') and high > 0:
+            gaussian_high = 1.0 - np.exp(-(dist_from_center**2) / (2 * (high**2)))
+        else:
+            gaussian_high = 1.0
+
+        fft_shifted = fft_shifted * gaussian_low * gaussian_high
 
     # Update the image_id
     fft_cache[image_id] = (fft_shifted, True)

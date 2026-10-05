@@ -17,5 +17,27 @@ Each of these transforms and filters allow to customize the parameters with it's
 
 This is currently still a Work In Progress and is not finished, so lots of bugs are to be expected. The UI is also not finished, some some elements may look out of place.
 
+### Try it out!
+Try it out [here](https://voranto.nat.selfnet.de/imaging/)
+
+### Local deployment
+'''
+git clone https://github.com/Voranto/Imaging-Science-Project.git
+cd Imaging-Science-Project
+'''
+
+To deploy the frontend
+'''
+npm install
+npm run dev
+'''
+
+To deploy the backend
+'''
+cd ImagingScience
+uv sync --frozen
+uv run fastapi dev src/project/main.py
+'''
+
 ### AI USAGE
 AI has been exclusively used for the CSS design, nothing else, as I am too bad of a graphic designer to go through the effort of aligning divs.

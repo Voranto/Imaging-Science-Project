@@ -39,5 +39,19 @@ uv sync --frozen
 uv run fastapi dev src/project/main.py
 ```
 
+### Examples
+Original Image:
+<img width="1117" height="797" alt="image" src="https://github.com/user-attachments/assets/6e203089-b326-4b02-a0f3-1876bb212a12" />
+
+Canny's Edge Detector
+<img width="1112" height="757" alt="image" src="https://github.com/user-attachments/assets/c33d8261-3e01-47d7-b487-e1454d532c6e" />
+
+Corner Detection (Tomasi/Kanade)
+<img width="1120" height="757" alt="image" src="https://github.com/user-attachments/assets/810cc446-305b-4a2b-bc78-037c9d39b0ed" />
+
+Diffusion Filter
+<img width="1113" height="757" alt="image" src="https://github.com/user-attachments/assets/b8fe595c-844a-40f5-8aa1-817f96313d81" />
+
+
 ### AI USAGE
 AI has been exclusively used for the CSS design, nothing else, as I am too bad of a graphic designer to go through the effort of aligning divs.

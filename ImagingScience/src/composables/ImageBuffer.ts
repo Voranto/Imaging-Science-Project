@@ -34,10 +34,6 @@ export class ImageBuffer {
     this.canvas.on('object:removed', () => this.syncFloatBuffer());
   }
   public async syncFloatBuffer() {
-    // To rasterize images correctly, discard objects
-    const activeObject = this.canvas.getActiveObject();
-    this.canvas.discardActiveObject();
-    this.canvas.requestRenderAll();
     // Have to wait before syncing float buffer, to avoid adding and then syncing
     await new Promise((resolve) => requestAnimationFrame(resolve));
     this.floatBuffer.fill(getBackgroundColor() / 255);
@@ -48,11 +44,6 @@ export class ImageBuffer {
       this.rasterizeObject(obj);
     }
 
-    // Restore active object
-    if (activeObject) {
-      this.canvas.setActiveObject(activeObject);
-      this.canvas.renderAll();
-    }
 
     // Afterwards, compute all the stats
     this.computeImageStats();
@@ -315,8 +306,16 @@ export class ImageBuffer {
     const maxX = Math.min(this.width.value, Math.ceil(left + width));
     const minY = Math.max(0, Math.floor(top));
     const maxY = Math.min(this.height.value, Math.ceil(top + height));
-    const ctx = this.canvas.getContext();
-    const imageData = ctx.getImageData(minX,minY, (maxX - minX),(maxY - minY)).data;
+
+    const cropWidth = maxX - minX;
+    const cropHeight = maxY - minY;
+
+    const offscreen = document.createElement('canvas');
+    offscreen.width = this.width.value;
+    offscreen.height = this.height.value;
+    const offCtx = offscreen.getContext('2d')!;
+    obj.render(offCtx);
+    const imageData = offCtx.getImageData(minX, minY, cropWidth, cropHeight).data;
 
     for (let y = minY; y < maxY; y++) {
       for (let x = minX; x < maxX; x++) {

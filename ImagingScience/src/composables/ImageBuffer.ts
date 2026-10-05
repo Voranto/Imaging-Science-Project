@@ -34,6 +34,10 @@ export class ImageBuffer {
     this.canvas.on('object:removed', () => this.syncFloatBuffer());
   }
   public async syncFloatBuffer() {
+    // To rasterize images correctly, discard objects
+    const activeObject = this.canvas.getActiveObject();
+    this.canvas.discardActiveObject();
+    this.canvas.requestRenderAll();
     // Have to wait before syncing float buffer, to avoid adding and then syncing
     await new Promise((resolve) => requestAnimationFrame(resolve));
     this.floatBuffer.fill(getBackgroundColor() / 255);
@@ -42,6 +46,12 @@ export class ImageBuffer {
 
     for (const obj of objects) {
       this.rasterizeObject(obj);
+    }
+
+    // Restore active object
+    if (activeObject) {
+      this.canvas.setActiveObject(activeObject);
+      this.canvas.renderAll();
     }
 
     // Afterwards, compute all the stats

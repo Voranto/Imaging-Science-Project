@@ -18,6 +18,8 @@ const sinusoidalCyclesX = ref(1);
 const sinusoidalCyclesY = ref(1);
 const checkerboardRows = ref(5);
 const checkerboardColumns = ref(5);
+const gridRows = ref(5);
+const gridColumns = ref(5);
 const gaussianSigma = ref(1);
 const selectedShape = ref<string>('box');
 const uniformNoiseRange = ref(0);
@@ -57,7 +59,7 @@ const emit = defineEmits([
 ]);
 
 const handleAddShape = () => {
-  emit('addObject', { shape: selectedShape.value, gaussianSigma: gaussianSigma.value, sinusoidalCyclesX : sinusoidalCyclesX.value , sinusoidalCyclesY : sinusoidalCyclesY.value, checkerboardRows: checkerboardRows.value, checkerboardColumns: checkerboardColumns.value},);
+  emit('addObject', { shape: selectedShape.value, gaussianSigma: gaussianSigma.value, sinusoidalCyclesX : sinusoidalCyclesX.value , sinusoidalCyclesY : sinusoidalCyclesY.value, checkerboardRows: checkerboardRows.value, checkerboardColumns: checkerboardColumns.value, gridRows:gridRows.value, gridColumns: gridColumns.value},);
   activeMenu.value = null;
 };
 
@@ -121,6 +123,7 @@ onUnmounted(() => {
                 <option value="gaussian">Gaussian</option>
                 <option value="sinusoidal">Sinusoidal</option>
                 <option value="checkerboard">Checkerboard (box function)</option>
+                <option value="grid">Grid</option>
               </select>
             </div>
 
@@ -139,6 +142,12 @@ onUnmounted(() => {
               <input type="range" min="0" max="100" v-model.number="checkerboardRows" class="input-field" />
               <label>Columns: <strong>{{ checkerboardColumns }}</strong></label>
               <input type="range" min="0" max="100" v-model.number="checkerboardColumns" class="input-field" />
+            </div>
+            <div v-show="selectedShape === 'grid'" class="form-control">
+              <label>Rows: <strong>{{ gridRows }}</strong></label>
+              <input type="range" min="0" max="100" v-model.number="gridRows" class="input-field" />
+              <label>Columns: <strong>{{ gridColumns }}</strong></label>
+              <input type="range" min="0" max="100" v-model.number="gridColumns" class="input-field" />
             </div>
             <button class="primary full-width" @click="handleAddShape">Add Selected Shape</button>
           </div>

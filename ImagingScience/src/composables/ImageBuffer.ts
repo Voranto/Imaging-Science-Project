@@ -123,6 +123,9 @@ export class ImageBuffer {
     else if (objectType === 'checkerboard'){
       this.rasterizeCheckerboard(obj);
     }
+    else if (objectType === 'grid'){
+      this.rasterizeGrid(obj);
+    }
     else {
       console.warn("Object was not classified", obj)
     }
@@ -293,6 +296,35 @@ export class ImageBuffer {
             this.floatBuffer[idx] = 1.0;
           }
           
+      }
+    }
+  }
+  private rasterizeGrid(obj : FabricObject) {
+    const width = (obj.width || 0) * (obj.scaleX || 1);
+    const height = (obj.height || 0) * (obj.scaleY || 1);
+    const left = obj.left!;
+    const top = obj.top!;
+    const rows = (obj as any).rows;
+    const columns = (obj as any).columns;
+    const cellWidth = Math.floor(width / columns);
+    const cellHeight = Math.floor(height / rows);
+
+    const minX = Math.max(0, Math.floor(left));
+    const maxX = Math.min(this.width.value, Math.ceil(left + width));
+    const minY = Math.max(0, Math.floor(top));
+    const maxY = Math.min(this.height.value, Math.ceil(top + height));
+    for (let y = minY; y < maxY; y++) {
+      for (let x = minX; x < maxX; x++) {
+          const localX = x - left;
+          const localY = y - top;
+          
+          const idx = y * this.width.value + x;
+          if (localX % cellWidth === Math.floor(cellWidth/2) || localY % cellHeight === Math.floor(cellHeight/2)){
+            this.floatBuffer[idx] = 0.0;
+          }
+          else{
+            this.floatBuffer[idx] = 1.0;
+          }
       }
     }
   }

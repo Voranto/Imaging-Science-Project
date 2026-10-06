@@ -117,6 +117,27 @@ export const addCheckerboard = (rows : number, columns : number) => {
   canvas.add(checkerboardObj);
   canvas.setActiveObject(checkerboardObj);
 }
+export const addGrid = (rows : number, columns : number) => {
+  const canvas = imageBuffer.value?.canvas; 
+  if (!canvas) return;
+  var height = canvas.height;
+  var width = canvas.width;
+  const gridObj = createGrid(width, height, rows, columns);
+  gridObj.set({
+    originX: 'left',
+    originY: 'top',
+    lockSkewingX: true,
+    lockSkewingY: true,
+    lockRotation: true,
+  });
+
+  gridObj.set("customType", "grid");
+  gridObj.set("rows", rows.toString())
+  gridObj.set("columns", columns.toString())
+  addEventListenersObject(gridObj);
+  canvas.add(gridObj);
+  canvas.setActiveObject(gridObj);
+}
 
 export function createGaussianImage(rawWidth: number, rawHeight: number, sigma: number) {
     const height = Math.floor(rawHeight);
@@ -190,6 +211,36 @@ export function createCheckerboard(rawWidth: number, rawHeight: number, rows: nu
             const val = posX * posY;
             var color = 255;
             if (val == -1) color = 0;
+            imgData.data[idx]     = color; // R
+            imgData.data[idx + 1] = color; // G
+            imgData.data[idx + 2] = color; // B
+            imgData.data[idx + 3] = 255; // A
+        }
+    }
+    ctx!.putImageData(imgData, 0, 0);
+    return new FabricImage(tempCanvas);
+}
+export function createGrid(rawWidth: number, rawHeight: number, rows: number, columns: number) { 
+  const height = Math.floor(rawHeight);
+    const width = Math.floor(rawWidth)
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = Math.floor(width);
+    tempCanvas.height = Math.floor(height);
+    const ctx = tempCanvas.getContext('2d');
+    const imgData = ctx!.createImageData(Math.floor(width), Math.floor(height));
+    const cellWidth =  Math.floor(width / columns);
+    const cellHeight = Math.floor(height / rows);
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const idx = (y * width + x) * 4;
+            var color;
+            if (x % cellWidth === Math.floor(cellWidth/2) || y % cellHeight === Math.floor(cellHeight/2)){
+              color = 0;
+            }
+            else {
+              color = 255;
+            }
             imgData.data[idx]     = color; // R
             imgData.data[idx + 1] = color; // G
             imgData.data[idx + 2] = color; // B
@@ -324,12 +375,13 @@ export const pasteObject = async () => {
 
 
 
-export const handleAddObject = ({ shape, gaussianSigma, sinusoidalCyclesX, sinusoidalCyclesY, checkerboardRows, checkerboardColumns }: { shape: string, gaussianSigma:number, sinusoidalCyclesX : number, sinusoidalCyclesY : number, checkerboardRows : number, checkerboardColumns : number }) => {
+export const handleAddObject = ({ shape, gaussianSigma, sinusoidalCyclesX, sinusoidalCyclesY, checkerboardRows, checkerboardColumns, gridRows, gridColumns }: { shape: string, gaussianSigma:number, sinusoidalCyclesX : number, sinusoidalCyclesY : number, checkerboardRows : number, checkerboardColumns : number, gridRows : number, gridColumns: number }) => {
   if (shape === 'box') addBox();
   else if (shape === 'circle') addCircle();
   else if (shape === 'gaussian') addGaussian(gaussianSigma);
   else if (shape === 'sinusoidal') addSinusoidal(sinusoidalCyclesX, sinusoidalCyclesY);
   else if (shape === 'checkerboard') addCheckerboard(checkerboardRows, checkerboardColumns);
+  else if (shape === 'grid') addGrid(gridRows, gridColumns);
   imageBuffer.value?.syncFloatBuffer();
 };
 

@@ -20,18 +20,18 @@ export class Corner extends Filter {
     }
 
     public getParameters() : Array<any> {
-        var thresholdObject : HTMLSelectElement | null = document.getElementById("cornerThreshold") as HTMLSelectElement;
-        var threshold = 0;
+        let thresholdObject : HTMLSelectElement | null = document.getElementById("cornerThreshold") as HTMLSelectElement;
+        let threshold = 0;
         if (thresholdObject) {
             threshold = Number(thresholdObject.value);
         }
-        var sigmaObject : HTMLSelectElement | null = document.getElementById("cornerSigma") as HTMLSelectElement;
-        var sigma = 0;
+        let sigmaObject : HTMLSelectElement | null = document.getElementById("cornerSigma") as HTMLSelectElement;
+        let sigma = 0;
         if (sigmaObject) {
             sigma = Number(sigmaObject.value);
         }
-        var rhoObject : HTMLInputElement | null = document.getElementById("cornerRho") as HTMLInputElement;
-        var rho = 0;
+        let rhoObject : HTMLInputElement | null = document.getElementById("cornerRho") as HTMLInputElement;
+        let rho = 0;
         if (rhoObject) {
             rho = Number(rhoObject.value);
         }

@@ -10,7 +10,7 @@ import { TransformType } from './transform.ts';
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
 
 export const transformRequested : Ref<boolean> = ref(false);
-export var transformImageSrc : Ref<string> = ref("");
+export let transformImageSrc : Ref<string> = ref("");
 
 const instanceFFT = new FFT();
 const instanceDCT = new DCT();

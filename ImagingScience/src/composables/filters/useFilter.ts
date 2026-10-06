@@ -98,8 +98,8 @@ export const affineGrayscaleDistance = ref(0);
 
 export function optimalAffineGrayscaleTransform() {
     if (!imageBuffer.value) return;
-    var max = 0;
-    var min = Infinity;
+    let max = 0;
+    let min = Infinity;
     for (const val of imageBuffer.value.floatBuffer) {
         max = Math.max(max, val);
         min = Math.min(min, val);

@@ -15,8 +15,8 @@ export const canvasFitToScreen = ref(true);
 export const addBox = () => {
   const canvas = imageBuffer.value?.canvas;
   if (!canvas) return;
-  var colorSelector = document.getElementById("objectColorSelector");
-  var color = (colorSelector as HTMLSelectElement).value;
+  let colorSelector = document.getElementById("objectColorSelector");
+  let color = (colorSelector as HTMLSelectElement).value;
   const rect = new Rect({
     left: 100,
     top: 100,
@@ -38,7 +38,7 @@ export const addBox = () => {
 export const addCircle = () => {
   const canvas = imageBuffer.value?.canvas;
   if (!canvas) return;
-  var colorSelector = document.getElementById("objectColorSelector");
+  let colorSelector = document.getElementById("objectColorSelector");
   const color = (colorSelector! as HTMLSelectElement).value
   const circle = new Circle({
     left: 100,
@@ -60,8 +60,8 @@ export const addCircle = () => {
 export const addGaussian = (sigma: number) => {
   const canvas = imageBuffer.value?.canvas; 
   if (!canvas) return;
-  var height = canvas.height;
-  var width = canvas.width;
+  let height = canvas.height;
+  let width = canvas.width;
   const gaussianObj = createGaussianImage(width, height, sigma);
   gaussianObj.set({
     originX: 'left',
@@ -79,8 +79,8 @@ export const addGaussian = (sigma: number) => {
 export const addSinusoidal = (cyclesX : number, cyclesY : number) => {
   const canvas = imageBuffer.value?.canvas; 
   if (!canvas) return;
-  var height = canvas.height;
-  var width = canvas.width;
+  let height = canvas.height;
+  let width = canvas.width;
   const sineObj = createSinusoidalImage(width, height, cyclesX, cyclesY);
   sineObj.set({
     originX: 'left',
@@ -99,8 +99,8 @@ export const addSinusoidal = (cyclesX : number, cyclesY : number) => {
 export const addCheckerboard = (rows : number, columns : number) => {
   const canvas = imageBuffer.value?.canvas; 
   if (!canvas) return;
-  var height = canvas.height;
-  var width = canvas.width;
+  let height = canvas.height;
+  let width = canvas.width;
   const checkerboardObj = createCheckerboard(width, height, rows, columns);
   checkerboardObj.set({
     originX: 'left',
@@ -120,8 +120,8 @@ export const addCheckerboard = (rows : number, columns : number) => {
 export const addGrid = (rows : number, columns : number) => {
   const canvas = imageBuffer.value?.canvas; 
   if (!canvas) return;
-  var height = canvas.height;
-  var width = canvas.width;
+  let height = canvas.height;
+  let width = canvas.width;
   const gridObj = createGrid(width, height, rows, columns);
   gridObj.set({
     originX: 'left',
@@ -209,7 +209,7 @@ export function createCheckerboard(rawWidth: number, rawHeight: number, rows: nu
             const posX = (Math.floor(x  / cellWidth + 1/2) % 2) * 2 - 1;
             const posY = (Math.floor(y / cellHeight + 1/2) % 2) * 2 - 1;
             const val = posX * posY;
-            var color = 255;
+            let color = 255;
             if (val == -1) color = 0;
             imgData.data[idx]     = color; // R
             imgData.data[idx + 1] = color; // G
@@ -234,7 +234,7 @@ export function createGrid(rawWidth: number, rawHeight: number, rows: number, co
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             const idx = (y * width + x) * 4;
-            var color;
+            let color;
             if (x % cellWidth === Math.floor(cellWidth/2) || y % cellHeight === Math.floor(cellHeight/2)){
               color = 0;
             }
@@ -268,7 +268,7 @@ export const updateObjectColor = () => {
   if (imageBuffer.value!.isDrawing && imageBuffer.value!.canvas.freeDrawingBrush) {
       imageBuffer.value!.canvas.freeDrawingBrush.color = `rgb(${c}, ${c}, ${c})`;
   }
-  var objs = imageBuffer.value!.canvas.getActiveObjects();
+  let objs = imageBuffer.value!.canvas.getActiveObjects();
   for (const obj of objs){
     if (!obj) return;
     obj.set("fill", `rgb(${c}, ${c}, ${c})`);
@@ -406,10 +406,10 @@ export const fitCanvasToObjects = () => {
   if (objects.length === 0) {
     console.error("No objects to fit the canvas to");
   }
-  var minX = canvas.width;
-  var minY = canvas.height;
-  var maxX = 0;
-  var maxY = 0;
+  let minX = canvas.width;
+  let minY = canvas.height;
+  let maxX = 0;
+  let maxY = 0;
   for (const obj of objects) {
     const boundingRect = obj.getBoundingRect();
 

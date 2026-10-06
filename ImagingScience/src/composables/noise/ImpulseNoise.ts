@@ -13,18 +13,18 @@ export class ImpulseNoise extends Noise {
     }
 
     public getParameters() : Array<any> {
-        var highObject : HTMLSelectElement | null = document.getElementById("impulseNoiseHigh") as HTMLSelectElement;
-        var high = 0;
+        let highObject : HTMLSelectElement | null = document.getElementById("impulseNoiseHigh") as HTMLSelectElement;
+        let high = 0;
         if (highObject) {
             high = Number(highObject.value);
         }
-        var lowObject : HTMLSelectElement | null = document.getElementById("impulseNoiseLow") as HTMLSelectElement;
-        var low = 0;
+        let lowObject : HTMLSelectElement | null = document.getElementById("impulseNoiseLow") as HTMLSelectElement;
+        let low = 0;
         if (lowObject) {
             low = Number(lowObject.value);
         }
-        var probObject : HTMLSelectElement | null = document.getElementById("impulseNoiseProbability") as HTMLSelectElement;
-        var prob = 0;
+        let probObject : HTMLSelectElement | null = document.getElementById("impulseNoiseProbability") as HTMLSelectElement;
+        let prob = 0;
         if (probObject) {
             prob = Number(probObject.value);
         }

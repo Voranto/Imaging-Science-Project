@@ -13,13 +13,13 @@ export class GaussianNoise extends Noise {
     }
 
     public getParameters() : Array<any> {
-        var meanObject : HTMLSelectElement | null = document.getElementById("gaussianNoiseMean") as HTMLSelectElement;
-        var mean = 0;
+        let meanObject : HTMLSelectElement | null = document.getElementById("gaussianNoiseMean") as HTMLSelectElement;
+        let mean = 0;
         if (meanObject) {
             mean = Number(meanObject.value);
         }
-        var sigmaObject : HTMLSelectElement | null = document.getElementById("gaussianNoiseSigma") as HTMLSelectElement;
-        var sigma = 0;
+        let sigmaObject : HTMLSelectElement | null = document.getElementById("gaussianNoiseSigma") as HTMLSelectElement;
+        let sigma = 0;
         if (sigmaObject) {
             sigma = Number(sigmaObject.value);
         }

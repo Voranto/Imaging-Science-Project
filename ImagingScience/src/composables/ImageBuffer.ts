@@ -56,15 +56,15 @@ export class ImageBuffer {
 
   private computeImageStats() {
     // Compute both mean and variance
-    var mean = 0;
-    for (var i = 0; i < this.floatBuffer.length; i++ ){
+    let mean = 0;
+    for (let i = 0; i < this.floatBuffer.length; i++ ){
       mean += this.floatBuffer[i]!;
     }
     mean *= 255;
     mean /= this.floatBuffer.length;
 
-    var variance = 0;
-    for (var i = 0; i < this.floatBuffer.length; i++ ){
+    let variance = 0;
+    for (let i = 0; i < this.floatBuffer.length; i++ ){
       variance += (this.floatBuffer[i]!*255 - mean)**2;
     }
     variance /= this.floatBuffer.length;

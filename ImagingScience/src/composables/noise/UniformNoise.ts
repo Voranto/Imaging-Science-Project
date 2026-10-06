@@ -13,8 +13,8 @@ export class UniformNoise extends Noise {
     }
 
     public getParameters() : Array<any> {
-        var rangeObject : HTMLSelectElement | null = document.getElementById("uniformNoiseRange") as HTMLSelectElement;
-        var range = 0;
+        let rangeObject : HTMLSelectElement | null = document.getElementById("uniformNoiseRange") as HTMLSelectElement;
+        let range = 0;
         if (rangeObject) {
             range = Number(rangeObject.value);
         }

@@ -13,8 +13,8 @@ export class Lowpass extends Filter {
     }
 
     public getParameters() : Array<any> {
-        var sigmaObject : HTMLSelectElement | null = document.getElementById("lowpassFilterSigma") as HTMLSelectElement;
-        var sigma = 0;
+        let sigmaObject : HTMLSelectElement | null = document.getElementById("lowpassFilterSigma") as HTMLSelectElement;
+        let sigma = 0;
         if (sigmaObject) {
             sigma = Number(sigmaObject.value);
         }

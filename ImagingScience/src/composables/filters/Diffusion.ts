@@ -13,18 +13,18 @@ export class Diffusion extends Filter {
     }
 
     public getParameters() : Array<any> {
-        var timeObject : HTMLSelectElement | null = document.getElementById("diffusionTime") as HTMLSelectElement;
-        var time = 0;
+        let timeObject : HTMLSelectElement | null = document.getElementById("diffusionTime") as HTMLSelectElement;
+        let time = 0;
         if (timeObject) {
             time = Number(timeObject.value);
         }
-        var contrastObject : HTMLSelectElement | null = document.getElementById("diffusionContrast") as HTMLSelectElement;
-        var contrast = 0;
+        let contrastObject : HTMLSelectElement | null = document.getElementById("diffusionContrast") as HTMLSelectElement;
+        let contrast = 0;
         if (contrastObject) {
             contrast = Number(contrastObject.value);
         }
-        var optionObject : HTMLSelectElement | null = document.getElementById("diffusionOption") as HTMLSelectElement;
-        var option = 0;
+        let optionObject : HTMLSelectElement | null = document.getElementById("diffusionOption") as HTMLSelectElement;
+        let option = 0;
         if (optionObject) {
             option = Number(optionObject.value);
         }

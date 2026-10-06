@@ -23,13 +23,13 @@ export class Morphological extends Filter {
     }
 
     public getParameters() : Array<any> {
-        var radiusObject : HTMLSelectElement | null = document.getElementById("morphologicalRadius") as HTMLSelectElement;
-        var radius = 0;
+        let radiusObject : HTMLSelectElement | null = document.getElementById("morphologicalRadius") as HTMLSelectElement;
+        let radius = 0;
         if (radiusObject) {
             radius = Number(radiusObject.value);
         }
-        var typeMask : HTMLSelectElement | null = document.getElementById("morphologicalMaskType") as HTMLSelectElement;
-        var circle = true;
+        let typeMask : HTMLSelectElement | null = document.getElementById("morphologicalMaskType") as HTMLSelectElement;
+        let circle = true;
         if (typeMask) {
             circle = typeMask.value === "circle";
         }

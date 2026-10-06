@@ -5,11 +5,11 @@ import { useImageBufferState } from '../useImageBufferState.ts';
 import { clearCanvas } from '../canvas.ts';
 
 const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
-var canvas = imageBuffer.value?.canvas;
+let canvas = imageBuffer.value?.canvas;
 
 export const transformRequested : Ref<boolean> = ref(false);
 export const transformCanvas = ref<Canvas | null>(null);
-export var imageID = ref("");
+export let imageID = ref("");
 
 export abstract class  Noise {
     abstract baseURL : string;
@@ -52,12 +52,12 @@ export abstract class  Noise {
     }
 
     private getHeaders(height :number, width: number) {
-        var headers = new AxiosHeaders({
+        let headers = new AxiosHeaders({
                 'Content-Type': 'application/octet-stream',
                 'x-image-width': Math.floor(width).toString(),
                 'x-image-height': Math.floor(height).toString(),
             });
-        var parameters = this.getParameters();
+        let parameters = this.getParameters();
         for (const [key ,value ] of parameters) {
             headers.set(key,value)
         }

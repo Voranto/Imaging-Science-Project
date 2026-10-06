@@ -13,8 +13,8 @@ export class DWT extends Transform {
     }
 
     public getParameters() : Array<any> {
-        var levelsObject : HTMLSelectElement | null = document.getElementById("dwtLevel") as HTMLSelectElement;
-        var level = 0;
+        let levelsObject : HTMLSelectElement | null = document.getElementById("dwtLevel") as HTMLSelectElement;
+        let level = 0;
         if (levelsObject) {
             level = Number(levelsObject.value);
         }

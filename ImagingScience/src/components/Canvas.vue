@@ -76,7 +76,7 @@ onUnmounted(() => {
 
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Delete' || e.key === 'Backspace') {
-    var element = e.target as HTMLElement;     
+    let element = e.target as HTMLElement;     
     if (element.tagName !== "INPUT") { 
         deleteActiveObject();
     }  

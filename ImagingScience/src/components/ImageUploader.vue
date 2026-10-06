@@ -60,11 +60,11 @@
         img.filters.push(new filters.Grayscale());
         img.applyFilters();
 
-        var targetImageHeight = null;
-        var targetImageWidth = null;
+        let targetImageHeight = null;
+        let targetImageWidth = null;
 
-        var targetImageX = 0;
-        var targetImageY = 0;
+        let targetImageX = 0;
+        let targetImageY = 0;
         if (img.width - canvas.width > img.width - canvas.height) {
             targetImageWidth = canvas.width;
             targetImageHeight = img.height * (canvas.width / img.width)

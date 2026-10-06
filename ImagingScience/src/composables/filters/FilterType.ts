@@ -1,7 +1,7 @@
 import { ref, type Ref } from "vue";
 
 export const filterRequested : Ref<boolean> = ref(false);
-export var filterImageSrc : Ref<string> = ref("");
+export let filterImageSrc : Ref<string> = ref("");
 export enum FilterType {
     simpleEdge = "simpleEdge",
     cannys = "cannys",

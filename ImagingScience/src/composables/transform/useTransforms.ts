@@ -1,16 +1,11 @@
 import { ref, type Ref } from 'vue';
-import axios from 'axios';
-import { Canvas, FabricImage } from 'fabric'
 import { FFT } from './FFT.ts'
 import { DCT } from './DCT.ts'
 import { DWT } from './DWT.ts'
-import { useImageBufferState } from '../useImageBufferState.ts';
 import { TransformType } from './transform.ts';
 
-const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
-
 export const transformRequested : Ref<boolean> = ref(false);
-export let transformImageSrc : Ref<string> = ref("");
+export const transformImageSrc : Ref<string> = ref("");
 
 const instanceFFT = new FFT();
 const instanceDCT = new DCT();

@@ -13,7 +13,7 @@ export class GammaCorrection extends Filter {
     }
 
     public getParameters() : Array<any> {
-        let gammaObject : HTMLSelectElement | null = document.getElementById("gammaCorrectionValue") as HTMLSelectElement;
+        const gammaObject : HTMLSelectElement | null = document.getElementById("gammaCorrectionValue") as HTMLSelectElement;
         let gamma = 0;
         if (gammaObject) {
             gamma = Number(gammaObject.value);

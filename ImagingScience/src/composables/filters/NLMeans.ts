@@ -13,17 +13,17 @@ export class NLMeans extends Filter {
     }
 
     public getParameters() : Array<any> {
-        let radiusPatchObject : HTMLSelectElement | null = document.getElementById("NLMeansRadiusPatch") as HTMLSelectElement;
+        const radiusPatchObject : HTMLSelectElement | null = document.getElementById("NLMeansRadiusPatch") as HTMLSelectElement;
         let radiusPatch = 0;
         if (radiusPatchObject) {
             radiusPatch = Number(radiusPatchObject.value);
         }
-        let radiusWindowObject : HTMLSelectElement | null = document.getElementById("NLMeansRadiusWindow") as HTMLSelectElement;
+        const radiusWindowObject : HTMLSelectElement | null = document.getElementById("NLMeansRadiusWindow") as HTMLSelectElement;
         let radiusWindow = 0;
         if (radiusWindowObject) {
             radiusWindow = Number(radiusWindowObject.value);
         }
-        let strengthObject : HTMLSelectElement | null = document.getElementById("NLMeansStrength") as HTMLSelectElement;
+        const strengthObject : HTMLSelectElement | null = document.getElementById("NLMeansStrength") as HTMLSelectElement;
         let strength = 0;
         if (strengthObject) {
             strength = Number(strengthObject.value);

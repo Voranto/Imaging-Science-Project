@@ -13,7 +13,7 @@ export class MultiplicativeUniformNoise extends Noise {
     }
 
     public getParameters() : Array<any> {
-        let rangeObject : HTMLSelectElement | null = document.getElementById("uniformMultNoiseRange") as HTMLSelectElement;
+        const rangeObject : HTMLSelectElement | null = document.getElementById("uniformMultNoiseRange") as HTMLSelectElement;
         let range = 0;
         if (rangeObject) {
             range = Number(rangeObject.value);

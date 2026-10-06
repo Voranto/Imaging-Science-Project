@@ -13,12 +13,12 @@ export class WaveletShrinkage extends Filter {
     }
 
     public getParameters() : Array<any> {
-        let thresholdObject : HTMLSelectElement | null = document.getElementById("waveletShrinkageThreshold") as HTMLSelectElement;
+        const thresholdObject : HTMLSelectElement | null = document.getElementById("waveletShrinkageThreshold") as HTMLSelectElement;
         let threshold = 0;
         if (thresholdObject) {
             threshold = Number(thresholdObject.value);
         }
-        let typeObject : HTMLSelectElement | null = document.getElementById("waveletShrinkageMode") as HTMLSelectElement;
+        const typeObject : HTMLSelectElement | null = document.getElementById("waveletShrinkageMode") as HTMLSelectElement;
         let type = "";
         if (typeObject) {
             type = typeObject.value;

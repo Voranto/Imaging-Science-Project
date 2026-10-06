@@ -9,7 +9,7 @@ let canvas = imageBuffer.value?.canvas;
 
 export const transformRequested : Ref<boolean> = ref(false);
 export const transformCanvas = ref<Canvas | null>(null);
-export let imageID = ref("");
+export const imageID = ref("");
 
 export abstract class  Noise {
     abstract baseURL : string;
@@ -52,12 +52,12 @@ export abstract class  Noise {
     }
 
     private getHeaders(height :number, width: number) {
-        let headers = new AxiosHeaders({
+        const headers = new AxiosHeaders({
                 'Content-Type': 'application/octet-stream',
                 'x-image-width': Math.floor(width).toString(),
                 'x-image-height': Math.floor(height).toString(),
             });
-        let parameters = this.getParameters();
+        const parameters = this.getParameters();
         for (const [key ,value ] of parameters) {
             headers.set(key,value)
         }

@@ -14,12 +14,12 @@ export class Bilateral extends Filter {
     }
 
     public getParameters() : Array<any> {
-        let spatialObject : HTMLSelectElement | null = document.getElementById("bilateralSigmaSpatial") as HTMLSelectElement;
+        const spatialObject : HTMLSelectElement | null = document.getElementById("bilateralSigmaSpatial") as HTMLSelectElement;
         let spatial = 0;
         if (spatialObject) {
             spatial = Number(spatialObject.value);
         }
-        let tonalObject : HTMLSelectElement | null = document.getElementById("bilateralSigmaTonal") as HTMLSelectElement;
+        const tonalObject : HTMLSelectElement | null = document.getElementById("bilateralSigmaTonal") as HTMLSelectElement;
         let tonal = 0;
         if (tonalObject) {
             tonal = Number(tonalObject.value);

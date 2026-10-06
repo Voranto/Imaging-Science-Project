@@ -13,17 +13,17 @@ export class Cannys extends Filter {
     }
 
     public getParameters() : Array<any> {
-        let thresholdWeakObject : HTMLSelectElement | null = document.getElementById("thresholdCannyWeak") as HTMLSelectElement;
+        const thresholdWeakObject : HTMLSelectElement | null = document.getElementById("thresholdCannyWeak") as HTMLSelectElement;
         let thresholdWeak = 0;
         if (thresholdWeakObject) {
             thresholdWeak = Number(thresholdWeakObject.value);
         }
-        let thresholdStrongObject : HTMLSelectElement | null = document.getElementById("thresholdCannyStrong") as HTMLSelectElement;
+        const thresholdStrongObject : HTMLSelectElement | null = document.getElementById("thresholdCannyStrong") as HTMLSelectElement;
         let thresholdStrong = 0;
         if (thresholdStrongObject) {
             thresholdStrong = Number(thresholdStrongObject.value);
         }
-        let applyGaussianObject : HTMLInputElement | null = document.getElementById("applyGaussianCanny") as HTMLInputElement;
+        const applyGaussianObject : HTMLInputElement | null = document.getElementById("applyGaussianCanny") as HTMLInputElement;
         let applyGaussian = true;
         if (applyGaussianObject) {
             applyGaussian = Boolean(applyGaussianObject.checked);

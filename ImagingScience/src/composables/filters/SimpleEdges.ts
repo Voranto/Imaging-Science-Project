@@ -13,13 +13,13 @@ export class SimpleEdges extends Filter {
     }
 
     public getParameters() : Array<any> {
-        let thresholdObject : HTMLSelectElement | null = document.getElementById("simpleEdgeThreshold") as HTMLSelectElement;
+        const thresholdObject : HTMLSelectElement | null = document.getElementById("simpleEdgeThreshold") as HTMLSelectElement;
         let threshold = 0;
         if (thresholdObject) {
             threshold = Number(thresholdObject.value);
         }
 
-        let applyGaussianObject : HTMLInputElement | null = document.getElementById("applyGaussianSimpleEdges") as HTMLInputElement;
+        const applyGaussianObject : HTMLInputElement | null = document.getElementById("applyGaussianSimpleEdges") as HTMLInputElement;
         let applyGaussian = true;
         if (applyGaussianObject) {
             applyGaussian = Boolean(applyGaussianObject.checked);

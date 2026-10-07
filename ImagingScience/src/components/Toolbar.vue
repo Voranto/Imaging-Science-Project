@@ -14,23 +14,23 @@ const activeMenu = ref<string | null>(null);
 
 // Form configurations
 const brushSize = ref(10);
-const sinusoidalCyclesX = ref(1);
-const sinusoidalCyclesY = ref(1);
+const sinusoidalCyclesX = ref(5);
+const sinusoidalCyclesY = ref(5);
 const checkerboardRows = ref(5);
 const checkerboardColumns = ref(5);
 const gridRows = ref(5);
 const gridColumns = ref(5);
-const gaussianSigma = ref(1);
+const gaussianSigma = ref(30);
 const selectedShape = ref<string>('box');
-const uniformNoiseRange = ref(0);
+const uniformNoiseRange = ref(50);
 const gaussianNoiseMean = ref(0);
-const gaussianNoiseSigma= ref(1);
-const uniformMultNoiseRange= ref(0);
+const gaussianNoiseSigma= ref(30);
+const uniformMultNoiseRange= ref(1.5);
 const gaussianMultNoiseMean = ref(0);
-const gaussianMultNoiseSigma = ref(1);
+const gaussianMultNoiseSigma = ref(0.1);
 const impulseNoiseHigh = ref(255);
 const impulseNoiseLow = ref(0);
-const impulseNoiseProbability = ref(20);
+const impulseNoiseProbability = ref(33);
 
 const toggleMenu = (menuName: string) => {
   activeMenu.value = activeMenu.value === menuName ? null : menuName;

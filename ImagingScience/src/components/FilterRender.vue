@@ -15,11 +15,11 @@ const gammaCorrectionValue = ref(1.0)
 
 const cornerSigma = ref(2);
 const cornerRho = ref(4);
-const cornerThreshold = ref(20);
+const cornerThreshold = ref(40);
 
 const morphologicalFilters = ["dilation","erosion","opening","closing","whiteTopHat","blackTopHat","selfdualTopHat","medianFilter"]
 const morphologicalRadius = ref(1);
-const medianRadius = ref(1);
+const medianRadius = ref(0);
 
 const waveletShrinkageMode = ref("hard");
 const waveletShrinkageThreshold = ref(1);

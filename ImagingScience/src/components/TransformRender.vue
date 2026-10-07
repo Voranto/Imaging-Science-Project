@@ -10,7 +10,7 @@ const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState(
 
 const dwtLevel = ref(1);
 const lowestFrequency = ref(0);
-const highestFrequency = ref(200);
+const highestFrequency = ref(1300);
 const frequencyFilterOption = ref(1);
 </script>
 

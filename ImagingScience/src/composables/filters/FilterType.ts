@@ -24,7 +24,8 @@ export enum FilterType {
     NLMeans = "NLMeans",
     diffusion = "diffusion",
     affineGrayscale = "affineGrayscale",
-    histogramEqualization = "histogramEqualization"
+    histogramEqualization = "histogramEqualization",
+    variational = "variational"
 }
 export function getFilterType() {
     const filterType : HTMLSelectElement | null = document.getElementById("filterType") as HTMLSelectElement;

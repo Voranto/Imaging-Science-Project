@@ -15,6 +15,7 @@ import { Diffusion } from './Diffusion.ts';
 import { AffineGrayscale } from './AffineGrayscale.ts';
 import { filterRequested, changeFilterType, getFilterType } from './FilterType.ts';
 import { HistogramEqualization } from './HistogramEqualization.ts';
+import { Variational } from './Variational.ts';
 const { imageBuffer } = useImageBufferState();
 
 const cannyInstance = new Cannys();
@@ -41,6 +42,7 @@ const NLMeansInstance = new NLMeans();
 const diffusionInstance = new Diffusion();
 const affineGrayscale = new AffineGrayscale();
 const histogramEqualizationInstance = new HistogramEqualization();
+const variationalInstance = new Variational();
 export function updateImageTransform() {
     changeFilterType("none")
     filterRequested.value =false; 
@@ -70,6 +72,7 @@ export function getFilterInstance(type : string) {
     if (type === "diffusion") return diffusionInstance;
     if (type === "affineGrayscale") return affineGrayscale;
     if (type === "histogramEqualization") return histogramEqualizationInstance;
+    if (type === "variational") return variationalInstance;
     return null;
 }
 export const handleFilter = (type: string) => {

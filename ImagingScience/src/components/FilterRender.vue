@@ -34,6 +34,8 @@ const NLMeansStrength = ref(3);
 const diffusionContrast = ref(10);
 const diffusionTime = ref(10);
 const diffusionOption = ref(1);
+
+const variationalParameter = ref(10);
 </script>
 
 <template>
@@ -72,6 +74,7 @@ const diffusionOption = ref(1);
         <option value="diffusion">diffusion</option>
         <option value="affineGrayscale">affineGrayscale</option>
         <option value="histogramEqualization">histogramEqualization</option>
+        <option value="variational">variational</option>
       </select>
       </header>
       <div class="content-body">
@@ -297,6 +300,15 @@ const diffusionOption = ref(1);
         <div v-show="getFilterType() === 'histogramEqualization'" class="control-group">
           <h3>Histogram Equalization</h3>
           <p class="filter-note">This algorithm tries to spread pixel values so that the possibility of each pixel value is equal.</p>
+        </div>
+        <div v-show="getFilterType() === 'variational'" class="control-group">
+          <h3>Global Variational Filter</h3>
+          <p class="filter-note">This algorithm works by minimizing an energy function that is based on both smoothness and similarity. So the target image should both be smooth, and similar to the original. Solved iteratively.</p>
+          <label >Regularisation parameter:</label>
+          <div class="input-row">
+            <input type="range" class="custom-input" @dragstart.prevent v-model.number="variationalParameter" @change="updateCurrentFilter" id="variationalParameter" min="0" max="100">
+            <span class="threshold-value">{{ variationalParameter }}</span>
+          </div>
         </div>
       </aside>
       </div>

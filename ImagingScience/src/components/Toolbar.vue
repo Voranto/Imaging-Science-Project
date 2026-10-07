@@ -304,6 +304,10 @@ onUnmounted(() => {
             <button @click="handleFilter('NLMeans')" class="btn-item">NL Means</button>
             <button @click="handleFilter('diffusion')" class="btn-item">Diffusion Filter</button>
           </div>
+        </CollapsibleToolbarItem><CollapsibleToolbarItem title="Global Filters" :isOpen="activeSection === 'Global Filters'" @toggle="toggleSection('Global Filters')">
+          <div class="button-grid">
+            <button @click="handleFilter('variational')" class="btn-item">Variational Method</button>
+          </div>
         </CollapsibleToolbarItem>
       </div>
     </div>

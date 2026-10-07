@@ -1,6 +1,8 @@
 # IMAGING SCIENCE WEBSITE
 
-This website is based on a Vue.js frontend with a FastAPI backend, and is designed to render most transforms and filters used in my "Imaging Science" lecture. It is done using an interactive canvas (Fabric.js based) where objects and images are rendered, and then a series of buttons that render different operations on the image. The operations are done on the backend, using a mixture of numpy, scipy and PyWavelets. The render is exclusively on grayscale to avoid the struggle of multichannel images. Some features include: 
+This website is based on a Vue.js frontend with a FastAPI backend, and is designed to render most transforms and filters used in my "Imaging Science" lecture. It is done using an interactive canvas (Fabric.js based) where objects and images are rendered, and then a series of buttons that render different operations on the image. The operations are done on the backend, using a mixture of numpy, scipy and PyWavelets. The render is exclusively on grayscale to avoid the struggle of multichannel images.
+
+## Features
 - Edge detection using Canny's algorithm.
 - Corner Detection
 - Morphological Filters (Erosion, Dilation, Top Hats...)
@@ -11,7 +13,8 @@ This website is based on a Vue.js frontend with a FastAPI backend, and is design
 - Histogram Equalization, Gamma Correction, Affine Grayscale Transformations, etc...
 - Global Variational Filters computed as a minimization of an energy functional.
 - Visualization of the Mean, Variance and Histogram of the image
-  
+
+## Explanation
 To ensure the accuracy of the transforms and filters, instead of relying on the canvas.getImageData() (which is affected by anti-aliasing and more), all objects have their own custom rasterization algorithms onto a 32-bit imageBuffer, to ensure accuracy of the numbers and not be limited by 8 bits. Imported Images don't get a jump in accuracy (given that they were stored in 8 bits from the beginning) , but custom shapes like gaussians are preserved much better, so artifacts are minimized. This is because even though Gaussians are treated as simple images in the fabric canvas, they have some custom properties added to their fabric object so that when syncing the ImageBuffer, we can compute the actual value to a much higher accuracy. 
 
 There are multiple custom shapes:
@@ -26,10 +29,10 @@ The canvas is also able to be resize to different settings, either the entire av
 
 This is currently still a Work In Progress and is not finished, so lots of bugs are to be expected.
 
-### Try it out!
+## Try it out!
 Try it out [here](https://voranto.nat.selfnet.de/imaging/)
 
-### Local deployment
+## Local deployment
 ```
 git clone https://github.com/Voranto/Imaging-Science-Project.git
 cd Imaging-Science-Project

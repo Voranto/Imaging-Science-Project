@@ -13,7 +13,7 @@ router = APIRouter(
 
 
 # Define max tolerance for convergence 
-tolerance = 0.1
+tolerance = 0.5
 max_iterations = 500
 @router.post("/variational")
 async def compute_variational_filter(request: Request):
@@ -56,7 +56,8 @@ async def compute_variational_filter(request: Request):
         neighborhood = convolve(u_prev, mask, mode="constant", cval=0.0)
         u_next = (img_array + regularisation * neighborhood) / ( 1 + regularisation * neighbour_count )     
         
-        if np.linalg.norm(u_next - u_prev) < tolerance:
+        if np.mean(np.abs(u_next - u_prev)) < tolerance:
+            print("Reached correct convergence threshold")
             break
         u_prev = u_next
     

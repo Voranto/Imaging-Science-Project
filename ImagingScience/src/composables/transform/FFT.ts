@@ -1,4 +1,3 @@
-import { Filter } from "../filters/Filter";
 import { API_BASE_URL } from "@/config";
 
 import { imageID, Transform, TransformType } from "./transform"
@@ -17,7 +16,6 @@ export class FFT extends Transform {
     public async applyFrequencyFilter(low : number, high: number, cutoff: number) {
         
         if (!imageID) return;
-        const image_id = imageID.value;
         try {
             const response = await axios.post<Blob>(this.baseURL + "/filter", {},{
             params: { image_id: imageID.value, low: low, high: high, cutoff: cutoff },
@@ -30,7 +28,7 @@ export class FFT extends Transform {
         }
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         return []
     }
 }

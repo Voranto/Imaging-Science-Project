@@ -22,7 +22,7 @@ export class Morphological extends Filter {
         this.filterType = FILTER_TYPE_MAP[type]!;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string | boolean]> {
         const radiusObject : HTMLSelectElement | null = document.getElementById("morphologicalRadius") as HTMLSelectElement;
         let radius = 0;
         if (radiusObject) {
@@ -33,6 +33,6 @@ export class Morphological extends Filter {
         if (typeMask) {
             circle = typeMask.value === "circle";
         }
-        return [["radius", radius], ["circle", circle]]
+        return [["radius", radius.toString()], ["circle", circle]]
     }
 }

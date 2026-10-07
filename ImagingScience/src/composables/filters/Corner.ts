@@ -19,7 +19,7 @@ export class Corner extends Filter {
         this.filterType = FILTER_TYPE_MAP[type]!;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         const thresholdObject : HTMLSelectElement | null = document.getElementById("cornerThreshold") as HTMLSelectElement;
         let threshold = 0;
         if (thresholdObject) {
@@ -35,6 +35,6 @@ export class Corner extends Filter {
         if (rhoObject) {
             rho = Number(rhoObject.value);
         }
-        return [["threshold", threshold], ["sigma", sigma], ["rho", rho]]
+        return [["threshold", threshold.toString()], ["sigma", sigma.toString()], ["rho", rho.toString()]]
     }
 }

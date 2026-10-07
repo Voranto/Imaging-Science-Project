@@ -1,11 +1,11 @@
-import { ref, type Ref, useTemplateRef } from 'vue';
+import { ref, type Ref } from 'vue';
 import axios, {type AxiosResponse, AxiosHeaders} from 'axios';
-import { Canvas, FabricImage, FabricObject } from 'fabric'
+import { FabricImage, FabricObject } from 'fabric'
 import { useImageBufferState } from '../useImageBufferState.ts';
 import { filterImageSrc, filterRequested, getFilterType, changeFilterType, FilterType  } from './FilterType.ts';
 import { clearCanvas } from '../canvas.ts';
 
-const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
+const { imageBuffer } = useImageBufferState();
 let canvas = imageBuffer.value?.canvas;
 
 export const imageID = ref("");
@@ -59,13 +59,13 @@ export abstract class  Filter {
         }
     }
 
-    private getGrayscaleArray() : Float32Array<any>{
+    private getGrayscaleArray() : Float32Array<ArrayBufferLike>{
         const arr = imageBuffer.value?.floatBuffer;
         if (!arr) return new Float32Array();
         return arr;
     }
 
-    private async requestFilter(height: number, width: number, grayArray : Float32Array<any>) {
+    private async requestFilter(height: number, width: number, grayArray : Float32Array<ArrayBufferLike>) {
         Filter.isLoading.value = true;
         this.visibilizeFilterContainer();
 
@@ -112,7 +112,7 @@ export abstract class  Filter {
         canvas = imageBuffer.value?.canvas;
     }
 
-    private async renderImageResult(response: AxiosResponse<any, Float32Array>) {
+    private async renderImageResult(response: AxiosResponse<Blob>) {
         const newImageUrl = URL.createObjectURL(response.data);
         filterImageSrc.value = newImageUrl
     }
@@ -157,6 +157,6 @@ export abstract class  Filter {
         return imageElement.src;
     }
 
-    public abstract getParameters() : Array<[string, string]>;
+    public abstract getParameters() : Array<[string, string | boolean]>;
 }
 

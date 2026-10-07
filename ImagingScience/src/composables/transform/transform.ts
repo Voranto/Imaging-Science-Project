@@ -1,11 +1,11 @@
-import { ref, type Ref, useTemplateRef } from 'vue';
+import { ref, type Ref } from 'vue';
 import axios, {type AxiosResponse, AxiosHeaders} from 'axios';
-import { Canvas, FabricImage, FabricObject } from 'fabric'
+import { FabricImage, FabricObject } from 'fabric'
 import { useImageBufferState } from '../useImageBufferState.ts';
 import { transformImageSrc, getTransformType, changeTransformType, transformRequested  } from './useTransforms.ts';
 import { clearCanvas } from '../canvas.ts';
 
-const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
+const { imageBuffer } = useImageBufferState();
 let canvas = imageBuffer.value?.canvas;
 
 export const imageID = ref("");
@@ -70,13 +70,13 @@ export abstract class  Transform {
         }
     }
 
-    private getGrayscaleArray() : Float32Array<any>{
+    private getGrayscaleArray() : Float32Array<ArrayBufferLike>{
         const arr = imageBuffer.value?.floatBuffer;
         if (!arr) return new Float32Array();
         return arr;
     }
 
-    private async requestTransform(height: number, width: number, grayArray : Float32Array<any>) {
+    private async requestTransform(height: number, width: number, grayArray : Float32Array<ArrayBufferLike>) {
         Transform.isLoading.value = true; 
         this.visibilizeTransformContainer();
             if (Transform.abortController) {
@@ -128,7 +128,7 @@ export abstract class  Transform {
         canvas = imageBuffer.value?.canvas;
     }
 
-    private async projectResultOnMainCanvas(response: AxiosResponse<any, Float32Array>) {
+    private async projectResultOnMainCanvas(response: AxiosResponse<Blob>) {
         const newImageUrl = URL.createObjectURL(response.data);
 
             if (imageBuffer && imageBuffer.value){
@@ -177,7 +177,7 @@ export abstract class  Transform {
         this.hideTransformContainer();
     }
 
-    protected async renderImageResult(response: AxiosResponse<any, Float32Array>) {
+    protected async renderImageResult(response: AxiosResponse<Blob>) {
         const newImageUrl = URL.createObjectURL(response.data);
         transformImageSrc.value = newImageUrl
     }

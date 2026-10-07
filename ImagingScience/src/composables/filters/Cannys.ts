@@ -12,7 +12,7 @@ export class Cannys extends Filter {
         this.filterType = FilterType.cannys;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         const thresholdWeakObject : HTMLSelectElement | null = document.getElementById("thresholdCannyWeak") as HTMLSelectElement;
         let thresholdWeak = 0;
         if (thresholdWeakObject) {
@@ -28,6 +28,6 @@ export class Cannys extends Filter {
         if (applyGaussianObject) {
             applyGaussian = Boolean(applyGaussianObject.checked);
         }
-        return [["applyGaussian", applyGaussian], ["thresholdWeak", thresholdWeak], ["thresholdStrong", thresholdStrong]]
+        return [["applyGaussian", applyGaussian.toString()], ["thresholdWeak", thresholdWeak.toString()], ["thresholdStrong", thresholdStrong.toString()]]
     }
 }

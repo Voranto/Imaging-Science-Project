@@ -1,4 +1,3 @@
-import { Filter } from "../filters/Filter";
 import { Noise, NoiseType } from "./noise"
 import { API_BASE_URL } from "@/config";
 
@@ -12,7 +11,7 @@ export class ImpulseNoise extends Noise {
         this.noiseType = NoiseType.impulse;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         const highObject : HTMLSelectElement | null = document.getElementById("impulseNoiseHigh") as HTMLSelectElement;
         let high = 0;
         if (highObject) {
@@ -28,6 +27,6 @@ export class ImpulseNoise extends Noise {
         if (probObject) {
             prob = Number(probObject.value);
         }
-        return [["high", high], ["low", low], ["probability", prob]];
+        return [["high", high.toString()], ["low", low.toString()], ["probability", prob.toString()]];
     }
 }

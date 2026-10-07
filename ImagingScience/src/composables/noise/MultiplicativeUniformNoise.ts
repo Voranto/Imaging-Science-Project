@@ -1,4 +1,3 @@
-import { Filter } from "../filters/Filter";
 import { Noise, NoiseType } from "./noise"
 import { API_BASE_URL } from "@/config";
 
@@ -12,7 +11,7 @@ export class MultiplicativeUniformNoise extends Noise {
         this.noiseType = NoiseType.multiplicative_uniform;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         const rangeObject : HTMLSelectElement | null = document.getElementById("uniformMultNoiseRange") as HTMLSelectElement;
         let range = 0;
         if (rangeObject) {

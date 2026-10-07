@@ -101,7 +101,7 @@ export class ImageBuffer {
   };
 
   private rasterizeObject(obj: FabricObject) {
-    const objectType : string = (obj as any).customType;
+    const objectType : string = (obj as unknown).customType;
     if (objectType == "rect") {
         this.rasterizeRect(obj);
     }
@@ -231,7 +231,7 @@ export class ImageBuffer {
           const dy = (y + 0.5) - centerY;
           const distSq = dx * dx + dy * dy;
 
-          const val = Math.exp(-distSq / (2 * (obj as any).sigma * (obj as any).sigma));
+          const val = Math.exp(-distSq / (2 * (obj as unknown).sigma * (obj as unknown).sigma));
           const idx = y * this.width.value + x;
 
           this.floatBuffer[idx] = Math.min(1.0, val);
@@ -243,8 +243,8 @@ export class ImageBuffer {
     const height = (obj.height || 0) * (obj.scaleY || 1);
     const left = obj.left!;
     const top = obj.top!;
-    const cyclesX = (obj as any).cyclesX;
-    const cyclesY = (obj as any).cyclesY;
+    const cyclesX = (obj as unknown).cyclesX;
+    const cyclesY = (obj as unknown).cyclesY;
     const freqX = (2 * Math.PI * cyclesX) / width;
     const freqY = (2 * Math.PI * cyclesY) / height;
 
@@ -269,8 +269,8 @@ export class ImageBuffer {
     const height = (obj.height || 0) * (obj.scaleY || 1);
     const left = obj.left!;
     const top = obj.top!;
-    const rows = (obj as any).rows;
-    const columns = (obj as any).columns;
+    const rows = (obj as unknown).rows;
+    const columns = (obj as unknown).columns;
     const cellWidth = width / columns;
     const cellHeight = height / rows;
 
@@ -304,8 +304,8 @@ export class ImageBuffer {
     const height = (obj.height || 0) * (obj.scaleY || 1);
     const left = obj.left!;
     const top = obj.top!;
-    const rows = (obj as any).rows;
-    const columns = (obj as any).columns;
+    const rows = (obj as unknown).rows;
+    const columns = (obj as unknown).columns;
     const cellWidth = Math.floor(width / columns);
     const cellHeight = Math.floor(height / rows);
 
@@ -329,8 +329,6 @@ export class ImageBuffer {
     }
   }
   private rasterizeImage(obj : FabricImage){
-    const angle = degreesToRadians(obj.angle);
-
     const points = obj.getCoords();
     const p1 = points[0]!;
     const p2 = points[1]!;

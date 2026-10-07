@@ -1,4 +1,3 @@
-import { Filter } from "../filters/Filter";
 import { Noise, NoiseType } from "./noise"
 import { API_BASE_URL } from "@/config";
 
@@ -12,7 +11,7 @@ export class MultiplicativeGaussianNoise extends Noise {
         this.noiseType = NoiseType.multiplicative_gaussian;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         const meanObject : HTMLSelectElement | null = document.getElementById("gaussianMultNoiseMean") as HTMLSelectElement;
         let mean = 0;
         if (meanObject) {

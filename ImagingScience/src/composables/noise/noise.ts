@@ -1,10 +1,10 @@
-import { ref, type Ref, useTemplateRef } from 'vue';
+import { ref, type Ref } from 'vue';
 import axios, {type AxiosResponse, AxiosHeaders} from 'axios';
-import { Canvas, FabricImage, FabricObject } from 'fabric'
+import { Canvas, FabricImage } from 'fabric'
 import { useImageBufferState } from '../useImageBufferState.ts';
 import { clearCanvas } from '../canvas.ts';
 
-const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
+const { imageBuffer } = useImageBufferState();
 let canvas = imageBuffer.value?.canvas;
 
 export const transformRequested : Ref<boolean> = ref(false);
@@ -30,13 +30,13 @@ export abstract class  Noise {
 
     }
 
-    private getGrayscaleArray() : Float32Array<any>{
+    private getGrayscaleArray() : Float32Array<ArrayBufferLike>{
         const arr = imageBuffer.value?.floatBuffer;
         if (!arr) return new Float32Array();
         return arr;
     }
 
-    private async requestNoise(height: number, width: number, grayArray : Float32Array<any>) {
+    private async requestNoise(height: number, width: number, grayArray : Float32Array<ArrayBufferLike>) {
          try {
             
             const response = await axios.post(this.baseURL, grayArray, {
@@ -69,7 +69,7 @@ export abstract class  Noise {
         canvas = imageBuffer.value?.canvas;
     }
 
-    private async projectResultOnCanvas(response: AxiosResponse<any, Float32Array>) {
+    private async projectResultOnCanvas(response: AxiosResponse<Blob>) {
         const newImageUrl = URL.createObjectURL(response.data);
 
             if (imageBuffer && imageBuffer.value){

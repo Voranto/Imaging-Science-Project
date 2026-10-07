@@ -12,12 +12,12 @@ export class Median extends Filter {
         this.filterType = FilterType.median;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string , string]> {
         const radiusObject : HTMLSelectElement | null = document.getElementById("medianRadius") as HTMLSelectElement;
         let radius = 0;
         if (radiusObject) {
             radius = Number(radiusObject.value);
         }
-        return [["radius", radius]]
+        return [["radius", radius.toString()]]
     }
 }

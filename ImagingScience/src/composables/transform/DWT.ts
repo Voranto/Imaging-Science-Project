@@ -1,4 +1,3 @@
-import { Filter } from "../filters/Filter";
 import { Transform, TransformType } from "./transform"
 import { API_BASE_URL } from "@/config";
 
@@ -12,7 +11,7 @@ export class DWT extends Transform {
         this.transformType = TransformType.dwt;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         const levelsObject : HTMLSelectElement | null = document.getElementById("dwtLevel") as HTMLSelectElement;
         let level = 0;
         if (levelsObject) {

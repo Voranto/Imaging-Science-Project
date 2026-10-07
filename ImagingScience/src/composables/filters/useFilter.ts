@@ -1,8 +1,5 @@
-import { ref, type Ref } from 'vue';
-import axios from 'axios';
-import { Canvas, FabricImage } from 'fabric'
+import { ref} from 'vue';
 import { useImageBufferState } from '../useImageBufferState.ts';
-import { Filter } from './Filter.ts';
 import {Cannys} from "./Cannys.ts"
 import { Highpass } from './Highpass.ts';
 import { Lowpass } from './Lowpass.ts';
@@ -18,7 +15,7 @@ import { Diffusion } from './Diffusion.ts';
 import { AffineGrayscale } from './AffineGrayscale.ts';
 import { filterRequested, changeFilterType, getFilterType } from './FilterType.ts';
 import { HistogramEqualization } from './HistogramEqualization.ts';
-const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
+const { imageBuffer } = useImageBufferState();
 
 const cannyInstance = new Cannys();
 const highpassInstance = new Highpass();

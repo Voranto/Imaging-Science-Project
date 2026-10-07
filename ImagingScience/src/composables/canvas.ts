@@ -1,4 +1,4 @@
-import { ActiveSelection, Circle, controlsUtils, FabricImage, FabricObject, Rect } from "fabric";
+import { ActiveSelection, Circle, FabricImage, FabricObject, Rect } from "fabric";
 import { useImageBufferState } from "./useImageBufferState";
 import { getColorSelector, setColorSelector } from "./objectColor";
 import { getObjectGrayscale } from "./ImageBuffer";
@@ -6,9 +6,7 @@ import { getBackgroundColor } from "./backgroundColor";
 import { ref } from "vue";
 import { getDCT, getDWT, getFFT } from "./transform/useTransforms";
 import { applyGaussianNoise, applyImpulseNoise, applyMultiplicativeGaussianNoise, applyMultiplicativeUniformNoise, applyUniformNoise } from "./noise/applyNoise";
-import { scales } from "chart.js";
-
-const { imageBuffer, setImageBuffer, destroyImageBuffer } = useImageBufferState();
+const { imageBuffer } = useImageBufferState();
 export const brushSize = ref(10);
 export const canvasFitToScreen = ref(true);
 
@@ -255,7 +253,7 @@ export const computeCosine2D = (x : number, y : number) => {
 }
 
 export const addEventListenersObject = (obj : FabricObject) => {
-  const type = (obj as any).customType;
+  const type = (obj as unknown).customType;
   if (type === "rect" || type === "circle") {
     obj.on("selected", () => {
       setColorSelector(getObjectGrayscale(obj));
@@ -280,7 +278,6 @@ export const updateObjectColor = () => {
 
 export const clearCanvas = () => {
     imageBuffer.value!.canvas.clear();
-    const color = getBackgroundColor();
     updateBackgroundColor();
 }
 
@@ -318,7 +315,7 @@ export const copyObject = async () => {
 
     const center = activeObject.getCenterPoint();
     const cloned = await activeObject.clone(['customType']);
-    (cloned as any).customType = (activeObject as any).customType;
+    (cloned as unknown).customType = (activeObject as unknown).customType;
     cloned.set({
       left: center.x - activeObject.width / 2,
       top: center.y - activeObject.height / 2,
@@ -339,7 +336,7 @@ export const pasteObject = async () => {
   const newlyPastedObjects: FabricObject[] = [];
   for (const obj of clipboard){
     const clonedObj = await obj.clone(['customType']);
-    const customType = (obj as any).customType;
+    const customType = (obj as unknown).customType;
 
     const coords = obj.getCenterPoint();
     coords.x -= obj.width / 2;
@@ -352,7 +349,7 @@ export const pasteObject = async () => {
       originX: 'left',
       originY: 'top',
     });
-    (clonedObj as any).customType = customType;
+    (clonedObj as unknown).customType = customType;
     clonedObj.setCoords();
     
     addEventListenersObject(clonedObj);

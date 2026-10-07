@@ -12,7 +12,7 @@ export class SimpleEdges extends Filter {
         this.filterType = FilterType.simpleEdge;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string |boolean]> {
         const thresholdObject : HTMLSelectElement | null = document.getElementById("simpleEdgeThreshold") as HTMLSelectElement;
         let threshold = 0;
         if (thresholdObject) {
@@ -24,6 +24,6 @@ export class SimpleEdges extends Filter {
         if (applyGaussianObject) {
             applyGaussian = Boolean(applyGaussianObject.checked);
         }
-        return [["applyGaussian", applyGaussian], ["threshold", threshold]]
+        return [["applyGaussian", applyGaussian], ["threshold", threshold.toString()]]
     }
 }

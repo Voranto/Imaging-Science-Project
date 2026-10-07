@@ -12,7 +12,7 @@ export class Diffusion extends Filter {
         this.filterType = FilterType.diffusion;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         const timeObject : HTMLSelectElement | null = document.getElementById("diffusionTime") as HTMLSelectElement;
         let time = 0;
         if (timeObject) {
@@ -29,6 +29,6 @@ export class Diffusion extends Filter {
             option = Number(optionObject.value);
         }
 
-        return [["iterations", time], ["contrast", contrast], ["diffusivityOption", option]]
+        return [["iterations", time.toString()], ["contrast", contrast.toString()], ["diffusivityOption", option.toString()]]
     }
 }

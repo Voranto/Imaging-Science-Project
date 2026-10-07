@@ -1,5 +1,4 @@
 import { API_BASE_URL } from "@/config";
-import { Filter } from "../filters/Filter";
 import { Transform, TransformType } from "./transform"
 
 export class DCT extends Transform {
@@ -12,7 +11,7 @@ export class DCT extends Transform {
         this.transformType = TransformType.dct;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         return []
     }
 }

@@ -11,7 +11,7 @@ export class AffineGrayscale extends Filter {
         this.filterType = FilterType.affineGrayscale;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         const slopeObject : HTMLSelectElement | null = document.getElementById("affineGrayscaleSlope") as HTMLSelectElement;
         let slope = 0;
         if (slopeObject) {
@@ -22,6 +22,6 @@ export class AffineGrayscale extends Filter {
         if (distanceObject) {
             distance = Number(distanceObject.value);
         }
-        return [["slope", slope], ["distance", distance]]
+        return [["slope", slope.toString()], ["distance", distance.toString()]]
     }
 }

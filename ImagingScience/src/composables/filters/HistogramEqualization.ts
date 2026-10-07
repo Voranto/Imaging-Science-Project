@@ -11,7 +11,7 @@ export class HistogramEqualization extends Filter {
         this.filterType = FilterType.histogramEqualization;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         return []
     }
 }

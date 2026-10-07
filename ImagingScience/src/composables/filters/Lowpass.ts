@@ -12,12 +12,12 @@ export class Lowpass extends Filter {
         this.filterType = FilterType.lowpass;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         const sigmaObject : HTMLSelectElement | null = document.getElementById("lowpassFilterSigma") as HTMLSelectElement;
         let sigma = 0;
         if (sigmaObject) {
             sigma = Number(sigmaObject.value);
         }
-        return [["sigma", sigma]]
+        return [["sigma", sigma.toString()]]
     }
 }

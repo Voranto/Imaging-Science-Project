@@ -13,7 +13,7 @@ export class Bilateral extends Filter {
         this.filterType = FilterType.bilateral;
     }
 
-    public getParameters() : Array<any> {
+    public getParameters() : Array<[string, string]> {
         const spatialObject : HTMLSelectElement | null = document.getElementById("bilateralSigmaSpatial") as HTMLSelectElement;
         let spatial = 0;
         if (spatialObject) {
@@ -24,6 +24,6 @@ export class Bilateral extends Filter {
         if (tonalObject) {
             tonal = Number(tonalObject.value);
         }
-        return [["sigmaSpatial", spatial], ["sigmaTonal", tonal]]
+        return [["sigmaSpatial", spatial.toString()], ["sigmaTonal", tonal.toString()]]
     }
 }

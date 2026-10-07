@@ -1,11 +1,12 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException, Request
-from fastapi.responses import Response
-from PIL import Image
-import numpy as np
 import io
 import uuid
+
+import numpy as np
 from cachetools import Cache
-import math
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import Response
+from PIL import Image
+
 fft_cache = Cache(maxsize=50)
 
 router = APIRouter(
@@ -90,7 +91,7 @@ async def apply_frequency_filter(image_id : str, low:float, high: float, cutoff:
         low = -float('inf')
     if high == -1:
         high = float('inf')
-    fft_shifted, filter_applied= fft_cache[image_id]
+    fft_shifted, _filter_applied= fft_cache[image_id]
     rows, cols = fft_shifted.shape
 
     crow, ccol = rows // 2, cols // 2

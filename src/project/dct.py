@@ -1,11 +1,12 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException, Request, Header
+import io
+import uuid
+
+import numpy as np
+from cachetools import Cache
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
 from PIL import Image
-import numpy as np
-import io
 from scipy.fftpack import dctn, idctn
-import uuid
-from cachetools import Cache
 
 dct_cache = Cache(maxsize=50)
 router = APIRouter(

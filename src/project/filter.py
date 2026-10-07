@@ -1,15 +1,12 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException, Request, Header
-from fastapi.responses import Response, JSONResponse
-from PIL import Image
-import numpy as np
 import io
-from scipy.ndimage import convolve, gaussian_filter
-import math
-from enum import Enum
-from scipy.signal import medfilt2d
-import cv2
-import pywt
 
+import cv2
+import numpy as np
+import pywt
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import Response
+from PIL import Image
+from scipy.ndimage import gaussian_filter
 
 router = APIRouter(
     prefix="/filter",

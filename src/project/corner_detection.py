@@ -1,12 +1,11 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException, Request, Header
-from fastapi.responses import Response, JSONResponse
-from PIL import Image
-import numpy as np
 import io
-from scipy.ndimage import convolve, gaussian_filter, generate_binary_structure, label, maximum_filter, binary_dilation
-import math
-from enum import Enum
-from structure_tensor import structure_tensor_2d, eig_special_2d
+
+import numpy as np
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import Response
+from PIL import Image
+from scipy.ndimage import binary_dilation, maximum_filter
+from structure_tensor import eig_special_2d, structure_tensor_2d
 
 router = APIRouter(
     prefix="/filter/corner",
@@ -35,7 +34,7 @@ async def compute_corner_first_tomasi(request: Request):
     img_array  = img_array * 255
     print(img_array.shape)
     S = structure_tensor_2d(img_array,sigma, rho)
-    val, vec = eig_special_2d(S)
+    val, _vec = eig_special_2d(S)
     print(S.shape, val.shape)
     lambda_2 = np.min(val, axis=0)
     print(lambda_2.shape)
@@ -78,7 +77,7 @@ async def compute_corner_first_rohr(request: Request):
     img_array  = img_array * 255
     print(img_array.shape)
     S = structure_tensor_2d(img_array,sigma, rho)
-    val, vec = eig_special_2d(S)
+    val, _vec = eig_special_2d(S)
     print(S.shape, val.shape)
     lambda_2 = np.min(val, axis=0)
     lambda_1 = np.max(val, axis=0)
@@ -125,7 +124,7 @@ async def compute_corner_first_harris(request: Request):
     img_array  = img_array * 255
     print(img_array.shape)
     S = structure_tensor_2d(img_array,sigma, rho)
-    val, vec = eig_special_2d(S)
+    val, _vec = eig_special_2d(S)
     print(S.shape, val.shape)
     lambda_2 = np.min(val, axis=0)
     lambda_1 = np.max(val, axis=0)

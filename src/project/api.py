@@ -1,14 +1,13 @@
-from fastapi import FastAPI, APIRouter
-from project.fft import router as fft_router
+from fastapi import APIRouter
+
+from project.corner_detection import router as corner_router
 from project.dct import router as dct_router
 from project.dwt import router as dwt_router
 from project.edge_detection import router as edge_router
-from project.corner_detection import router as corner_router
-
+from project.fft import router as fft_router
 from project.filter import router as filter_router
-from project.noise import router as noise_router
 from project.morphological_filter import router as morph_router
-
+from project.noise import router as noise_router
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(fft_router)

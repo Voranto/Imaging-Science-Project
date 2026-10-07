@@ -1,10 +1,11 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException, Request, Header
+import io
+
+import numpy as np
+import pywt
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
 from PIL import Image
-import numpy as np
-import io
-from scipy.fftpack import dctn
-import pywt
+
 router = APIRouter(
     prefix="/dwt",
     tags=["DWT Transforms"]
@@ -42,7 +43,7 @@ async def compute_dwt_grayscale(request: Request):
 
 
 
-    arr, slices = pywt.coeffs_to_array(dwt)
+    arr, _slices = pywt.coeffs_to_array(dwt)
     vis_arr = ((arr - arr.min()) / (arr.max() - arr.min() + 1e-5) * 255)
     vis_arr = np.clip(vis_arr, 0, 255).astype(np.uint8)
 

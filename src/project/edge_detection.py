@@ -1,11 +1,11 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException, Request, Header
-from fastapi.responses import Response, JSONResponse
-from PIL import Image
-import numpy as np
 import io
-from scipy.ndimage import convolve, gaussian_filter, generate_binary_structure, label
-import math
 from enum import Enum
+
+import numpy as np
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import JSONResponse, Response
+from PIL import Image
+from scipy.ndimage import convolve, gaussian_filter, generate_binary_structure, label
 
 router = APIRouter(
     prefix="/filter/edge",
@@ -172,7 +172,7 @@ async def compute_cannys_edge_detection(request: Request):
     gradient_processed[:, 0] = 0
     gradient_processed[:, -1] = 0
 
-    # 3. Vectorized Double Thresholding
+    # Double Thresholding
     strong_mask = gradient_processed >= thresholdStrong
     weak_mask = (gradient_processed >= thresholdWeak) & ~strong_mask
 

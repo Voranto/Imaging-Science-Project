@@ -46,7 +46,7 @@
         }
         if (!image) return;
         const imageUrl = URL.createObjectURL(image);
-        
+        renderImage(imageUrl);
         
     }
     const renderImage = async ( imageURL : string) => {

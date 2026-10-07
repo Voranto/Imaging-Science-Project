@@ -2,6 +2,7 @@ import { Canvas, FabricObject, PencilBrush, FabricImage, Path, Point, Circle, ty
 import {ref, type Ref} from 'vue';
 import { computeHistogram, renderHistogram } from './histogram';
 import { getBackgroundColor } from './backgroundColor';
+import { type CustomFabricObject } from './CustomFabricObject'
 export class ImageBuffer {
     public canvas: Canvas;
     public floatBuffer: Float32Array;
@@ -101,7 +102,7 @@ export class ImageBuffer {
   };
 
   private rasterizeObject(obj: FabricObject) {
-    const objectType : string = (obj as unknown).customType;
+    const objectType : string | undefined = (obj as CustomFabricObject).customType;
     if (objectType == "rect") {
         this.rasterizeRect(obj);
     }
@@ -231,7 +232,7 @@ export class ImageBuffer {
           const dy = (y + 0.5) - centerY;
           const distSq = dx * dx + dy * dy;
 
-          const val = Math.exp(-distSq / (2 * (obj as unknown).sigma * (obj as unknown).sigma));
+          const val = Math.exp(-distSq / (2 * (obj as CustomFabricObject).sigma! * (obj as CustomFabricObject).sigma!));
           const idx = y * this.width.value + x;
 
           this.floatBuffer[idx] = Math.min(1.0, val);
@@ -243,8 +244,8 @@ export class ImageBuffer {
     const height = (obj.height || 0) * (obj.scaleY || 1);
     const left = obj.left!;
     const top = obj.top!;
-    const cyclesX = (obj as unknown).cyclesX;
-    const cyclesY = (obj as unknown).cyclesY;
+    const cyclesX = (obj as CustomFabricObject).cyclesX!;
+    const cyclesY = (obj as CustomFabricObject).cyclesY!;
     const freqX = (2 * Math.PI * cyclesX) / width;
     const freqY = (2 * Math.PI * cyclesY) / height;
 
@@ -269,8 +270,8 @@ export class ImageBuffer {
     const height = (obj.height || 0) * (obj.scaleY || 1);
     const left = obj.left!;
     const top = obj.top!;
-    const rows = (obj as unknown).rows;
-    const columns = (obj as unknown).columns;
+    const rows = (obj as CustomFabricObject).rows!;
+    const columns = (obj as CustomFabricObject).columns!;
     const cellWidth = width / columns;
     const cellHeight = height / rows;
 
@@ -304,8 +305,8 @@ export class ImageBuffer {
     const height = (obj.height || 0) * (obj.scaleY || 1);
     const left = obj.left!;
     const top = obj.top!;
-    const rows = (obj as unknown).rows;
-    const columns = (obj as unknown).columns;
+    const rows = (obj as CustomFabricObject).rows!;
+    const columns = (obj as CustomFabricObject).columns!;
     const cellWidth = Math.floor(width / columns);
     const cellHeight = Math.floor(height / rows);
 

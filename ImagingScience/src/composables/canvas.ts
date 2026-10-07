@@ -6,6 +6,7 @@ import { getBackgroundColor } from "./backgroundColor";
 import { ref } from "vue";
 import { getDCT, getDWT, getFFT } from "./transform/useTransforms";
 import { applyGaussianNoise, applyImpulseNoise, applyMultiplicativeGaussianNoise, applyMultiplicativeUniformNoise, applyUniformNoise } from "./noise/applyNoise";
+import type { CustomFabricObject } from "./CustomFabricObject";
 const { imageBuffer } = useImageBufferState();
 export const brushSize = ref(10);
 export const canvasFitToScreen = ref(true);
@@ -253,7 +254,7 @@ export const computeCosine2D = (x : number, y : number) => {
 }
 
 export const addEventListenersObject = (obj : FabricObject) => {
-  const type = (obj as unknown).customType;
+  const type = (obj as CustomFabricObject).customType;
   if (type === "rect" || type === "circle") {
     obj.on("selected", () => {
       setColorSelector(getObjectGrayscale(obj));
@@ -315,7 +316,7 @@ export const copyObject = async () => {
 
     const center = activeObject.getCenterPoint();
     const cloned = await activeObject.clone(['customType']);
-    (cloned as unknown).customType = (activeObject as unknown).customType;
+    (cloned as CustomFabricObject).customType = (activeObject as CustomFabricObject).customType;
     cloned.set({
       left: center.x - activeObject.width / 2,
       top: center.y - activeObject.height / 2,
@@ -336,7 +337,7 @@ export const pasteObject = async () => {
   const newlyPastedObjects: FabricObject[] = [];
   for (const obj of clipboard){
     const clonedObj = await obj.clone(['customType']);
-    const customType = (obj as unknown).customType;
+    const customType = (obj as CustomFabricObject).customType;
 
     const coords = obj.getCenterPoint();
     coords.x -= obj.width / 2;
@@ -349,7 +350,7 @@ export const pasteObject = async () => {
       originX: 'left',
       originY: 'top',
     });
-    (clonedObj as unknown).customType = customType;
+    (clonedObj as CustomFabricObject).customType = customType;
     clonedObj.setCoords();
     
     addEventListenersObject(clonedObj);

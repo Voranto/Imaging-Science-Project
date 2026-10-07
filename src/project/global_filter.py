@@ -13,7 +13,7 @@ router = APIRouter(
 
 
 # Define max tolerance for convergence 
-tolerance = 0.5
+tolerance = 0.01
 max_iterations = 500
 @router.post("/variational")
 async def compute_variational_filter(request: Request):

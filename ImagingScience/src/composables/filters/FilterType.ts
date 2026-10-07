@@ -25,7 +25,7 @@ export enum FilterType {
     diffusion = "diffusion",
     affineGrayscale = "affineGrayscale",
     histogramEqualization = "histogramEqualization",
-    variational = "variational"
+    variational = "variational",
 }
 export function getFilterType() {
     const filterType : HTMLSelectElement | null = document.getElementById("filterType") as HTMLSelectElement;

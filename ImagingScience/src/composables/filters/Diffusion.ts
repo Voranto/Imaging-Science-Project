@@ -12,7 +12,7 @@ export class Diffusion extends Filter {
         this.filterType = FilterType.diffusion;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const timeObject : HTMLSelectElement | null = document.getElementById("diffusionTime") as HTMLSelectElement;
         let time = 0;
         if (timeObject) {

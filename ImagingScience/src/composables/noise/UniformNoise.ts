@@ -11,7 +11,7 @@ export class UniformNoise extends Noise {
         this.noiseType = NoiseType.additive;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const rangeObject : HTMLSelectElement | null = document.getElementById("uniformNoiseRange") as HTMLSelectElement;
         let range = 0;
         if (rangeObject) {

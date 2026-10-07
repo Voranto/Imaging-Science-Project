@@ -11,7 +11,7 @@ export class ImpulseNoise extends Noise {
         this.noiseType = NoiseType.impulse;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const highObject : HTMLSelectElement | null = document.getElementById("impulseNoiseHigh") as HTMLSelectElement;
         let high = 0;
         if (highObject) {

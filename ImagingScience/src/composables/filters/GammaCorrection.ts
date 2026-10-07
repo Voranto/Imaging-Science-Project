@@ -12,7 +12,7 @@ export class GammaCorrection extends Filter {
         this.filterType = FilterType.gammaCorrection;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const gammaObject : HTMLSelectElement | null = document.getElementById("gammaCorrectionValue") as HTMLSelectElement;
         let gamma = 0;
         if (gammaObject) {

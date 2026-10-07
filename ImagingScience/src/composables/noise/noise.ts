@@ -94,7 +94,7 @@ export abstract class  Noise {
             }
             URL.revokeObjectURL(newImageUrl);
     }
-    public abstract getParameters() : Array<[string, string]>;
+    public abstract getParameters() : [string, string][];
 }
 export enum NoiseType {
     additive = "additive",

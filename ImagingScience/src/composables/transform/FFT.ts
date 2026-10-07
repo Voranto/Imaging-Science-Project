@@ -28,7 +28,7 @@ export class FFT extends Transform {
         }
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         return []
     }
 }

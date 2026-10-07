@@ -11,7 +11,7 @@ export class DCT extends Transform {
         this.transformType = TransformType.dct;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         return []
     }
 }

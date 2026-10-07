@@ -29,7 +29,7 @@ export const computeHistogram = (floatBuffer : Float32Array<ArrayBufferLike>) =>
 };
 
 // Function to render/update histogram
-export const renderHistogram = (histogramData : Array<number>) => {
+export const renderHistogram = (histogramData : number[]) => {
   if (!histogramCanvas.value) return;
   
   if (chartInstance) {

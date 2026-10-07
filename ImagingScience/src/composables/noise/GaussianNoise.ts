@@ -11,7 +11,7 @@ export class GaussianNoise extends Noise {
         this.noiseType = NoiseType.gaussian;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const meanObject : HTMLSelectElement | null = document.getElementById("gaussianNoiseMean") as HTMLSelectElement;
         let mean = 0;
         if (meanObject) {

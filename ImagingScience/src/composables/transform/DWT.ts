@@ -11,7 +11,7 @@ export class DWT extends Transform {
         this.transformType = TransformType.dwt;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const levelsObject : HTMLSelectElement | null = document.getElementById("dwtLevel") as HTMLSelectElement;
         let level = 0;
         if (levelsObject) {

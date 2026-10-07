@@ -11,7 +11,7 @@ export class MultiplicativeGaussianNoise extends Noise {
         this.noiseType = NoiseType.multiplicative_gaussian;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const meanObject : HTMLSelectElement | null = document.getElementById("gaussianMultNoiseMean") as HTMLSelectElement;
         let mean = 0;
         if (meanObject) {

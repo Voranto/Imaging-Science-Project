@@ -12,7 +12,7 @@ export class Highpass extends Filter {
         this.filterType = FilterType.highpass;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const sigmaObject : HTMLSelectElement | null = document.getElementById("highpassFilterSigma") as HTMLSelectElement;
         let sigma = 0;
         if (sigmaObject) {

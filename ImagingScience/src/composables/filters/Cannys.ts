@@ -12,7 +12,7 @@ export class Cannys extends Filter {
         this.filterType = FilterType.cannys;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const thresholdWeakObject : HTMLSelectElement | null = document.getElementById("thresholdCannyWeak") as HTMLSelectElement;
         let thresholdWeak = 0;
         if (thresholdWeakObject) {

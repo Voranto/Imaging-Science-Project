@@ -12,7 +12,7 @@ export class SimpleEdges extends Filter {
         this.filterType = FilterType.simpleEdge;
     }
 
-    public getParameters() : Array<[string, string |boolean]> {
+    public getParameters() : [string, string |boolean][] {
         const thresholdObject : HTMLSelectElement | null = document.getElementById("simpleEdgeThreshold") as HTMLSelectElement;
         let threshold = 0;
         if (thresholdObject) {

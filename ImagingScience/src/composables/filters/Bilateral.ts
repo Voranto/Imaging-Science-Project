@@ -13,7 +13,7 @@ export class Bilateral extends Filter {
         this.filterType = FilterType.bilateral;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const spatialObject : HTMLSelectElement | null = document.getElementById("bilateralSigmaSpatial") as HTMLSelectElement;
         let spatial = 0;
         if (spatialObject) {

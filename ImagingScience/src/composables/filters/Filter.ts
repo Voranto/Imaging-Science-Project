@@ -157,6 +157,6 @@ export abstract class  Filter {
         return imageElement.src;
     }
 
-    public abstract getParameters() : Array<[string, string | boolean]>;
+    public abstract getParameters() : [string, string | boolean][];
 }
 

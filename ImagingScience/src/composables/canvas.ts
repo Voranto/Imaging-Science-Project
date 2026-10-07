@@ -303,7 +303,7 @@ export const updateBrushSize = () => {
     }
 }
 
-let clipboard : Array<FabricObject>;
+let clipboard : FabricObject[];
 let pasteOffsetCount = 0;
 export const copyObject = async () => {
   if (!imageBuffer.value!.canvas) return;

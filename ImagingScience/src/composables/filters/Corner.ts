@@ -19,7 +19,7 @@ export class Corner extends Filter {
         this.filterType = FILTER_TYPE_MAP[type]!;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const thresholdObject : HTMLSelectElement | null = document.getElementById("cornerThreshold") as HTMLSelectElement;
         let threshold = 0;
         if (thresholdObject) {

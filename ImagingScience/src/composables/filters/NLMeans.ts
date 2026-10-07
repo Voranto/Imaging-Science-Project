@@ -12,7 +12,7 @@ export class NLMeans extends Filter {
         this.filterType = FilterType.NLMeans;
     }
 
-    public getParameters() : Array<[string, string]> {
+    public getParameters() : [string, string][] {
         const radiusPatchObject : HTMLSelectElement | null = document.getElementById("NLMeansRadiusPatch") as HTMLSelectElement;
         let radiusPatch = 0;
         if (radiusPatchObject) {

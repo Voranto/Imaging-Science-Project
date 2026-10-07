@@ -198,7 +198,7 @@ export abstract class  Transform {
     public static abortRequest() {
         Transform.abortController?.abort();
     }
-    public abstract getParameters() : Array<[string, string]>;
+    public abstract getParameters() : [string, string][];
 }
 export enum TransformType {
     fft = "fft",

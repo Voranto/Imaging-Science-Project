@@ -78,7 +78,7 @@ const frequencyFilterOption = ref(1);
             <select class="custom-select" v-model="frequencyFilterOption" id="frequencyFilterOption">
               <option :value="1">Hard Cutoff</option>
               <option :value="2">Butterworth</option>
-              <option :value="2">Gaussian</option>
+              <option :value="3">Gaussian</option>
             </select>
           </div>
           <button class="btn btn-secondary" @click="applyFrequencyFilterFFT">Apply</button>

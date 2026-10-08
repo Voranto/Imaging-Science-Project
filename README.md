@@ -128,7 +128,7 @@ uv run fastapi dev src/project/main.py
   </tr>
   <tr>
     <td align="center">
-      <p><b>Removing Higher Frequencies</b></p>
+      <p><b>Removing Higher Frequencies with a hard cutoff (not ideal)</b></p>
       <img src="https://github.com/user-attachments/assets/e26124e5-4d35-435c-abca-dcf07e61c5b4" width="300" />
     </td>
     <td align="center">
@@ -136,7 +136,18 @@ uv run fastapi dev src/project/main.py
       <img src="https://github.com/user-attachments/assets/7b16c283-edd6-429f-b890-1b46c256aac1" width="300" />
     </td>
   </tr>
+  <tr>
+    <td align="center">
+      <p><b>Removing Higher Frequencies with a butterworth cutoff </b></p>
+      <img width="300" alt="image" src="https://github.com/user-attachments/assets/91c88a35-d000-44fa-8593-283d8e41bb11" />
+    </td>
+    <td align="center">
+      <p><b>IFFT (Much better lowpass filter)</b></p>
+      <img width="300" alt="image" src="https://github.com/user-attachments/assets/2ea9b114-c251-4348-97ee-c4c7dded9a16" />
+    </td>
+  </tr>
 </table>
+
 <table align="center">
   <tr>
     <td align="center">

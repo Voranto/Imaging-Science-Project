@@ -123,12 +123,12 @@ async def apply_frequency_filter(image_id : str, low:float, high: float, cutoff:
     elif cutoff == 3:
         dist_from_center[dist_from_center == 0] = 1e-8
         if low != -float('inf') and low > 0:
-            gaussian_low = np.exp(-(dist_from_center**2) / (2 * (low**2)))
+            gaussian_low =  1 - np.exp(-(dist_from_center**2) / (2 * (low**2)))
         else:
             gaussian_low = 1.0
 
         if high != float('inf') and high > 0:
-            gaussian_high = 1.0 - np.exp(-(dist_from_center**2) / (2 * (high**2)))
+            gaussian_high = np.exp(-(dist_from_center**2) / (2 * (high**2)))
         else:
             gaussian_high = 1.0
 

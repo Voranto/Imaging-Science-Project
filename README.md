@@ -2,6 +2,8 @@
 
 This website is based on a Vue.js frontend with a FastAPI backend, and is designed to render most transforms and filters used in my "Imaging Science" lecture. It is done using an interactive canvas (Fabric.js based) where objects and images are rendered, and then a series of buttons that render different operations on the image. The operations are done on the backend, using a mixture of numpy, scipy and PyWavelets. The render is exclusively on grayscale to avoid the struggle of multichannel images.
 
+This website is only meant for desktop use. A mobile version could be considered in the future, but is not likely.
+
 ## Features
 - Edge detection using Canny's algorithm.
 - Corner Detection
